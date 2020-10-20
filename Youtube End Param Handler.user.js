@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name     Youtube End Param Handler
-// @version  v20.10.20.0
+// @version  1
 // @author   琳(jim60105)
 // @homepage https://blog.maki0419.com/
 // @grant    none
