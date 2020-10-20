@@ -10,4 +10,4 @@
 3. 修改Tampermonkey設定，每次播放都重載歌單
 	1. 一般→設定模式: 進階
 	2. 外部→更新週期: **永遠**
-3. 播放Playlist，請手動存至書籤: https://www.youtube.com/startplaylist
+3. 播放Playlist，請手動存至書籤: https://www.youtube.com/?startplaylist

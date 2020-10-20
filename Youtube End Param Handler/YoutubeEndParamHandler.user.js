@@ -10,8 +10,6 @@
 
 (function() {
     'use strict';
-    var player = document.getElementsByTagName('video')[0];
-
     if(window.location.href.indexOf("startplaylist")>=0){
         //playlist由@require載入
         var ele = playlist[0];
@@ -22,32 +20,35 @@
             ["shuffle",0]
         ]);
         document.location.href = "https://www.youtube.com/watch?"+newParams.toString();
+		return;
     }
 
+    var player = document.getElementsByTagName('video')[0];
     let urlParams = new URLSearchParams(window.location.search);
     var shuffle = 0;
+	
     if(urlParams.has('end')){
         if(urlParams.has('shuffle') && urlParams.get("shuffle") ==1){
             shuffle = 1;
         }
-        var stopInterval = setInterval(function(){
+		
+		player.ontimeupdate=()=>{
             var flag = player.currentTime > urlParams.get('end');
             if(urlParams.get('end') <= 1) flag = false;
             if(player.ended) flag = true;
 
             if(flag){
-                clearInterval(stopInterval);
                 player.pause();
-                console.log("PausePlayer");
+                console.log("PausePlayer at "+player.currentTime);
 
                 //Check playlist
-                for(var i =0;i<playlist.length;i++){
+                for(var i=0;i<playlist.length;i++){
                     var ele = playlist[i];
-                    if(ele[0] == urlParams.get('v') && (ele[1]<=1 || ele[1] == urlParams.get('t')) && ele[2] == urlParams.get('end')){
+                    if(ele[0] == urlParams.get('v') && (ele[1] <= 1 || ele[1] == urlParams.get('t')) && ele[2] == urlParams.get('end')){
                         if(shuffle){
                             ele = playlist[Math.floor(Math.random() * playlist.length)];
                         }else{
-                            if(i==playlist.length-1) return;
+                            if(i == playlist.length-1) return;
                             ele = playlist[i+1];
                         }
                         var newParams = new URLSearchParams([
@@ -57,11 +58,11 @@
                             ["shuffle",shuffle]
                         ]);
                         document.location.href = window.location.origin + window.location.pathname+'?'+newParams.toString();
-                        break;
+                        return;
                     }
                 }
             }
-        }, 1000);
+        }
     }
 })();
 
