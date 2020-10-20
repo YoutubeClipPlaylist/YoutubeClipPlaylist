@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name     Youtube End Param Handler
-// @version  1
+// @version  2
 // @author   琳(jim60105)
 // @homepage https://blog.maki0419.com/
 // @grant    none
 // @include  https://www.youtube.com/*
-// @require https://github.com/jim60105/TampermonkeyScript/raw/main/QuonTamaPlaylist.js
+// @require  https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/QuonTamaPlaylist.js
 // ==/UserScript==
 
 (function() {
