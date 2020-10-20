@@ -5,7 +5,7 @@
 // @homepage https://blog.maki0419.com/
 // @grant    none
 // @include  https://www.youtube.com/*
-// @require https://gist.github.com/jim60105/45ab96ae4fc429a845bb8bc92d78eb69/raw/4ea4451071d881a5ab5478a3bdce1ed685ce4792/QuonTamaPlaylist.js
+// @require https://github.com/jim60105/TampermonkeyScript/raw/main/QuonTamaPlaylist.js
 // ==/UserScript==
 
 (function() {
