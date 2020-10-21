@@ -1,6 +1,8 @@
 // ==UserScript==
 // @name     Youtube End Param Handler
-// @version  2.2
+// @updateURL https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
+// @downloadURL https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
+// @version  2.3
 // @author   琳(jim60105)
 // @homepage https://blog.maki0419.com/
 // @grant    none
@@ -12,39 +14,36 @@
 /** 在上方的@require加入自己的歌單，請參考範例建立 **/
 
 (function () {
-    if (window.location.href.indexOf("startplaylist") >= 0) {
-        var ele = myPlaylist[0];
-        var newParams = new URLSearchParams([
-            ["v", ele[0]],
-            ["t", ele[1]],
-            ["end", ele[2]],
-            ["shuffle", 0]
-        ]);
-        document.location.href = "https://www.youtube.com/watch?" + newParams.toString();
-        return;
+    var urlParams = new URLSearchParams(window.location.search);
+    var player = document.getElementsByTagName('video')[0];
+    var shuffle = 0;
+
+    if (urlParams.has('shuffle') && urlParams.get("shuffle") == 1) {
+        shuffle = 1;
+        console.log("Shuffle: On");
     }
 
-    var player = document.getElementsByTagName('video')[0];
-    var urlParams = new URLSearchParams(window.location.search);
-    var shuffle = 0;
-    var index = -1;
+    //Start Playlist
+    if (urlParams.has("startplaylist")) {
+        nextSong(0);
+    }
 
     if (urlParams.has('end')) {
-        if (urlParams.has('shuffle') && urlParams.get("shuffle") == 1) {
-            shuffle = 1;
-            console.log("Shuffle: On");
-        }
+        var currentIndex = -1;
+        var currentSong;
 
         //Check myPlaylist
+        //myPlaylist is declared in @require
         for (var i = 0; i < myPlaylist.length; i++) {
-            var currentSong = myPlaylist[i];
-            if (currentSong[0] == urlParams.get('v') && (currentSong[1] <= 1 || currentSong[1] == urlParams.get('t')) && currentSong[2] == urlParams.get('end')) {
-                console.log("Playing on Playlist No."+i);
-                index = i;
+            currentSong = myPlaylist[i];
+            if (currentSong[0] == urlParams.get('v') && currentSong[1] == urlParams.get('t') && currentSong[2] == urlParams.get('end')) {
+                console.log("Playing on Playlist No." + i);
+                currentIndex = i;
                 break;
             }
         }
 
+        //Stop the player when the end time is up.
         player.ontimeupdate = function () {
             var flag = player.currentTime > urlParams.get('end');
             if (urlParams.get('end') <= 1) flag = false;
@@ -54,24 +53,28 @@
                 player.pause();
                 console.log("Pause player at " + player.currentTime);
 
-                if(index>=0) {
-                    var currentSong;
-                    //Next Song
-                    if (shuffle) {
-                        currentSong = myPlaylist[Math.floor(Math.random() * myPlaylist.length)];
-                    } else {
-                        if (index == myPlaylist.length - 1) return;
-                        currentSong = myPlaylist[index + 1];
-                    }
-                    var newParams = new URLSearchParams([
-                        ["v", currentSong[0]],
-                        ["t", currentSong[1]],
-                        ["end", currentSong[2]],
-                        ["shuffle", shuffle]
-                    ]);
-                    document.location.href = window.location.origin + window.location.pathname + '?' + newParams.toString();
+                if (currentIndex >= 0) {
+                    nextSong((currentIndex == myPlaylist.length - 1) ? 0 : currentIndex + 1);
                 }
             }
         }
+    }
+
+    function nextSong(i) {
+        var nextSong;
+        if (shuffle) {
+            nextSong = myPlaylist[Math.floor(Math.random() * myPlaylist.length)];
+        }else{
+            nextSong = myPlaylist[i];
+        }
+
+        var newParams = new URLSearchParams([
+            ["v", nextSong[0]],
+            ["t", nextSong[1]],
+            ["end", nextSong[2]],
+            ["shuffle", shuffle]
+        ]);
+        document.location.href = "https://www.youtube.com/watch?" + newParams.toString();
+        return;
     }
 })();
