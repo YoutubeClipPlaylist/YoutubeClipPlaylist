@@ -28,6 +28,8 @@
 若要開始清單隨機播放: https://www.youtube.com/?startplaylist&shuffle=1
 
 ## 歌單
+目前內建的是[**久遠たま**](https://www.youtube.com/channel/UCBC7vYFNQoGPupe5NxPG4Bw)的歌單\
+如果有小夥伴更新了歌單，直接丟Pull Request過來就行 
 ### 建立
 歌單的建立請參考[這裡](Youtube%20End%20Param%20Handler/QuonTamaPlaylist.js)
 
@@ -43,6 +45,3 @@ Array中儲存三個項目: [VideoID,StartTime,EndTime]
 
 ### 更新
 每次播放都會由連結重載歌單，建議把歌單用Github管理
-
-目前內建的是[**久遠たま**](https://www.youtube.com/channel/UCBC7vYFNQoGPupe5NxPG4Bw)的歌單\
-如果有小夥伴更新了歌單，直接丟Pull Request過來就行 
