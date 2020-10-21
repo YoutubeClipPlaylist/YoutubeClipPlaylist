@@ -4,7 +4,7 @@
 // @downloadURL https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
 // @version  2.3
 // @author   琳(jim60105)
-// @homepage https://blog.maki0419.com/
+// @homepage https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
 // @grant    none
 // @include  https://www.youtube.com/*
 // @require  https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/QuonTamaPlaylist.js
