@@ -2,7 +2,7 @@
 // @name     Youtube End Param Handler
 // @updateURL https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
 // @downloadURL https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
-// @version  2.4
+// @version  2.5
 // @author   琳(jim60105)
 // @homepage https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
 // @grant    none
@@ -23,6 +23,7 @@
 
     //Start Playlist
     if (urlParams.has("startplaylist")) {
+        urlParams.delete("startplaylist");
         nextSong(0);
     }
 
@@ -73,12 +74,10 @@
             nextSong = myPlaylist[i];
         }
 
-        var newParams = new URLSearchParams([
-            ["v", nextSong[0]],
-            ["t", nextSong[1]],
-            ["end", nextSong[2]],
-            ["shuffle", shuffle]
-        ]);
-        document.location.href = "https://www.youtube.com/watch?" + newParams.toString();
+        urlParams.set("v", nextSong[0]);
+        urlParams.set("t", nextSong[1]);
+        urlParams.set("end", nextSong[2]);
+
+        document.location.href = "https://www.youtube.com/watch?" + urlParams.toString();
     }
 })();
