@@ -2,7 +2,7 @@
 // @name     Youtube End Param Handler
 // @updateURL https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
 // @downloadURL https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
-// @version  2.5
+// @version  2.6
 // @author   琳(jim60105)
 // @homepage https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
 // @grant    none
@@ -14,6 +14,7 @@
 /** 在上方的@require加入自己的歌單，請參考範例建立 **/
 
 (function () {
+    'use strict';
     var urlParams = new URLSearchParams(window.location.search);
     var shuffle = 0;
     if (urlParams.has('shuffle') && urlParams.get("shuffle") == 1) {
@@ -27,9 +28,33 @@
         nextSong(0);
     }
 
-    var player = document.getElementsByTagName('video')[0];
-    if(typeof player === 'undefined'){ return; }
-    player.ondurationchange = function(){
+    var player;
+    //Wait for DOM
+    var interval = setInterval(function () {
+        player = document.getElementsByTagName('video')[0];
+        if (typeof player != 'undefined') {
+            clearInterval(interval);
+            checkList();
+            player.ondurationchange = checkList;
+        }
+    }, 2000);
+
+    function nextSong(i) {
+        var nextSong;
+        if (shuffle) {
+            nextSong = myPlaylist[Math.floor(Math.random() * myPlaylist.length)];
+        } else {
+            nextSong = myPlaylist[i];
+        }
+
+        urlParams.set("v", nextSong[0]);
+        urlParams.set("t", nextSong[1]);
+        urlParams.set("end", nextSong[2]);
+
+        document.location.href = "https://www.youtube.com/watch?" + urlParams.toString();
+    }
+
+    function checkList() {
         urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('end')) {
             var currentIndex = -1;
@@ -60,24 +85,9 @@
                     }
                 }
             }
-        }else{
+        } else {
             console.log("Clear ontimeupdate");
             player.ontimeupdate = null;
         }
-    };
-
-    function nextSong(i) {
-        var nextSong;
-        if (shuffle) {
-            nextSong = myPlaylist[Math.floor(Math.random() * myPlaylist.length)];
-        }else{
-            nextSong = myPlaylist[i];
-        }
-
-        urlParams.set("v", nextSong[0]);
-        urlParams.set("t", nextSong[1]);
-        urlParams.set("end", nextSong[2]);
-
-        document.location.href = "https://www.youtube.com/watch?" + urlParams.toString();
     }
 })();
