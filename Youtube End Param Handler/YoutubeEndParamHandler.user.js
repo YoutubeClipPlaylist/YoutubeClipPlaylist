@@ -2,7 +2,7 @@
 // @name     Youtube End Param Handler
 // @updateURL https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
 // @downloadURL https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
-// @version  2.6
+// @version  2.7
 // @author   琳(jim60105)
 // @homepage https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
 // @grant    none
@@ -75,14 +75,20 @@
                 if (player.ended) flag = true;
 
                 if (flag) {
-
-                    console.log("3");
                     player.pause();
                     console.log("Pause player at " + player.currentTime);
 
                     if (currentIndex >= 0) {
                         nextSong((currentIndex == myPlaylist.length - 1) ? 0 : currentIndex + 1);
                     }
+                    return;
+                }
+
+                //Clear ontimeupdate when it is detected that the current time is less than the start time.
+                if(player.currentTime < urlParams.get('t')){
+                    console.log("Clear ontimeupdate");
+                    console.log("It is detected that the current time is less than the start time.");
+                    player.ontimeupdate = null;
                 }
             }
         } else {
