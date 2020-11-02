@@ -1,4 +1,4 @@
-﻿# Youtube End Param Handler
+﻿# Youtube影片截選播放清單 (Youtube End Param Handler)
 我們的Youtube網址格式如下:
     https://www.youtube.com/watch?v=ETjgki1sSgc&t=1591&end=1880&shuffle=1&playlistinclude=quon&playlistexclude=member
 
@@ -30,6 +30,8 @@
 	2. 外部→更新週期: **永遠**
 4. 播放Playlist，請手動儲存連結至書籤: https://www.youtube.com/?startplaylist \
 若要開始清單隨機播放: https://www.youtube.com/?startplaylist&shuffle=1
+5. 如果是使用Firefox，需要關閉「阻擋媒體自動播放」功能，請參閱:\ 
+https://support.mozilla.org/en-US/kb/block-autoplay 
 
 ## 歌單
 目前內建的是[**久遠たま**](https://www.youtube.com/channel/UCBC7vYFNQoGPupe5NxPG4Bw)的歌單\
