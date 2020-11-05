@@ -2,11 +2,12 @@
 // @name     Youtube End Param Handler
 // @updateURL https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
 // @downloadURL https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
-// @version  2.7
+// @version  2.8
 // @author   琳(jim60105)
 // @homepage https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
 // @grant    none
 // @include  https://www.youtube.com/*
+// @noframes
 // @require  https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/QuonTamaPlaylist.js
 // @require  https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/QuonTamaMemberPlaylist.js
 // ==/UserScript==
@@ -85,14 +86,14 @@
                 }
 
                 //Clear ontimeupdate when it is detected that the current time is less than the start time.
-                if(player.currentTime < urlParams.get('t')){
-                    console.log("Clear ontimeupdate");
+                if (player.currentTime < urlParams.get('t')) {
+                    console.log("Clear end parameter function");
                     console.log("It is detected that the current time is less than the start time.");
                     player.ontimeupdate = null;
                 }
             }
         } else {
-            console.log("Clear ontimeupdate");
+            console.log("Clear end parameter function");
             player.ontimeupdate = null;
         }
     }
