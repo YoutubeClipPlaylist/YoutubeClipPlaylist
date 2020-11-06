@@ -2,7 +2,7 @@
 // @name     Youtube End Param Handler
 // @updateURL https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
 // @downloadURL https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
-// @version  2.8
+// @version  2.9
 // @author   琳(jim60105)
 // @homepage https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
 // @grant    none
@@ -77,6 +77,7 @@
 
                 if (flag) {
                     player.pause();
+                    player.ontimeupdate = null;
                     console.log("Pause player at " + player.currentTime);
 
                     if (currentIndex >= 0) {
