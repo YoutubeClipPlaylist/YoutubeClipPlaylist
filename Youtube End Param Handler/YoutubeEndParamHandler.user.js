@@ -2,7 +2,7 @@
 // @name     Youtube End Param Handler
 // @updateURL https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
 // @downloadURL https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
-// @version  2.9
+// @version  2.10
 // @author   琳(jim60105)
 // @homepage https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
 // @grant    none
@@ -14,7 +14,7 @@
 
 /** 在上方的@require加入自己的歌單，請參考範例建立 **/
 
-(function () {
+(function() {
     'use strict';
     var urlParams = new URLSearchParams(window.location.search);
     var shuffle = 0;
@@ -31,7 +31,7 @@
 
     var player;
     //Wait for DOM
-    var interval = setInterval(function () {
+    var interval = setInterval(function() {
         player = document.getElementsByTagName('video')[0];
         if (typeof player != 'undefined') {
             clearInterval(interval);
@@ -69,10 +69,10 @@
             }
 
             //Stop the player when the end time is up.
-            player.ontimeupdate = function () {
+            player.ontimeupdate = function() {
                 //console.log(player.currentTime);
                 var flag = player.currentTime > urlParams.get('end');
-                if (urlParams.get('end') <= 1) flag = false;
+                if (urlParams.get('end') == 0) flag = false;
                 if (player.ended) flag = true;
 
                 if (flag) {

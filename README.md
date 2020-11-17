@@ -42,8 +42,8 @@ https://support.mozilla.org/en-US/kb/block-autoplay
 Array中儲存三個項目: [VideoID,StartTime,EndTime]
 
 * VideoID: 必須用引號包住，為字串型態
-* StartTime: 必須是正數，為數字型態。如果要從頭播放，輸入1
-* EndTime: 必須是正數，為數字型態。如果要播放至尾，輸入1
+* StartTime: 必須是非負數，為數字型態。如果要從頭播放，輸入0
+* EndTime: 必須是非負數，為數字型態。如果要播放至尾，輸入0
 
 ### 載入
 [在腳本註解中加上@require](Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js#L10)，後接歌單直鏈\
