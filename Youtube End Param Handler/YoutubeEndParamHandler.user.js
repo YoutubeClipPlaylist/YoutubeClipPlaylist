@@ -2,7 +2,7 @@
 // @name         Youtube End Param Handler
 // @updateURL    https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
 // @downloadURL  https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
-// @version      2.11
+// @version      3.0
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
 // @grant        GM_setValue
@@ -32,6 +32,7 @@
         urlParams.delete("startplaylist");
 
         shuffleList = makeShufflelist(myPlaylist.length);
+        shuffleList.unshift(0);
 
         nextSong(-1);
     }
@@ -56,6 +57,7 @@
             for (var i = 0; i < myPlaylist.length; i++) {
                 if (myPlaylist[i][0] == urlParams.get('v') && myPlaylist[i][1] == urlParams.get('t') && myPlaylist[i][2] == urlParams.get('end')) {
                     console.log("Playing on Playlist No." + i);
+                    makePlaylistUI(i);
                     currentIndex = i;
                 }
             }
@@ -88,12 +90,13 @@
         } else {
             console.log("Clear end parameter function");
             player.ontimeupdate = null;
+            plBox.innerHTML = "";
         }
     }
 
     function makeShufflelist(length) {
         var shuffleList = [];
-        for (i = 0; i < length; ++i) shuffleList[i] = i;
+        for (var i = 0; i < length; ++i) shuffleList[i] = i;
 
         // http://stackoverflow.com/questions/962802#962890
         var tmp, current, top = shuffleList.length;
@@ -108,14 +111,17 @@
         return shuffleList;
     }
 
-    function nextSong(index) {
-        if (shuffle) {
-            if (shuffleList.length <= 0) shuffleList = makeShufflelist(myPlaylist.length);
-            index = shuffleList.shift();
-            GM_setValue('shuffleList', shuffleList);
-        } else {
-            index = index + 1;
-            index %= myPlaylist.length;
+    function nextSong(index, passNext = false) {
+        if (!passNext) {
+            if (shuffle) {
+                if (shuffleList.length <= 0) shuffleList = makeShufflelist(myPlaylist.length);
+                shuffleList.shift();
+                GM_setValue('shuffleList', shuffleList);
+                index = shuffleList[0];
+            } else {
+                index = index + 1;
+                index %= myPlaylist.length;
+            }
         }
 
         var nextSong = myPlaylist[index];
@@ -124,5 +130,95 @@
         urlParams.set("end", nextSong[2]);
 
         document.location.href = "https://www.youtube.com/watch?" + urlParams.toString();
+    }
+
+    var plBox = document.createElement("div");
+    document.body.appendChild(plBox);
+
+    function makePlaylistUI(currentIndex) {
+        plBox.innerHTML = "";
+        var plTitle = document.createElement("h2");
+        plTitle.innerHTML = "截選播放佇列";
+        plBox.appendChild(plTitle);
+        var plContent = document.createElement("ul");
+        plBox.appendChild(plContent);
+
+        var pl = shuffleList;
+        if (!shuffle) {
+            pl = [];
+            for (var i = currentIndex; i < myPlaylist.length; ++i) pl[i - currentIndex] = i;
+        }
+
+        var liTemplate = document.createElement("li");
+        liTemplate.style.color = "white";
+        liTemplate.style.fontSize = "20px";
+        liTemplate.style.margin = "12px";
+        liTemplate.style.marginLeft = "30px";
+        liTemplate.style.listStyleType = "disclosure-closed";
+
+        pl.forEach(function(songIndex, plIndex) {
+            var li = liTemplate.cloneNode();
+            // 顯示歌曲文字
+            li.innerHTML = `${myPlaylist[songIndex][0]}: ${myPlaylist[songIndex][1]}`;
+            li.addEventListener("click", function() {
+                if (shuffle) {
+                    var tmp = shuffleList.splice(plIndex, 1);
+                    shuffleList.unshift(tmp[0]);
+                    GM_setValue('shuffleList', shuffleList);
+                }
+                nextSong(songIndex, true);
+            }, false);
+            plContent.appendChild(li);
+        });
+
+        var width = 450;
+        //讓box+目錄標籤的寬度，永遠不大於螢幕寬的0.8倍
+        if (screen.width * 0.8 - 40 < width) {
+            width = screen.width * 0.8 - 40;
+        }
+
+        //位置初始化
+        plBox.style.position = "fixed";
+        plBox.style.right = `-${width}px`;
+        plBox.style.zIndex = "2000";
+        plBox.style.background = "#222222DD";
+        plBox.style.transition = "all 1s";
+        plBox.style.cursor = 'pointer';
+        plBox.style.width = `${width}px`;
+        plBox.style.bottom = "0";
+        plBox.style.overflowY = "scroll";
+        plBox.style.height = "calc(100vh - 56px)"
+
+
+        plTitle.style.position = "fixed";
+        plTitle.style.right = "16px";
+        plTitle.style.bottom = "1vh";
+        plTitle.style.background = "#222222DD";
+        plTitle.style.padding = '8px';
+        plTitle.style.transition = "all 1s";
+        plTitle.style.writingMode = 'vertical-lr';
+        plTitle.style.color = "lightgray";
+
+        //開閉清單
+        function toggleDisplay(open) {
+            if (open) {
+                //開啟清單
+                plBox.style.right = "0px";
+                plTitle.style.right = `${width}px`;
+            } else {
+                //關閉清單
+                plBox.style.right = `-${width}px`;
+                plTitle.style.right = "0px";
+            }
+        }
+        toggleDisplay(false);
+
+        //註冊滑鼠事件
+        plBox.addEventListener("mouseover", function() {
+            toggleDisplay(true);
+        }, false);
+        plBox.addEventListener("mouseout", function() {
+            toggleDisplay(false);
+        }, false);
     }
 })();
