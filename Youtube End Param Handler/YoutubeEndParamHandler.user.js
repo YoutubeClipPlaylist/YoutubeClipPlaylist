@@ -1,15 +1,16 @@
 // ==UserScript==
-// @name     Youtube End Param Handler
-// @updateURL https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
-// @downloadURL https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
-// @version  2.10
-// @author   琳(jim60105)
-// @homepage https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
-// @grant    none
-// @include  https://www.youtube.com/*
+// @name         Youtube End Param Handler
+// @updateURL    https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
+// @downloadURL  https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
+// @version      2.11
+// @author       琳(jim60105)
+// @homepage     https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @include      https://www.youtube.com/*
 // @noframes
-// @require  https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/QuonTamaPlaylist.js
-// @require  https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/QuonTamaMemberPlaylist.js
+// @require      https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/QuonTamaPlaylist.js
+// @require      https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/QuonTamaMemberPlaylist.js
 // ==/UserScript==
 
 /** 在上方的@require加入自己的歌單，請參考範例建立 **/
@@ -23,10 +24,16 @@
         console.log("Shuffle: On");
     }
 
+    var shuffleList = GM_getValue('shuffleList', []);
+    console.log(shuffleList);
+
     //Start Playlist
     if (urlParams.has("startplaylist")) {
         urlParams.delete("startplaylist");
-        nextSong(0);
+
+        shuffleList = makeShufflelist(myPlaylist.length);
+
+        nextSong(-1);
     }
 
     var player;
@@ -39,21 +46,6 @@
             player.ondurationchange = checkList;
         }
     }, 2000);
-
-    function nextSong(i) {
-        var nextSong;
-        if (shuffle) {
-            nextSong = myPlaylist[Math.floor(Math.random() * myPlaylist.length)];
-        } else {
-            nextSong = myPlaylist[i];
-        }
-
-        urlParams.set("v", nextSong[0]);
-        urlParams.set("t", nextSong[1]);
-        urlParams.set("end", nextSong[2]);
-
-        document.location.href = "https://www.youtube.com/watch?" + urlParams.toString();
-    }
 
     function checkList() {
         urlParams = new URLSearchParams(window.location.search);
@@ -81,7 +73,7 @@
                     console.log("Pause player at " + player.currentTime);
 
                     if (currentIndex >= 0) {
-                        nextSong((currentIndex == myPlaylist.length - 1) ? 0 : currentIndex + 1);
+                        nextSong(currentIndex);
                     }
                     return;
                 }
@@ -97,5 +89,40 @@
             console.log("Clear end parameter function");
             player.ontimeupdate = null;
         }
+    }
+
+    function makeShufflelist(length) {
+        var shuffleList = [];
+        for (i = 0; i < length; ++i) shuffleList[i] = i;
+
+        // http://stackoverflow.com/questions/962802#962890
+        var tmp, current, top = shuffleList.length;
+        if (top)
+            while (--top) {
+                current = Math.floor(Math.random() * (top + 1));
+                tmp = shuffleList[current];
+                shuffleList[current] = shuffleList[top];
+                shuffleList[top] = tmp;
+            }
+
+        return shuffleList;
+    }
+
+    function nextSong(index) {
+        if (shuffle) {
+            if (shuffleList.length <= 0) shuffleList = makeShufflelist(myPlaylist.length);
+            index = shuffleList.shift();
+            GM_setValue('shuffleList', shuffleList);
+        } else {
+            index = index + 1;
+            index %= myPlaylist.length;
+        }
+
+        var nextSong = myPlaylist[index];
+        urlParams.set("v", nextSong[0]);
+        urlParams.set("t", nextSong[1]);
+        urlParams.set("end", nextSong[2]);
+
+        document.location.href = "https://www.youtube.com/watch?" + urlParams.toString();
     }
 })();
