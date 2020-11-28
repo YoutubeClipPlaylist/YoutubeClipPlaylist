@@ -170,7 +170,7 @@
                     shuffleList.unshift(tmp[0]);
                     GM_setValue('shuffleList', shuffleList);
                 }
-                nextSong(shuffleList[0], true);
+                nextSong(songIndex, true);
             }, false);
             plContent.appendChild(li);
         });
@@ -206,7 +206,7 @@
 
         plTitle.style.position = "fixed";
         plTitle.style.right = "16px";
-        plTitle.style.bottom = "1vh";
+        plTitle.style.bottom = "0px";
         plTitle.style.background = "#222222DD";
         plTitle.style.padding = '8px';
         plTitle.style.transition = "all 1s";
@@ -214,6 +214,7 @@
         plTitle.style.color = "lightgray";
         plTitle.style.fontWeight = "unset";
         plTitle.style.fontSize = "18px";
+        plTitle.style.borderRadius = "10px 0 0 0"
 
         //開閉清單
         var isOpen = GM_getValue('isOpen', false);
