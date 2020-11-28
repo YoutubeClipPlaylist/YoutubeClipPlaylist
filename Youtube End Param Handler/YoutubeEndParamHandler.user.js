@@ -153,13 +153,17 @@
         liTemplate.style.color = "white";
         liTemplate.style.fontSize = "20px";
         liTemplate.style.margin = "12px";
-        liTemplate.style.marginLeft = "30px";
+        liTemplate.style.marginLeft = "36px";
         liTemplate.style.listStyleType = "disclosure-closed";
 
         pl.forEach(function(songIndex, plIndex) {
             var li = liTemplate.cloneNode();
             // 顯示歌曲文字
-            li.innerHTML = `${myPlaylist[songIndex][0]}: ${myPlaylist[songIndex][1]}`;
+            if (myPlaylist[songIndex].length >= 4) {
+                li.innerHTML = myPlaylist[songIndex][3];
+            } else {
+                li.innerHTML = `${myPlaylist[songIndex][0]}: ${myPlaylist[songIndex][1]}`;
+            }
             li.addEventListener("click", function() {
                 if (shuffle) {
                     var tmp = shuffleList.splice(plIndex, 1);
