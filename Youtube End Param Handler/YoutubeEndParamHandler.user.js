@@ -151,7 +151,7 @@
 
         var liTemplate = document.createElement("li");
         liTemplate.style.color = "white";
-        liTemplate.style.fontSize = "20px";
+        liTemplate.style.fontSize = "2em";
         liTemplate.style.margin = "12px";
         liTemplate.style.marginLeft = "36px";
         liTemplate.style.listStyleType = "disclosure-closed";
@@ -170,18 +170,28 @@
                     shuffleList.unshift(tmp[0]);
                     GM_setValue('shuffleList', shuffleList);
                 }
-                nextSong(songIndex, true);
+                nextSong(shuffleList[0], true);
             }, false);
             plContent.appendChild(li);
         });
 
+        plContent.firstChild.style.fontSize = "2.5em";
+        plContent.firstChild.style.fontWeight = "bold";
+        plContent.firstChild.style.textAlign = "center";
+        plContent.firstChild.style.listStyleType = "none";
+        plContent.firstChild.style.borderBottom = ".1em #AAA solid";
+        plContent.firstChild.style.overflow = "hidden";
+        plContent.firstChild.style.textOverflow = "ellipsis";
+        plContent.firstChild.style.whiteSpace = "nowrap";
+
         var width = 450;
+
         //讓box+目錄標籤的寬度，永遠不大於螢幕寬的0.8倍
         if (screen.width * 0.8 - 40 < width) {
             width = screen.width * 0.8 - 40;
         }
 
-        //位置初始化
+        //位置和Style初始化
         plBox.style.position = "fixed";
         plBox.style.right = `-${width}px`;
         plBox.style.zIndex = "2000";
@@ -192,7 +202,7 @@
         plBox.style.bottom = "0";
         plBox.style.overflowY = "scroll";
         plBox.style.height = "calc(100vh - 56px)"
-
+        plBox.style.fontFamily = "Meiryo";
 
         plTitle.style.position = "fixed";
         plTitle.style.right = "16px";
@@ -202,8 +212,12 @@
         plTitle.style.transition = "all 1s";
         plTitle.style.writingMode = 'vertical-lr';
         plTitle.style.color = "lightgray";
+        plTitle.style.fontWeight = "unset";
+        plTitle.style.fontSize = "18px";
 
         //開閉清單
+        var isOpen = GM_getValue('isOpen', false);
+
         function toggleDisplay(open) {
             if (open) {
                 //開啟清單
@@ -214,15 +228,24 @@
                 plBox.style.right = `-${width}px`;
                 plTitle.style.right = "0px";
             }
+            isOpen = open;
+            GM_setValue('isOpen', isOpen);
         }
-        toggleDisplay(false);
+        toggleDisplay(isOpen);
 
-        //註冊滑鼠事件
-        plBox.addEventListener("mouseover", function() {
-            toggleDisplay(true);
-        }, false);
-        plBox.addEventListener("mouseout", function() {
-            toggleDisplay(false);
+        //滑鼠事件
+        // 滑鼠hover開閉UI
+        /*  plBox.addEventListener("mouseover", function() {
+                toggleDisplay(true);
+            }, false);
+            plBox.addEventListener("mouseout", function() {
+                toggleDisplay(false);
+            }, false);
+        */
+
+        // 點擊開閉UI
+        plTitle.addEventListener("click", function() {
+            toggleDisplay(!isOpen);
         }, false);
     }
 })();
