@@ -28,7 +28,7 @@
     console.log(shuffleList);
 
     //Start Playlist
-    if (urlParams.has("startplaylist")) {
+    if (urlParams.has("startplaylist") || shuffleList.length > myPlaylist.length) {
         urlParams.delete("startplaylist");
 
         shuffleList = makeShufflelist(myPlaylist.length);
