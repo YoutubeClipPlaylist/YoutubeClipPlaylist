@@ -25,16 +25,32 @@
     }
 
     var shuffleList = GM_getValue('shuffleList', []);
+    // console.log("New Start");
     console.log(shuffleList);
 
     //Start Playlist
     if (urlParams.has("startplaylist") || shuffleList.length > myPlaylist.length) {
         urlParams.delete("startplaylist");
 
-        shuffleList = makeShufflelist(myPlaylist.length);
-        shuffleList.unshift(0);
+        shuffleList = [0];
+        nextSong(0);
+    }
 
-        nextSong(-1);
+    function makeShufflelist(length) {
+        var shuffleList = [];
+        for (var i = 0; i < length; ++i) shuffleList[i] = i;
+
+        // http://stackoverflow.com/questions/962802#962890
+        var tmp, current, top = shuffleList.length;
+        if (top)
+            while (--top) {
+                current = Math.floor(Math.random() * (top + 1));
+                tmp = shuffleList[current];
+                shuffleList[current] = shuffleList[top];
+                shuffleList[top] = tmp;
+            }
+
+        return shuffleList;
     }
 
     var player;
@@ -57,6 +73,15 @@
             for (var i = 0; i < myPlaylist.length; i++) {
                 if (myPlaylist[i][0] == urlParams.get('v') && myPlaylist[i][1] == urlParams.get('t') && myPlaylist[i][2] == urlParams.get('end')) {
                     console.log("Playing on Playlist No." + i);
+                    if (shuffle) {
+                        if (shuffleList[0] != i) {
+                            shuffleList.unshift(i);
+                            // console.log(`Unshift back ${i}`);
+                        }
+                        GM_setValue('shuffleList', shuffleList);
+                        // console.log(shuffleList);
+                    }
+                    // console.log("Make UI");
                     makePlaylistUI(i);
                     currentIndex = i;
                 }
@@ -85,6 +110,7 @@
                     console.log("Clear end parameter function");
                     console.log("It is detected that the current time is less than the start time.");
                     player.ontimeupdate = null;
+                    plBox.innerHTML = "";
                 }
             }
         } else {
@@ -92,44 +118,6 @@
             player.ontimeupdate = null;
             plBox.innerHTML = "";
         }
-    }
-
-    function makeShufflelist(length) {
-        var shuffleList = [];
-        for (var i = 0; i < length; ++i) shuffleList[i] = i;
-
-        // http://stackoverflow.com/questions/962802#962890
-        var tmp, current, top = shuffleList.length;
-        if (top)
-            while (--top) {
-                current = Math.floor(Math.random() * (top + 1));
-                tmp = shuffleList[current];
-                shuffleList[current] = shuffleList[top];
-                shuffleList[top] = tmp;
-            }
-
-        return shuffleList;
-    }
-
-    function nextSong(index, passNext = false) {
-        if (!passNext) {
-            if (shuffle) {
-                if (shuffleList.length <= 0) shuffleList = makeShufflelist(myPlaylist.length);
-                shuffleList.shift();
-                GM_setValue('shuffleList', shuffleList);
-                index = shuffleList[0];
-            } else {
-                index = index + 1;
-                index %= myPlaylist.length;
-            }
-        }
-
-        var nextSong = myPlaylist[index];
-        urlParams.set("v", nextSong[0]);
-        urlParams.set("t", nextSong[1]);
-        urlParams.set("end", nextSong[2]);
-
-        document.location.href = "https://www.youtube.com/watch?" + urlParams.toString();
     }
 
     var plBox = document.createElement("div");
@@ -143,10 +131,12 @@
         var plContent = document.createElement("ul");
         plBox.appendChild(plContent);
 
-        var pl = shuffleList;
-        if (!shuffle) {
-            pl = [];
-            for (var i = currentIndex; i < myPlaylist.length; ++i) pl[i - currentIndex] = i;
+        var pl = [];
+        if (shuffle) {
+            pl = shuffleList;
+        } else {
+            for (var i = currentIndex; i < myPlaylist.length; ++i)
+                pl[i - currentIndex] = i;
         }
 
         var liTemplate = document.createElement("li");
@@ -154,23 +144,32 @@
         liTemplate.style.fontSize = "2em";
         liTemplate.style.margin = "12px";
         liTemplate.style.marginLeft = "36px";
-        liTemplate.style.listStyleType = "disclosure-closed";
+        liTemplate.style.listStyleType = "disclosure-closed"; // Not function in chrome
 
-        pl.forEach(function(songIndex, plIndex) {
+        pl.forEach(function(plElement, plIndex) {
             var li = liTemplate.cloneNode();
             // 顯示歌曲文字
-            if (myPlaylist[songIndex].length >= 4) {
-                li.innerHTML = myPlaylist[songIndex][3];
+            if (myPlaylist[plElement].length >= 4) {
+                li.innerHTML = myPlaylist[plElement][3];
             } else {
-                li.innerHTML = `${myPlaylist[songIndex][0]}: ${myPlaylist[songIndex][1]}`;
+                // Fallback
+                li.innerHTML = `${myPlaylist[plElement][0]}: ${myPlaylist[plElement][1]}`;
             }
+
+            // Onclick
             li.addEventListener("click", function() {
+                player.ontimeupdate = null;
                 if (shuffle) {
-                    var tmp = shuffleList.splice(plIndex, 1);
-                    shuffleList.unshift(tmp[0]);
-                    GM_setValue('shuffleList', shuffleList);
+                    // console.log(`Splice on ${plIndex}`);
+                    var tmp = pl.splice(plIndex, 1);
+                    // console.log(`Spliced ${tmp}`);
+
+                    // console.log(`Save shuffleList:`);
+                    // console.log(pl);
+                    GM_setValue('shuffleList', pl);
                 }
-                nextSong(songIndex, true);
+                console.log(`Next Song ${plElement} by UI click`);
+                nextSong(plElement, true);
             }, false);
             plContent.appendChild(li);
         });
@@ -248,5 +247,27 @@
         plTitle.addEventListener("click", function() {
             toggleDisplay(!isOpen);
         }, false);
+    }
+
+    function nextSong(index, passNext = false) {
+        if (!passNext) {
+            if (shuffle) {
+                shuffleList.shift();
+                if (shuffleList.length == 0) shuffleList = makeShufflelist(myPlaylist.length);
+                GM_setValue('shuffleList', shuffleList);
+                index = shuffleList[0];
+            } else {
+                index = index + 1;
+                index %= myPlaylist.length;
+            }
+            console.log(`Next Song ${index} by song end`);
+        }
+
+        var nextSong = myPlaylist[index];
+        urlParams.set("v", nextSong[0]);
+        urlParams.set("t", nextSong[1]);
+        urlParams.set("end", nextSong[2]);
+
+        document.location.href = "https://www.youtube.com/watch?" + urlParams.toString();
     }
 })();
