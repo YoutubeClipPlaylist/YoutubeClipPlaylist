@@ -111,13 +111,13 @@
                     console.log("Clear end parameter function");
                     console.log("It is detected that the current time is less than the start time.");
                     player.ontimeupdate = null;
-                    plBox.innerHTML = "";
+                    plBox.outerHTML = "";
                 }
             }
         } else {
             console.log("Clear end parameter function");
             player.ontimeupdate = null;
-            plBox.innerHTML = "";
+            plBox.outerHTML = "";
         }
     }
 
