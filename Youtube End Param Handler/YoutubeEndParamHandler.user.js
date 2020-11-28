@@ -33,7 +33,7 @@
         urlParams.delete("startplaylist");
 
         shuffleList = [0];
-        nextSong(0);
+        nextSong(-1);
     }
 
     function makeShufflelist(length) {
@@ -50,6 +50,7 @@
                 shuffleList[top] = tmp;
             }
 
+        console.log("Make new shuffleList");
         return shuffleList;
     }
 
