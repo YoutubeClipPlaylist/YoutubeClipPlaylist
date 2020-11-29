@@ -74,17 +74,26 @@
             for (var i = 0; i < myPlaylist.length; i++) {
                 if (myPlaylist[i][0] == urlParams.get('v') && myPlaylist[i][1] == urlParams.get('t') && myPlaylist[i][2] == urlParams.get('end')) {
                     console.log("Playing on Playlist No." + i);
+                    currentIndex = i;
+
+                    // Handle Keyboard Media Key "NextTrack"
+                    navigator.mediaSession.setActionHandler("nexttrack", function() {
+                        console.log("Media Key trigger");
+                        player.ontimeupdate = null;
+                        nextSong(currentIndex);
+                    });
+
                     if (shuffle) {
-                        if (shuffleList[0] != i) {
-                            shuffleList.unshift(i);
+                        if (shuffleList[0] != currentIndex) {
+                            shuffleList.unshift(currentIndex);
                             // console.log(`Unshift back ${i}`);
                         }
                         GM_setValue('shuffleList', shuffleList);
                         // console.log(shuffleList);
                     }
+
                     // console.log("Make UI");
-                    makePlaylistUI(i);
-                    currentIndex = i;
+                    makePlaylistUI(currentIndex);
                 }
             }
 
@@ -111,13 +120,13 @@
                     console.log("Clear end parameter function");
                     console.log("It is detected that the current time is less than the start time.");
                     player.ontimeupdate = null;
-                    plBox.outerHTML = "";
+                    hideUI();
                 }
             }
         } else {
             console.log("Clear end parameter function");
             player.ontimeupdate = null;
-            plBox.outerHTML = "";
+            hideUI();
         }
     }
 
@@ -125,6 +134,7 @@
     document.body.appendChild(plBox);
 
     function makePlaylistUI(currentIndex) {
+        plBox.style.display = "block";
         plBox.innerHTML = "";
         var plTitle = document.createElement("h2");
         plTitle.innerHTML = "截選播放佇列";
@@ -248,6 +258,10 @@
         plTitle.addEventListener("click", function() {
             toggleDisplay(!isOpen);
         }, false);
+    }
+
+    function hideUI() {
+        plBox.style.display = "none";
     }
 
     function nextSong(index, passNext = false) {
