@@ -83,6 +83,20 @@
                         nextSong(currentIndex);
                     });
 
+                    // Get rid of the "automatic video pause" function
+                    player.onpause = function() {
+                        var btns = document.querySelectorAll('a.yt-simple-endpoint.style-scope.yt-button-renderer');
+                        while (btns.length > 0) {
+                            player.play();
+                            btns.forEach(btn => {
+                                btn.click();
+                                btn.outerHTML = "";
+                                // console.log("Keep Playing~");
+                            });
+                            btns = document.querySelectorAll('a.yt-simple-endpoint.style-scope.yt-button-renderer');
+                        }
+                    }
+
                     if (shuffle) {
                         if (shuffleList[0] != currentIndex) {
                             shuffleList.unshift(currentIndex);
