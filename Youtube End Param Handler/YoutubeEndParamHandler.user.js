@@ -2,15 +2,17 @@
 // @name         Youtube End Param Handler
 // @updateURL    https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
 // @downloadURL  https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
-// @version      4.0
+// @version      5.1
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @include      https://www.youtube.com/*
-// @noframes
+// @include      https://drive.google.com/file/*
+// @include      https://youtube.googleapis.com/*
 // @require      https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/QuonTamaPlaylist.js
 // @require      https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/QuonTamaMemberPlaylist.js
+// @require      https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/QuonTamaBackupPlaylist.js
 // ==/UserScript==
 
 /** 在上方的@require加入自己的歌單，請參考範例建立 **/
@@ -33,6 +35,8 @@
         urlParams.delete("startplaylist");
 
         shuffleList = [0];
+
+        GM_setValue('shuffleList', shuffleList);
         nextSong(-1);
     }
 
@@ -57,59 +61,94 @@
     var player;
     //Wait for DOM
     var interval = setInterval(function() {
-        player = document.getElementsByTagName('video')[0];
-        if (typeof player != 'undefined') {
-            clearInterval(interval);
-            checkList();
-            player.ondurationchange = checkList;
+        if (window.location.pathname.match(/^\/file\/d\/.*\/view$/i)) {
+            // Google Drive files
+            var iframe = document.getElementById("drive-viewer-video-player-object-0");
+            if (iframe && iframe.tagName == "IFRAME") {
+                clearInterval(interval);
+
+                // Display the thumb video forcely
+                iframe.parentNode.parentNode.childNodes[1].style.visibility = "hidden";
+                iframe.parentNode.parentNode.childNodes[2].style.visibility = "unset";
+                var box = iframe.parentNode.parentElement;
+                box.style.width = "100%";
+                box.style.height = "100%";
+                box.style.border = "0px";
+                box.style.top = "unset";
+                box.style.left = "unset";
+
+                // Map the params into iframe
+                var iframeURL = new URL(iframe.src);
+                var iframeUrlParams = iframeURL.searchParams;
+                iframeUrlParams.set("autoplay", 1);
+                if (urlParams.has("t")) iframeUrlParams.set("start", urlParams.get("t"));
+                if (urlParams.has("end")) iframeUrlParams.set("end", urlParams.get("end"));
+                iframe.src = iframeURL.toString();
+                // And then will trigger this script inside iframe.
+
+                // NextSong after play end
+                window.addEventListener("message", function(event) {
+                    if (event.data == "child frame") {
+                        nextSong(checkList());
+                    }
+                });
+            }
+        } else {
+            // Skip the song if it is on Google Drive and play in the background.
+            if (window.location.pathname == "/embed/" && document.visibilityState == "hidden") {
+                //console.log(document.visibilityState);
+                clearInterval(interval);
+                nextSong(checkList());
+            }
+
+            player = document.getElementsByTagName('video')[0];
+            if (typeof player != 'undefined') {
+                clearInterval(interval);
+                player.play();
+                doMain();
+                player.ondurationchange = doMain;
+            }
         }
     }, 2000);
 
-    function checkList() {
+    function doMain() {
         urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('end')) {
-            var currentIndex = -1;
-            //Check myPlaylist
-            //myPlaylist is declared in @require
-            for (var i = 0; i < myPlaylist.length; i++) {
-                if (myPlaylist[i][0] == urlParams.get('v') && myPlaylist[i][1] == urlParams.get('t') && myPlaylist[i][2] == urlParams.get('end')) {
-                    console.log("Playing on Playlist No." + i);
-                    currentIndex = i;
+        var currentIndex = checkList();
+        if (currentIndex >= 0) {
+            // Handle Keyboard Media Key "NextTrack"
+            navigator.mediaSession.setActionHandler("nexttrack", function() {
+                console.log("Media Key trigger");
+                player.ontimeupdate = null;
+                nextSong(currentIndex);
+            });
 
-                    // Handle Keyboard Media Key "NextTrack"
-                    navigator.mediaSession.setActionHandler("nexttrack", function() {
-                        console.log("Media Key trigger");
-                        player.ontimeupdate = null;
-                        nextSong(currentIndex);
-                    });
-
-                    // Get rid of the "automatic video pause" function
-                    player.onpause = function() {
-                        var btns = document.querySelectorAll('a.yt-simple-endpoint.style-scope.yt-button-renderer');
-                        while (btns.length > 0) {
-                            player.play();
-                            btns.forEach(btn => {
-                                btn.click();
-                                btn.outerHTML = "";
-                                // console.log("Keep Playing~");
-                            });
-                            btns = document.querySelectorAll('a.yt-simple-endpoint.style-scope.yt-button-renderer');
-                        }
+            // Get rid of the "automatic video pause" function
+            if (window.location.pathname.match(/^\/watch$/i)) {
+                player.onpause = function() {
+                    var btns = document.querySelectorAll('a.yt-simple-endpoint.style-scope.yt-button-renderer');
+                    while (btns.length > 0) {
+                        player.play();
+                        btns.forEach(btn => {
+                            btn.click();
+                            btn.outerHTML = "";
+                            // console.log("Keep Playing~");
+                        });
+                        btns = document.querySelectorAll('a.yt-simple-endpoint.style-scope.yt-button-renderer');
                     }
-
-                    if (shuffle) {
-                        if (shuffleList[0] != currentIndex) {
-                            shuffleList.unshift(currentIndex);
-                            // console.log(`Unshift back ${i}`);
-                        }
-                        GM_setValue('shuffleList', shuffleList);
-                        // console.log(shuffleList);
-                    }
-
-                    // console.log("Make UI");
-                    makePlaylistUI(currentIndex);
                 }
             }
+
+            if (shuffle) {
+                if (shuffleList[0] != currentIndex) {
+                    shuffleList.unshift(currentIndex);
+                    // console.log(`Unshift back ${i}`);
+                }
+                GM_setValue('shuffleList', shuffleList);
+                // console.log(shuffleList);
+            }
+
+            // console.log("Make UI");
+            makePlaylistUI(currentIndex);
 
             //Stop the player when the end time is up.
             player.ontimeupdate = function() {
@@ -142,6 +181,42 @@
             player.ontimeupdate = null;
             hideUI();
         }
+    }
+
+    function checkList() {
+        urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('end')) {
+            //Check myPlaylist
+            //myPlaylist is declared in @require
+
+            var flag = false;
+            if (window.location.pathname.match(/^\/watch$/i)) {
+                // Youtube
+                for (var i = 0; i < myPlaylist.length; i++) {
+                    if (myPlaylist[i][0] == urlParams.get('v') &&
+                        myPlaylist[i][1] == urlParams.get('t') &&
+                        myPlaylist[i][2] == urlParams.get('end')) {
+                        flag = true;
+                        break;
+                    }
+                }
+            } else {
+                // Google Drive iframe
+                for (var i = 0; i < myPlaylist.length; i++) {
+                    if (document.location.href.includes(myPlaylist[i][0]) &&
+                        (myPlaylist[i][1] == urlParams.get('t') || myPlaylist[i][1] == urlParams.get('start')) &&
+                        myPlaylist[i][2] == urlParams.get('end')) {
+                        flag = true;
+                        break;
+                    }
+                }
+            }
+            if (flag) {
+                console.log("Playing on Playlist No." + i);
+                return i;
+            }
+        }
+        return -1;
     }
 
     var plBox = document.createElement("div");
@@ -238,7 +313,8 @@
         plTitle.style.color = "lightgray";
         plTitle.style.fontWeight = "unset";
         plTitle.style.fontSize = "18px";
-        plTitle.style.borderRadius = "10px 0 0 0"
+        plTitle.style.borderRadius = "10px 0 0 0";
+        plTitle.style.margin = "0px";
 
         //開閉清單
         var isOpen = GM_getValue('isOpen', false);
@@ -279,6 +355,12 @@
     }
 
     function nextSong(index, passNext = false) {
+        // Out iframe
+        if (window.location.pathname == "/embed/") {
+            parent.postMessage("child frame", "*");
+            return;
+        }
+
         if (!passNext) {
             if (shuffle) {
                 shuffleList.shift();
@@ -293,10 +375,16 @@
         }
 
         var nextSong = myPlaylist[index];
-        urlParams.set("v", nextSong[0]);
         urlParams.set("t", nextSong[1]);
         urlParams.set("end", nextSong[2]);
 
-        document.location.href = "https://www.youtube.com/watch?" + urlParams.toString();
+        if (nextSong[0].length > 20) {
+            // Google Drive
+            document.location.href = `https://drive.google.com/file/d/${nextSong[0]}/view?${urlParams.toString()}`;
+        } else {
+            // Youtube
+            urlParams.set("v", nextSong[0]);
+            document.location.href = `https://www.youtube.com/watch?${urlParams.toString()}`;
+        }
     }
 })();
