@@ -109,7 +109,7 @@
                 player.ondurationchange = doMain;
             }
         }
-    }, 2000);
+    }, 1000);
 
     function doMain() {
         urlParams = new URLSearchParams(window.location.search);
@@ -379,6 +379,7 @@
         urlParams.set("end", nextSong[2]);
 
         if (nextSong[0].length > 20) {
+            urlParams.delete("v");
             // Google Drive
             document.location.href = `https://drive.google.com/file/d/${nextSong[0]}/view?${urlParams.toString()}`;
         } else {
