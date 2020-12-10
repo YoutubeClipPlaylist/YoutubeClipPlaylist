@@ -3,7 +3,6 @@
 https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
 
 ## Youtube網址格式
-
 	https://www.youtube.com/watch?
 		v=ETjgki1sSgc &
 		t=1591 &
@@ -13,7 +12,6 @@ https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
 		playlistexclude=member
 
 ## Google Drive網址格式
-
 	https://drive.google.com/file/d/13LaALYNOmdN3GfD7aeKreyzshdKX-Tvz/view?
 		t=884 &
 		end=1166 &
@@ -22,7 +20,6 @@ https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
 		playlistexclude=member
 
 ## 參數說明
-
 - VideoID: 在Youtube原生為`v`參數，在Google Drive中是在路徑中
 - `t`: 影片播放開始時間
 - `end`: 設定在指定秒數停止播放影片
@@ -64,7 +61,7 @@ Array中儲存四個項目: [VideoID, StartTime, EndTime, Title]
 * Title: 必須用引號包住，為字串型態
 
 ### 載入
-[在腳本註解中加上@require](https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js#L13)，後接歌單直鏈\
+[在腳本註解中加上@require](https://github.com/jim60105/TampermonkeyScript/blob/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js#L13)，後接歌單直鏈\
 支援載入複數歌單，會全部merge在一起播放
 
 ### 更新
