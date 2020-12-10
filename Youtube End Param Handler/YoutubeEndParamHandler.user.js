@@ -2,7 +2,7 @@
 // @name         Youtube End Param Handler
 // @updateURL    https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
 // @downloadURL  https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
-// @version      5.2
+// @version      5.3
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
 // @grant        GM_setValue
@@ -10,9 +10,9 @@
 // @include      https://www.youtube.com/*
 // @include      https://drive.google.com/file/*
 // @include      https://youtube.googleapis.com/*
-// @require      https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/QuonTamaPlaylist.js
-// @require      https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/QuonTamaMemberPlaylist.js
-// @require      https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/QuonTamaBackupPlaylist.js
+// @require      https://github.com/jim60105/SongLists/raw/master/QuonTama/QuonTamaSongList.js
+// @require      https://github.com/jim60105/SongLists/raw/master/QuonTama/QuonTamaMemberSongList.js
+// @require      https://github.com/jim60105/SongLists/raw/master/QuonTama/QuonTamaBackupSongList.js
 // ==/UserScript==
 
 /** 在上方的@require加入自己的歌單，請參考範例建立 **/
