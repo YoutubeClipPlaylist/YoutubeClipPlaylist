@@ -143,6 +143,26 @@
             // console.log("Make UI");
             makePlaylistUI(currentIndex);
 
+            // Add custom subtitle
+            var track = document.createElement("track");
+            track.label = "Traditional Chinese";
+            track.kind = "subtitles";
+            track.srclang = "zh";
+            track.default = true;
+            track.track.mode = "showing";
+            track.track.addCue(new VTTCue(366, 376, "[Test]"));
+            track.track.addCue(new VTTCue(380, 386, "[Test22222222222222222233333333333344442222222222222223333333333334444444222222222222222223333333333334444222222222222222333333333333444444444222222222222222223333333333334444222222222222222333333333333444444445555555555]"));
+            track.track.oncuechange = function() {
+                let cues = track.track.activeCues[0];
+                cues.line = 15;
+            };
+            var first = player.firstElementChild;
+            while (first) {
+                first.remove();
+                first = player.firstElementChild;
+            }
+            player.appendChild(track);
+
             //Stop the player when the end time is up.
             player.ontimeupdate = function() {
                 // Handle Keyboard Media Key "NextTrack"
