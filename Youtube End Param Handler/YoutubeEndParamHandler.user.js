@@ -115,13 +115,6 @@
         urlParams = new URLSearchParams(window.location.search);
         var currentIndex = checkList();
         if (currentIndex >= 0) {
-            // Handle Keyboard Media Key "NextTrack"
-            navigator.mediaSession.setActionHandler("nexttrack", function() {
-                console.log("Media Key trigger");
-                player.ontimeupdate = null;
-                nextSong(currentIndex);
-            });
-
             // Get rid of the "automatic video pause" function
             if (window.location.pathname.match(/^\/watch$/i)) {
                 player.onpause = function() {
@@ -152,6 +145,13 @@
 
             //Stop the player when the end time is up.
             player.ontimeupdate = function() {
+                // Handle Keyboard Media Key "NextTrack"
+                navigator.mediaSession.setActionHandler("nexttrack", function() {
+                    console.log("Media Key trigger");
+                    player.ontimeupdate = null;
+                    nextSong(currentIndex);
+                });
+
                 //console.log(player.currentTime);
                 var flag = player.currentTime > urlParams.get('end');
                 if (urlParams.get('end') == 0) flag = false;
