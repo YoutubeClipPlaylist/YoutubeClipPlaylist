@@ -15,12 +15,12 @@ https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
 	https://drive.google.com/file/d/13LaALYNOmdN3GfD7aeKreyzshdKX-Tvz/view?
 		t=884 &
 		end=1166 &
-		shuffle= 1 &
+		shuffle=1 &
 		playlistinclude=quon &
 		playlistexclude=member
 
 ## 參數說明
-- VideoID: 在Youtube原生為`v`參數，在Google Drive中是在路徑中
+- VideoID: 在Youtube原生為`v`參數，在Google Drive是在路徑中
 - `t`: 影片播放開始時間
 - `end`: 設定在指定秒數停止播放影片
 - `shuffle`: Playlist隨機播放
