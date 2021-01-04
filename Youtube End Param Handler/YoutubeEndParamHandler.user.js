@@ -2,7 +2,7 @@
 // @name         Youtube End Param Handler
 // @updateURL    https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
 // @downloadURL  https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
-// @version      5.3
+// @version      5.4
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
 // @grant        GM_setValue
@@ -114,43 +114,46 @@
     function doMain() {
         urlParams = new URLSearchParams(window.location.search);
         var currentIndex = checkList();
-        if (currentIndex >= 0) {
-            // Get rid of the "automatic video pause" function
-            if (window.location.pathname.match(/^\/watch$/i)) {
-                player.onpause = function() {
-                    var btns = document.querySelectorAll('a.yt-simple-endpoint.style-scope.yt-button-renderer');
-                    while (btns.length > 0) {
-                        player.play();
-                        btns.forEach(btn => {
-                            btn.click();
-                            btn.outerHTML = "";
-                            // console.log("Keep Playing~");
-                        });
-                        btns = document.querySelectorAll('a.yt-simple-endpoint.style-scope.yt-button-renderer');
+        if (urlParams.has('end')) {
+            if (currentIndex >= 0) {
+                // Get rid of the "automatic video pause" function
+                if (window.location.pathname.match(/^\/watch$/i)) {
+                    player.onpause = function() {
+                        var btns = document.querySelectorAll('a.yt-simple-endpoint.style-scope.yt-button-renderer');
+                        while (btns.length > 0) {
+                            player.play();
+                            btns.forEach(btn => {
+                                btn.click();
+                                btn.outerHTML = "";
+                                // console.log("Keep Playing~");
+                            });
+                            btns = document.querySelectorAll('a.yt-simple-endpoint.style-scope.yt-button-renderer');
+                        }
                     }
                 }
-            }
 
-            if (shuffle) {
-                if (shuffleList[0] != currentIndex) {
-                    shuffleList.unshift(currentIndex);
-                    // console.log(`Unshift back ${i}`);
+                if (shuffle) {
+                    if (shuffleList[0] != currentIndex) {
+                        shuffleList.unshift(currentIndex);
+                        // console.log(`Unshift back ${i}`);
+                    }
+                    GM_setValue('shuffleList', shuffleList);
+                    // console.log(shuffleList);
                 }
-                GM_setValue('shuffleList', shuffleList);
-                // console.log(shuffleList);
-            }
 
-            // console.log("Make UI");
-            makePlaylistUI(currentIndex);
+                // console.log("Make UI");
+                makePlaylistUI(currentIndex);
+            }
 
             //Stop the player when the end time is up.
             player.ontimeupdate = function() {
                 // Handle Keyboard Media Key "NextTrack"
-                navigator.mediaSession.setActionHandler("nexttrack", function() {
-                    console.log("Media Key trigger");
-                    player.ontimeupdate = null;
-                    nextSong(currentIndex);
-                });
+                if (currentIndex >= 0)
+                    navigator.mediaSession.setActionHandler("nexttrack", function() {
+                        console.log("Media Key trigger");
+                        player.ontimeupdate = null;
+                        nextSong(currentIndex);
+                    });
 
                 //console.log(player.currentTime);
                 var flag = player.currentTime > urlParams.get('end');
@@ -185,6 +188,7 @@
 
     function checkList() {
         urlParams = new URLSearchParams(window.location.search);
+        var i = -1;
         if (urlParams.has('end')) {
             //Check myPlaylist
             //myPlaylist is declared in @require
@@ -192,7 +196,7 @@
             var flag = false;
             if (window.location.pathname.match(/^\/watch$/i)) {
                 // Youtube
-                for (var i = 0; i < myPlaylist.length; i++) {
+                for (i = 0; i < myPlaylist.length; i++) {
                     if (myPlaylist[i][0] == urlParams.get('v') &&
                         myPlaylist[i][1] == urlParams.get('t') &&
                         myPlaylist[i][2] == urlParams.get('end')) {
@@ -202,7 +206,7 @@
                 }
             } else {
                 // Google Drive iframe
-                for (var i = 0; i < myPlaylist.length; i++) {
+                for (i = 0; i < myPlaylist.length; i++) {
                     if (document.location.href.includes(myPlaylist[i][0]) &&
                         (myPlaylist[i][1] == urlParams.get('t') || myPlaylist[i][1] == urlParams.get('start')) &&
                         myPlaylist[i][2] == urlParams.get('end')) {
@@ -213,10 +217,12 @@
             }
             if (flag) {
                 console.log("Playing on Playlist No." + i);
-                return i;
+            } else {
+                console.log("Not playing in the playlist.");
+                i = -1;
             }
         }
-        return -1;
+        return i;
     }
 
     var plBox = document.createElement("div");
