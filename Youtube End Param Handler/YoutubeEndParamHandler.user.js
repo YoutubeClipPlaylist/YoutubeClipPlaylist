@@ -87,13 +87,19 @@
                 iframeUrlParams.set("autoplay", 1);
                 if (urlParams.has("t")) iframeUrlParams.set("start", urlParams.get("t"));
                 if (urlParams.has("end")) iframeUrlParams.set("end", urlParams.get("end"));
+                if (urlParams.has("playlistinclude")) iframeUrlParams.set("playlistinclude", urlParams.get("playlistinclude"));
+                if (urlParams.has("playlistexclude")) iframeUrlParams.set("playlistexclude", urlParams.get("playlistexclude"));
                 iframe.src = iframeURL.toString();
                 // And then will trigger this script inside iframe.
 
                 // NextSong after play end
                 window.addEventListener("message", function(event) {
-                    if (event.data == "child frame") {
+                    if (event.data == "song end") {
                         nextSong(checkList());
+                    } else {
+                        if (Number.isInteger(event.data)) {
+                            nextSong(event.data, true);
+                        }
                     }
                 });
             }
@@ -393,7 +399,11 @@
     function nextSong(index, passNext = false) {
         // Out iframe
         if (window.location.pathname == "/embed/") {
-            parent.postMessage("child frame", "*");
+            if (!passNext) {
+                parent.postMessage("song end", "*");
+            } else {
+                parent.postMessage(index, "*");
+            }
             return;
         }
 
