@@ -7,12 +7,16 @@
 // @homepage     https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
 // @grant        GM_setValue
 // @grant        GM_getValue
+// @grant        GM_xmlhttpRequest
+// @connect      github.com
+// @connect      githubusercontent.com
 // @include      https://www.youtube.com/*
 // @include      https://drive.google.com/file/*
 // @include      https://youtube.googleapis.com/*
 // @require      https://github.com/jim60105/SongLists/raw/master/QuonTama/QuonTamaSongList.js
 // @require      https://github.com/jim60105/SongLists/raw/master/QuonTama/QuonTamaMemberSongList.js
 // @require      https://github.com/jim60105/SongLists/raw/master/QuonTama/QuonTamaBackupSongList.js
+// @require      https://github.com/jim60105/SongLists/raw/master/QuonTama/QuonTamaRadioQTamaList.js
 // ==/UserScript==
 
 /** 在上方的@require加入自己的歌單，請參考範例建立 **/
@@ -143,27 +147,31 @@
 
                 // console.log("Make UI");
                 makePlaylistUI(currentIndex);
-            }
 
-            // Add custom subtitle
-            var track = document.createElement("track");
-            track.label = "Traditional Chinese";
-            track.kind = "subtitles";
-            track.srclang = "zh";
-            track.default = true;
-            track.track.mode = "showing";
-            track.track.addCue(new VTTCue(366, 376, "[Test]"));
-            track.track.addCue(new VTTCue(380, 386, "[Test22222222222222222233333333333344442222222222222223333333333334444444222222222222222223333333333334444222222222222222333333333333444444444222222222222222223333333333334444222222222222222333333333333444444445555555555]"));
-            track.track.oncuechange = function() {
-                let cues = track.track.activeCues[0];
-                cues.line = 15;
-            };
-            var first = player.firstElementChild;
-            while (first) {
-                first.remove();
-                first = player.firstElementChild;
+                // Add custom subtitle
+                if (myPlaylist[currentIndex].length >= 4 && myPlaylist[currentIndex][4]) {
+                    player.setAttribute("crossorigin", "");
+                    GM_xmlhttpRequest({
+                        method: "GET",
+                        url: myPlaylist[currentIndex][4],
+                        onload: function(response) {
+                            var blob = new Blob([response.responseText], { type: 'text/vtt' });
+                            var track = document.createElement("track");
+                            track.src = URL.createObjectURL(blob);
+                            track.label = "Traditional Chinese";
+                            track.kind = "subtitles";
+                            track.srclang = "zh";
+                            track.default = true;
+                            var first = player.firstElementChild;
+                            while (first) {
+                                first.remove();
+                                first = player.firstElementChild;
+                            }
+                            player.appendChild(track);
+                        }
+                    });
+                }
             }
-            player.appendChild(track);
 
             //Stop the player when the end time is up.
             player.ontimeupdate = function() {
@@ -217,6 +225,7 @@
             if (window.location.pathname.match(/^\/watch$/i)) {
                 // Youtube
                 for (i = 0; i < myPlaylist.length; i++) {
+                    if (myPlaylist[i][1] == 0) myPlaylist[i][1] = 1;
                     if (myPlaylist[i][0] == urlParams.get('v') &&
                         myPlaylist[i][1] == urlParams.get('t') &&
                         myPlaylist[i][2] == urlParams.get('end')) {
@@ -227,6 +236,7 @@
             } else {
                 // Google Drive iframe
                 for (i = 0; i < myPlaylist.length; i++) {
+                    if (myPlaylist[i][1] == 0) myPlaylist[i][1] = 1;
                     if (document.location.href.includes(myPlaylist[i][0]) &&
                         (myPlaylist[i][1] == urlParams.get('t') || myPlaylist[i][1] == urlParams.get('start')) &&
                         myPlaylist[i][2] == urlParams.get('end')) {
@@ -401,7 +411,11 @@
         }
 
         var nextSong = myPlaylist[index];
+
+        //參數給入1才會從頭播放
+        if (nextSong[1] == 0) nextSong[1] = 1;
         urlParams.set("t", nextSong[1]);
+
         urlParams.set("end", nextSong[2]);
 
         if (nextSong[0].length > 20) {
