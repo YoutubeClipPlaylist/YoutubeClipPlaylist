@@ -277,8 +277,14 @@
         if (shuffle) {
             pl = shuffleList;
         } else {
-            for (var i = currentIndex; i < myPlaylist.length; ++i)
-                pl[i - currentIndex] = i;
+            var list = [];
+            for (var i = 0; i < myPlaylist.length; i++) list[i] = i;
+
+            if (0 == currentIndex) {
+                pl = list;
+            } else {
+                pl = list.slice(currentIndex).concat(list.slice(0, currentIndex));
+            }
         }
 
         var liTemplate = document.createElement("li");
