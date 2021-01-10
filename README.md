@@ -53,12 +53,13 @@ https://support.mozilla.org/en-US/kb/block-autoplay
 ## 歌單
 歌單的建立請參考[這裡](https://github.com/jim60105/SongLists/blob/master/QuonTama/QuonTamaSongList.js)
 
-Array中儲存四個項目: [VideoID, StartTime, EndTime, Title]
+Array中儲存項目: [VideoID, StartTime, EndTime, Title, SubSrc]
 
 * VideoID: 必須用引號包住，為字串型態
 * StartTime: 必須是非負數，為數字型態。如果要從頭播放，輸入0
 * EndTime: 必須是非負數，為數字型態。如果要播放至尾，輸入0
 * Title: 必須用引號包住，為字串型態
+* SubSrc: 必須用引號包住，為字串型態
 
 ### 載入
 [在腳本註解中加上@require](https://github.com/jim60105/TampermonkeyScript/blob/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js#L13)，後接歌單直鏈\
@@ -66,3 +67,7 @@ Array中儲存四個項目: [VideoID, StartTime, EndTime, Title]
 
 ### 更新
 每次播放都會由連結重載歌單，建議把歌單用Github管理
+
+## 字幕
+此工具支援載入WebVTT字幕(.vtt)，請將字幕直鏈傳入歌單之SubSrc\
+範例: [這裡是WebVTT檔案](https://github.com/jim60105/SongLists/blob/master/QuonTama/Sub/RadioQTama/0.vtt)，並[在此處傳入連結](https://github.com/jim60105/SongLists/blob/253d9cf826a54733abb99f874283632270cc4175/QuonTama/QuonTamaRadioQTamaList.js#L23)
