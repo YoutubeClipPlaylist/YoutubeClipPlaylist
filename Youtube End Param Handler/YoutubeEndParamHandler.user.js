@@ -140,7 +140,9 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
                 clearInterval(interval);
                 player.play().then(() => {
                     // Set the start time manually here to prevent YouTube from skipping it when t == 0.
-                    if (urlParams.has("t")) {
+                    if (urlParams.has("t") &&
+                        urlParams.get("t") == 0 &&
+                        player.currentTime > 2) {
                         player.currentTime = urlParams.get("t");
                     }
 
