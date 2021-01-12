@@ -162,6 +162,7 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
         if (!urlParams.has('end')) {
             console.log("Clear end parameter function");
             player.ontimeupdate = null;
+            DestroySubtitle();
             HideUI();
             return;
         }
@@ -215,6 +216,7 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
                 console.log("Clear end parameter function");
                 console.log("It is detected that the current time is less than the start time.");
                 player.ontimeupdate = null;
+                DestroySubtitle();
                 HideUI();
             }
         };
@@ -239,6 +241,7 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
 
         // Add custom subtitle
         function MakeSubtitle(currentIndex) {
+            DestroySubtitle();
             if (myPlaylist[currentIndex].length >= 4 && myPlaylist[currentIndex][4]) {
                 // player.setAttribute("crossorigin", "");
                 GM_xmlhttpRequest({
@@ -253,16 +256,18 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
                         track.srclang = "zh";
                         track.default = true;
 
-                        // Clear exist tracks
-                        var first = player.firstElementChild;
-                        while (first) {
-                            first.remove();
-                            first = player.firstElementChild;
-                        }
-
                         player.appendChild(track);
                     }
                 });
+            }
+        }
+
+        // Clear exist tracks
+        function DestroySubtitle() {
+            var first = player.firstElementChild;
+            while (first) {
+                first.remove();
+                first = player.firstElementChild;
             }
         }
 
