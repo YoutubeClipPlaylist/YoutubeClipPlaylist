@@ -4,7 +4,7 @@
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @version      7
 // @author       琳(jim60105)
-// @homepage     https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
+// @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_xmlhttpRequest
