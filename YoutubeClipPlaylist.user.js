@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Youtube End Param Handler
-// @updateURL    https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
-// @downloadURL  https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
-// @version      6.4
+// @name         Youtube Clip Playlist
+// @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
+// @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
+// @version      7
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
 // @grant        GM_setValue
@@ -13,17 +13,26 @@
 // @include      https://www.youtube.com/*
 // @include      https://drive.google.com/file/*
 // @include      https://youtube.googleapis.com/*
-// @require      https://github.com/jim60105/SongLists/raw/master/QuonTama/QuonTamaSongList.js
-// @require      https://github.com/jim60105/SongLists/raw/master/QuonTama/QuonTamaMemberSongList.js
-// @require      https://github.com/jim60105/SongLists/raw/master/QuonTama/QuonTamaBackupSongList.js
-// @require      https://github.com/jim60105/SongLists/raw/master/QuonTama/QuonTamaRadioQTamaList.js
+// @require      https://github.com/jim60105/Playlists/raw/master/QuonTama/QuonTamaSongList.js
+// @require      https://github.com/jim60105/Playlists/raw/master/QuonTama/QuonTamaMemberSongList.js
+// @require      https://github.com/jim60105/Playlists/raw/master/QuonTama/QuonTamaBackupSongList.js
+// @require      https://github.com/jim60105/Playlists/raw/master/QuonTama/QuonTamaRadioQTamaList.js
 // ==/UserScript==
 
 /**** 在上方的@require加入自己的歌單，請參考範例建立 ****/
 
+/**
+ * 版本更新提要: v7
+ * 1. 更改本repo名稱為YoutubeClipPlaylist
+ * 2. 更改default branch為master
+ * 3. 專案架構調整
+ * 4. 更改歌單repo SongLists名稱為Playlists
+ */
+
 var myPlaylist = (typeof myPlaylist === 'undefined') ? [] : myPlaylist;
 
 function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
+    // TODO 只載入必要歌單
     var urlParams = new URLSearchParams(window.location.search);
     var flag = false;
 

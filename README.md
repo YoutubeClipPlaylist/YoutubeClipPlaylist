@@ -1,6 +1,6 @@
-﻿# Youtube影片截選播放清單 (Youtube End Param Handler)
-![](Youtube%20End%20Param%20Handler/demo.png)
-https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
+﻿# Youtube影片截選播放清單 (Youtube Clip Playlist)
+![pic](pic/demo.png)
+https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 
 ## Youtube網址格式
 	https://www.youtube.com/watch?
@@ -41,7 +41,7 @@ https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
 
 ## 安裝步驟
 1. 安裝瀏覧器擴充: [Tampermonkey](https://www.tampermonkey.net/)
-2. 安裝腳本: [Youtube End Param Handler](https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js)
+2. 安裝腳本: [Youtube Clip Playlist](https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js)
 3. 修改Tampermonkey設定，每次播放都重載歌單
 	1. 一般→設定模式: 進階
 	2. 外部→更新週期: **永遠**
@@ -51,7 +51,7 @@ https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
 https://support.mozilla.org/en-US/kb/block-autoplay 
 
 ## 歌單
-歌單的建立請參考[這裡](https://github.com/jim60105/SongLists/blob/master/QuonTama/QuonTamaSongList.js)
+歌單的建立請參考[這裡](https://github.com/jim60105/Playlists/blob/master/QuonTama/QuonTamaSongList.js)
 
 Array中儲存項目: [VideoID, StartTime, EndTime, Title, SubSrc]
 
@@ -62,7 +62,7 @@ Array中儲存項目: [VideoID, StartTime, EndTime, Title, SubSrc]
 * SubSrc: 必須用引號包住，為字串型態
 
 ### 載入
-[在腳本註解中加上@require](https://github.com/jim60105/TampermonkeyScript/blob/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js#L13)，後接歌單直鏈\
+[在腳本註解中加上@require](https://github.com/jim60105/YoutubeClipPlaylist/blob/master/YoutubeClipPlaylist.user.js#L13)，後接歌單直鏈\
 支援載入複數歌單，會全部merge在一起播放
 
 ### 更新
@@ -70,4 +70,4 @@ Array中儲存項目: [VideoID, StartTime, EndTime, Title, SubSrc]
 
 ## 字幕
 此工具支援載入WebVTT字幕(.vtt)，請將字幕直鏈傳入歌單之SubSrc\
-範例: [這裡是WebVTT檔案](https://github.com/jim60105/SongLists/blob/master/QuonTama/Sub/RadioQTama/0.vtt)，並[在此處傳入連結](https://github.com/jim60105/SongLists/blob/253d9cf826a54733abb99f874283632270cc4175/QuonTama/QuonTamaRadioQTamaList.js#L23)
+範例: [這裡是WebVTT檔案](https://github.com/jim60105/Playlists/blob/master/QuonTama/Sub/RadioQTama/0.vtt)，並[在此處傳入連結](https://github.com/jim60105/Playlists/blob/253d9cf826a54733abb99f874283632270cc4175/QuonTama/QuonTamaRadioQTamaList.js#L23)
