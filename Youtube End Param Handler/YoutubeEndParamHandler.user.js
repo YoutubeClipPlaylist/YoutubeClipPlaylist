@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Youtube End Param Handler
-// @updateURL    https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
-// @downloadURL  https://github.com/jim60105/TampermonkeyScript/raw/main/Youtube%20End%20Param%20Handler/YoutubeEndParamHandler.user.js
-// @version      6.4
+// @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
+// @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
+// @version      6.5
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
 // @grant        GM_setValue
@@ -13,13 +13,19 @@
 // @include      https://www.youtube.com/*
 // @include      https://drive.google.com/file/*
 // @include      https://youtube.googleapis.com/*
-// @require      https://github.com/jim60105/SongLists/raw/master/QuonTama/QuonTamaSongList.js
-// @require      https://github.com/jim60105/SongLists/raw/master/QuonTama/QuonTamaMemberSongList.js
-// @require      https://github.com/jim60105/SongLists/raw/master/QuonTama/QuonTamaBackupSongList.js
-// @require      https://github.com/jim60105/SongLists/raw/master/QuonTama/QuonTamaRadioQTamaList.js
+// @require      https://github.com/jim60105/Playlists/raw/master/QuonTama/QuonTamaSongList.js
+// @require      https://github.com/jim60105/Playlists/raw/master/QuonTama/QuonTamaMemberSongList.js
+// @require      https://github.com/jim60105/Playlists/raw/master/QuonTama/QuonTamaBackupSongList.js
+// @require      https://github.com/jim60105/Playlists/raw/master/QuonTama/QuonTamaRadioQTamaList.js
 // ==/UserScript==
 
-/**** 在上方的@require加入自己的歌單，請參考範例建立 ****/
+/**
+ * 版本更新提要: v6.5
+ * >>> 更改default branch為master <<<
+ * 此v6.5為「自動更名和切換分支」用版本號，請務必更新腳本來源
+ * 由此確認原專案說明: https://blog.maki0419.com/2020/10/userscript-youtube-end-param-handler.html
+ * 由此手動更新至v7版: https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
+ */
 
 var myPlaylist = (typeof myPlaylist === 'undefined') ? [] : myPlaylist;
 
