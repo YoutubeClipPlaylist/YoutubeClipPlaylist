@@ -20,6 +20,7 @@
 // @require      https://github.com/jim60105/Playlists/raw/minify/QuonTama/QuonTamaBackupSongList.js
 // @require      https://github.com/jim60105/Playlists/raw/minify/QuonTama/QuonTamaRadioQTamaList.js
 // @require      https://github.com/LittleRice1007/SongList/raw/main/ItouYuna/ItouYunaSongList.js
+// @require      https://github.com/LittleRice1007/SongList/raw/main/HaneMiya/HaneMiyaSongList.js
 // ==/UserScript==
 
 /**
@@ -32,7 +33,7 @@
  */
 
 /** 小飯分支差異簡介: v7.3-beta
-  * 1. 加入伊冬ユナ的歌單
+  * 1. 加入伊冬ユナ、羽宮くぅ的歌單
   * 2. 名稱差異，更新主分支版本不影響新增的歌單
   */
 

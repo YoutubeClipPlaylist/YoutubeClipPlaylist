@@ -5,9 +5,9 @@ https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 
 ## 和主版本的差異
 -   增加了伊冬ユナ的歌單(https://www.youtube.com/?startplaylist&playlistinclude=ItouYuna)
+-   增加了羽宮くぅ的歌單(https://www.youtube.com/?startplaylist&playlistinclude=HaneMiya)
 
 ## 預計新增
--   羽宮くぅ
 -   神月天
 
 ## Youtube 網址格式
@@ -71,8 +71,10 @@ https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 | 久遠たま全歌單循序 | https://www.youtube.com/?startplaylist&playlistinclude=tama&playlistexclude=NotSongs           |
 | 久遠たま全歌單隨機 | https://www.youtube.com/?startplaylist&playlistinclude=tama&playlistexclude=NotSongs&shuffle=1 |
 | RadioQTama 廣播    | https://www.youtube.com/?startplaylist&playlistinclude=RadioQTama                              |
-| 伊冬ユナ全歌單循序 | https://www.youtube.com/?startplaylist&playlistinclude=Yuna&playlistexclude=NotSongs           |
-| 伊冬ユナ全歌單隨機 | https://www.youtube.com/?startplaylist&playlistinclude=Yuna&playlistexclude=NotSongs&shuffle=1 |
+| 伊冬ユナ全歌單循序 | https://www.youtube.com/?startplaylist&playlistinclude=ItouYuna&playlistexclude=NotSongs           |
+| 伊冬ユナ全歌單隨機 | https://www.youtube.com/?startplaylist&playlistinclude=ItouYuna&playlistexclude=NotSongs&shuffle=1 |
+| 羽宮くぅ全歌單循序 | https://www.youtube.com/?startplaylist&playlistinclude=HaneMiya&playlistexclude=NotSongs           |
+| 羽宮くぅ全歌單隨機 | https://www.youtube.com/?startplaylist&playlistinclude=HaneMiya&playlistexclude=NotSongs&shuffle=1 |
 
 <!-- TODO 多標籤邏輯  -->
 <!-- |久遠たま歌單(排除會限)|https://www.youtube.com/?startplaylist&playlistinclude=tama&playlistexclude=member| -->
