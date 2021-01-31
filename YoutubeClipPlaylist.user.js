@@ -19,8 +19,6 @@
 // @require      https://github.com/jim60105/Playlists/raw/minify/QuonTama/QuonTamaMemberSongList.js
 // @require      https://github.com/jim60105/Playlists/raw/minify/QuonTama/QuonTamaBackupSongList.js
 // @require      https://github.com/jim60105/Playlists/raw/minify/QuonTama/QuonTamaRadioQTamaList.js
-// @require      https://github.com/LittleRice1007/SongList/raw/main/ItouYuna/ItouYunaSongList.js
-// @require      https://github.com/LittleRice1007/SongList/raw/main/HaneMiya/HaneMiyaSongList.js
 // ==/UserScript==
 
 /**
