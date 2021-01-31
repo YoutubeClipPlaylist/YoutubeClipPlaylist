@@ -2,42 +2,43 @@
 // @name         Youtube Clip Playlist
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      7
+// @version      7.1
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_xmlhttpRequest
 // @connect      github.com
+// @connect      gitlab.com
 // @connect      githubusercontent.com
 // @include      https://www.youtube.com/*
 // @include      https://drive.google.com/file/*
 // @include      https://youtube.googleapis.com/*
+// @require      https://github.com/jim60105/ASS/raw/master/dist/ass.min.js
 // @require      https://github.com/jim60105/Playlists/raw/master/QuonTama/QuonTamaSongList.js
 // @require      https://github.com/jim60105/Playlists/raw/master/QuonTama/QuonTamaMemberSongList.js
 // @require      https://github.com/jim60105/Playlists/raw/master/QuonTama/QuonTamaBackupSongList.js
 // @require      https://github.com/jim60105/Playlists/raw/master/QuonTama/QuonTamaRadioQTamaList.js
 // ==/UserScript==
 
-/**** 在上方的@require加入自己的歌單，請參考範例建立 ****/
-
 /**
- * 版本更新提要: v7
+ * 版本更新提要: v7(.1)
  * 1. 更改本repo名稱為YoutubeClipPlaylist
  * 2. 更改default branch為master
  * 3. 專案架構調整
  * 4. 更改歌單repo SongLists名稱為Playlists
+ * 5. 字幕支援: webvtt、ass
  */
 
-var myPlaylist = (typeof myPlaylist === 'undefined') ? [] : myPlaylist;
+var myPlaylist = typeof myPlaylist === 'undefined' ? [] : myPlaylist;
 
 function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
     // TODO 只載入必要歌單
     var urlParams = new URLSearchParams(window.location.search);
     var flag = false;
 
-    var include = urlParams.has('playlistinclude') ? urlParams.get('playlistinclude').toString().toLowerCase() : "";
-    if ("" != include) {
+    var include = urlParams.has('playlistinclude') ? urlParams.get('playlistinclude').toString().toLowerCase() : '';
+    if ('' != include) {
         for (var i in tags) {
             if (include == tags[i].toLowerCase()) {
                 flag = true;
@@ -48,8 +49,8 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
         flag = true;
     }
 
-    var exclude = urlParams.has('playlistexclude') ? urlParams.get('playlistexclude').toString().toLowerCase() : "";
-    if ("" != exclude) {
+    var exclude = urlParams.has('playlistexclude') ? urlParams.get('playlistexclude').toString().toLowerCase() : '';
+    if ('' != exclude) {
         for (var j in tags) {
             if (exclude == tags[j].toLowerCase()) {
                 flag = false;
@@ -61,7 +62,7 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
 
     if (flag) {
         myPlaylist = myPlaylist.concat(newPlaylist);
-        console.log("Load %s: %o", listName, newPlaylist);
+        console.log('Load %s: %o', listName, newPlaylist);
     }
 }
 
@@ -71,17 +72,17 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
     var urlParams = new URLSearchParams(window.location.search);
 
     // Set shuffle
-    var shuffle = (urlParams.has('shuffle') && urlParams.get("shuffle") != 0)
-    console.log("Shuffle: %o", shuffle);
+    var shuffle = urlParams.has('shuffle') && urlParams.get('shuffle') != 0;
+    console.log('Shuffle: %o', shuffle);
 
     var shuffleList = GM_getValue('shuffleList', []);
     if (shuffle) {
-        console.log("Shuffle List: %o", shuffleList);
+        console.log('Shuffle List: %o', shuffleList);
     }
 
     //Start Playlist
-    if (urlParams.has("startplaylist") || shuffleList.length > myPlaylist.length) {
-        urlParams.delete("startplaylist");
+    if (urlParams.has('startplaylist') || shuffleList.length > myPlaylist.length) {
+        urlParams.delete('startplaylist');
 
         shuffleList = [0];
 
@@ -100,32 +101,32 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
     function WaitForDOMLoad() {
         if (window.location.pathname.match(/^\/file\/d\/.*\/view$/i)) {
             // Google Drive files
-            var iframe = document.getElementById("drive-viewer-video-player-object-0");
-            if (iframe && "IFRAME" == iframe.tagName) {
+            var iframe = document.getElementById('drive-viewer-video-player-object-0');
+            if (iframe && 'IFRAME' == iframe.tagName) {
                 clearInterval(interval);
 
                 // Display the thumb video forcely
-                iframe.parentNode.parentNode.childNodes[1].style.visibility = "hidden";
-                iframe.parentNode.parentNode.childNodes[2].style.visibility = "unset";
+                iframe.parentNode.parentNode.childNodes[1].style.visibility = 'hidden';
+                iframe.parentNode.parentNode.childNodes[2].style.visibility = 'unset';
                 var box = iframe.parentNode.parentElement;
-                box.style.width = "100%";
-                box.style.height = "100%";
-                box.style.border = "0px";
-                box.style.top = "unset";
-                box.style.left = "unset";
+                box.style.width = '100%';
+                box.style.height = '100%';
+                box.style.border = '0px';
+                box.style.top = 'unset';
+                box.style.left = 'unset';
 
                 // Map the params into iframe
                 var iframeURL = new URL(iframe.src);
                 var iframeUrlParams = iframeURL.searchParams;
-                iframeUrlParams.set("autoplay", 1);
+                iframeUrlParams.set('autoplay', 1);
                 urlParams.forEach(function(value, key) {
                     iframeUrlParams.set(key, value);
                 });
                 iframe.src = iframeURL.toString();
 
                 // NextSong after play end
-                window.addEventListener("message", function(event) {
-                    if ("song end" == event.data) {
+                window.addEventListener('message', function(event) {
+                    if ('song end' == event.data) {
                         NextSong(CheckList());
                     } else {
                         // Next on UI click
@@ -138,8 +139,7 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
             }
         } else {
             // Skip the song if it is on Google Drive and play in the background.
-            if ("/embed/" == window.location.pathname &&
-                "hidden" == document.visibilityState) {
+            if ('/embed/' == window.location.pathname && 'hidden' == document.visibilityState) {
                 clearInterval(interval);
                 NextSong(CheckList());
             }
@@ -149,10 +149,8 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
                 clearInterval(interval);
                 player.play().then(() => {
                     // Set the start time manually here to prevent YouTube from skipping it when t == 0.
-                    if (urlParams.has("t") &&
-                        urlParams.get("t") == 0 &&
-                        player.currentTime > 2) {
-                        player.currentTime = urlParams.get("t");
+                    if (urlParams.has('t') && urlParams.get('t') == 0 && player.currentTime > 2) {
+                        player.currentTime = urlParams.get('t');
                     }
 
                     // For situations where the webpage does not reload, such as clicking a link on YouTube.
@@ -169,7 +167,7 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
 
         // This check is performed here because youtube did not reload the page on some page changes, but only reloaded the page content and video.
         if (!urlParams.has('end')) {
-            console.log("Clear end parameter function");
+            console.log('Clear end parameter function');
             player.ontimeupdate = null;
             DestroySubtitle();
             HideUI();
@@ -198,8 +196,8 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
         player.ontimeupdate = function() {
             // Handle Keyboard Media Key "NextTrack"
             if (currentIndex >= 0)
-                navigator.mediaSession.setActionHandler("nexttrack", function() {
-                    console.log("Media Key trigger");
+                navigator.mediaSession.setActionHandler('nexttrack', function() {
+                    console.log('Media Key trigger');
                     player.ontimeupdate = null;
                     NextSong(currentIndex);
                 });
@@ -212,7 +210,7 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
             if (flag) {
                 player.pause();
                 player.ontimeupdate = null;
-                console.log("Pause player at " + player.currentTime);
+                console.log('Pause player at ' + player.currentTime);
 
                 if (currentIndex >= 0) {
                     NextSong(currentIndex);
@@ -222,8 +220,8 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
 
             //Clear ontimeupdate when it is detected that the current time is less than the start time.
             if (player.currentTime < urlParams.get('t')) {
-                console.log("Clear end parameter function");
-                console.log("It is detected that the current time is less than the start time.");
+                console.log('Clear end parameter function');
+                console.log('It is detected that the current time is less than the start time.');
                 player.ontimeupdate = null;
                 DestroySubtitle();
                 HideUI();
@@ -237,9 +235,9 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
                     var btns = document.querySelectorAll('a.yt-simple-endpoint.style-scope.yt-button-renderer');
                     while (btns.length > 0) {
                         player.play();
-                        btns.forEach(btn => {
+                        btns.forEach((btn) => {
                             btn.click();
-                            btn.outerHTML = "";
+                            btn.outerHTML = '';
                             // console.log("Keep Playing~");
                         });
                         btns = document.querySelectorAll('a.yt-simple-endpoint.style-scope.yt-button-renderer');
@@ -248,31 +246,44 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
             }
         }
 
+        var ass;
+
         // Add custom subtitle
         function MakeSubtitle(currentIndex) {
             DestroySubtitle();
             if (myPlaylist[currentIndex].length >= 4 && myPlaylist[currentIndex][4]) {
                 // player.setAttribute("crossorigin", "");
                 GM_xmlhttpRequest({
-                    method: "GET",
+                    method: 'GET',
                     url: myPlaylist[currentIndex][4],
                     onload: (response) => {
-                        var blob = new Blob([response.responseText], { type: 'text/vtt' });
-                        var track = document.createElement("track");
-                        track.src = URL.createObjectURL(blob);
-                        track.label = "Traditional Chinese";
-                        track.kind = "subtitles";
-                        track.srclang = "zh";
-                        track.default = true;
+                        if (response.responseText.startsWith('WEBVTT')) {
+                            // webvtt
+                            var blob = new Blob([response.responseText], {
+                                type: 'text/vtt',
+                            });
+                            var track = document.createElement('track');
+                            track.src = URL.createObjectURL(blob);
+                            track.label = 'Traditional Chinese';
+                            track.kind = 'subtitles';
+                            track.srclang = 'zh';
+                            track.default = true;
 
-                        player.appendChild(track);
-                    }
+                            player.appendChild(track);
+                        } else if (response.responseText.startsWith('[Script Info]')) {
+                            // ass
+                            ass = new ASS(response.responseText, player);
+                        }
+                    },
                 });
             }
         }
 
-        // Clear exist tracks
         function DestroySubtitle() {
+            // Clean ass sub
+            if (ass) ass.destroy();
+
+            // Clean webvtt sub
             var first = player.firstElementChild;
             while (first) {
                 first.remove();
@@ -281,17 +292,17 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
         }
 
         function HideUI() {
-            var plBox = document.getElementById("plBox");
+            var plBox = document.getElementById('plBox');
             if (undefined !== typeof plBox) {
-                plBox.style.display = "none";
+                plBox.style.display = 'none';
             }
         }
 
         function MakePlaylistUI(currentIndex) {
-            var plBox = document.getElementById("plBox");
+            var plBox = document.getElementById('plBox');
             if (null == plBox) {
-                plBox = document.createElement("div");
-                plBox.id = "plBox";
+                plBox = document.createElement('div');
+                plBox.id = 'plBox';
                 document.body.appendChild(plBox);
             }
 
@@ -311,21 +322,21 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
             }
 
             // Init Playlist Box
-            plBox.style.display = "block";
-            plBox.innerHTML = "";
-            var plTitle = document.createElement("h2");
-            plTitle.innerHTML = "截選播放佇列";
+            plBox.style.display = 'block';
+            plBox.innerHTML = '';
+            var plTitle = document.createElement('h2');
+            plTitle.innerHTML = '截選播放清單';
             plBox.appendChild(plTitle);
-            var plContent = document.createElement("ul");
+            var plContent = document.createElement('ul');
             plBox.appendChild(plContent);
 
             // Make li template
-            var liTemplate = document.createElement("li");
-            liTemplate.style.color = "white";
-            liTemplate.style.fontSize = "2em";
-            liTemplate.style.margin = "12px";
-            liTemplate.style.marginLeft = "36px";
-            liTemplate.style.listStyleType = "disclosure-closed"; // Not function in chrome
+            var liTemplate = document.createElement('li');
+            liTemplate.style.color = 'white';
+            liTemplate.style.fontSize = '2em';
+            liTemplate.style.margin = '12px';
+            liTemplate.style.marginLeft = '36px';
+            liTemplate.style.listStyleType = 'disclosure-closed'; // Not function in chrome
 
             // Make list
             pl.forEach(function(plElement, plIndex) {
@@ -339,32 +350,36 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
                 }
 
                 // Onclick
-                li.addEventListener("click", function() {
-                    player.ontimeupdate = null;
-                    if (shuffle) {
-                        // console.log(`Splice on ${plIndex}`);
-                        var tmp = pl.splice(plIndex, 1);
-                        // console.log(`Spliced ${tmp}`);
+                li.addEventListener(
+                    'click',
+                    function() {
+                        player.ontimeupdate = null;
+                        if (shuffle) {
+                            // console.log(`Splice on ${plIndex}`);
+                            var tmp = pl.splice(plIndex, 1);
+                            // console.log(`Spliced ${tmp}`);
 
-                        // console.log(`Save shuffleList:`);
-                        // console.log(pl);
-                        GM_setValue('shuffleList', pl);
-                    }
-                    console.log(`Next Song ${plElement} by UI click`);
-                    NextSong(plElement, true);
-                }, false);
+                            // console.log(`Save shuffleList:`);
+                            // console.log(pl);
+                            GM_setValue('shuffleList', pl);
+                        }
+                        console.log(`Next Song ${plElement} by UI click`);
+                        NextSong(plElement, true);
+                    },
+                    false
+                );
                 plContent.appendChild(li);
             });
 
             // Styling Now-Playing li
-            plContent.firstChild.style.fontSize = "2.5em";
-            plContent.firstChild.style.fontWeight = "bold";
-            plContent.firstChild.style.textAlign = "center";
-            plContent.firstChild.style.listStyleType = "none";
-            plContent.firstChild.style.borderBottom = ".1em #AAA solid";
-            plContent.firstChild.style.overflow = "hidden";
-            plContent.firstChild.style.textOverflow = "ellipsis";
-            plContent.firstChild.style.whiteSpace = "nowrap";
+            plContent.firstChild.style.fontSize = '2.5em';
+            plContent.firstChild.style.fontWeight = 'bold';
+            plContent.firstChild.style.textAlign = 'center';
+            plContent.firstChild.style.listStyleType = 'none';
+            plContent.firstChild.style.borderBottom = '.1em #AAA solid';
+            plContent.firstChild.style.overflow = 'hidden';
+            plContent.firstChild.style.textOverflow = 'ellipsis';
+            plContent.firstChild.style.whiteSpace = 'nowrap';
 
             // 讓box+目錄標籤的寬度，永遠不大於螢幕寬的0.8倍
             var width = 450;
@@ -373,30 +388,30 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
             }
 
             // Styling
-            plBox.style.position = "fixed";
+            plBox.style.position = 'fixed';
             plBox.style.right = `-${width}px`;
-            plBox.style.zIndex = "2000";
-            plBox.style.background = "#222222DD";
-            plBox.style.transition = "all 1s";
+            plBox.style.zIndex = '2000';
+            plBox.style.background = '#222222DD';
+            plBox.style.transition = 'all 1s';
             plBox.style.cursor = 'pointer';
             plBox.style.width = `${width}px`;
-            plBox.style.bottom = "0";
-            plBox.style.overflowY = "scroll";
-            plBox.style.height = "calc(100vh - 56px)"
-            plBox.style.fontFamily = "Meiryo";
+            plBox.style.bottom = '0';
+            plBox.style.overflowY = 'scroll';
+            plBox.style.height = 'calc(100vh - 56px)';
+            plBox.style.fontFamily = 'Meiryo';
 
-            plTitle.style.position = "fixed";
-            plTitle.style.right = "16px";
-            plTitle.style.bottom = "0px";
-            plTitle.style.background = "#222222DD";
+            plTitle.style.position = 'fixed';
+            plTitle.style.right = '16px';
+            plTitle.style.bottom = '0px';
+            plTitle.style.background = '#222222DD';
             plTitle.style.padding = '8px';
-            plTitle.style.transition = "all 1s";
+            plTitle.style.transition = 'all 1s';
             plTitle.style.writingMode = 'vertical-lr';
-            plTitle.style.color = "lightgray";
-            plTitle.style.fontWeight = "unset";
-            plTitle.style.fontSize = "18px";
-            plTitle.style.borderRadius = "10px 0 0 0";
-            plTitle.style.margin = "0px";
+            plTitle.style.color = 'lightgray';
+            plTitle.style.fontWeight = 'unset';
+            plTitle.style.fontSize = '18px';
+            plTitle.style.borderRadius = '10px 0 0 0';
+            plTitle.style.margin = '0px';
 
             //開閉清單
             var isOpen = GM_getValue('isOpen', false);
@@ -404,12 +419,12 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
             function toggleDisplay(open) {
                 if (open) {
                     //開啟清單
-                    plBox.style.right = "0px";
+                    plBox.style.right = '0px';
                     plTitle.style.right = `${width}px`;
                 } else {
                     //關閉清單
                     plBox.style.right = `-${width}px`;
-                    plTitle.style.right = "0px";
+                    plTitle.style.right = '0px';
                 }
                 isOpen = open;
                 GM_setValue('isOpen', isOpen);
@@ -417,9 +432,13 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
             toggleDisplay(isOpen);
 
             // 滑鼠點擊開閉UI
-            plTitle.addEventListener("click", function() {
-                toggleDisplay(!isOpen);
-            }, false);
+            plTitle.addEventListener(
+                'click',
+                function() {
+                    toggleDisplay(!isOpen);
+                },
+                false
+            );
 
             // 滑鼠hover開閉UI
             /*  plBox.addEventListener("mouseover", function() {
@@ -443,9 +462,7 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
         if (window.location.pathname.match(/^\/watch$/i)) {
             // Youtube
             for (i = 0; i < myPlaylist.length; i++) {
-                if (myPlaylist[i][0] == urlParams.get('v') &&
-                    myPlaylist[i][1] == urlParams.get('t') &&
-                    myPlaylist[i][2] == urlParams.get('end')) {
+                if (myPlaylist[i][0] == urlParams.get('v') && myPlaylist[i][1] == urlParams.get('t') && myPlaylist[i][2] == urlParams.get('end')) {
                     flag = true;
                     break;
                 }
@@ -453,19 +470,16 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
         } else {
             // Google Drive iframe
             for (i = 0; i < myPlaylist.length; i++) {
-                if (document.location.href.includes(myPlaylist[i][0]) &&
-                    (myPlaylist[i][1] == urlParams.get('t') ||
-                        myPlaylist[i][1] == urlParams.get('start')) &&
-                    myPlaylist[i][2] == urlParams.get('end')) {
+                if (document.location.href.includes(myPlaylist[i][0]) && (myPlaylist[i][1] == urlParams.get('t') || myPlaylist[i][1] == urlParams.get('start')) && myPlaylist[i][2] == urlParams.get('end')) {
                     flag = true;
                     break;
                 }
             }
         }
         if (flag) {
-            console.log("Playing on Playlist No.%d", i);
+            console.log('Playing on Playlist No.%d', i);
         } else {
-            console.log("Not playing in the playlist.");
+            console.log('Not playing in the playlist.');
             i = -1;
         }
         return i;
@@ -476,7 +490,9 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
         for (var i = 0; i < length; ++i) shuffleList[i] = i;
 
         // http://stackoverflow.com/questions/962802#962890
-        var tmp, current, top = shuffleList.length;
+        var tmp,
+            current,
+            top = shuffleList.length;
         if (top)
             while (--top) {
                 current = Math.floor(Math.random() * (top + 1));
@@ -485,17 +501,17 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
                 shuffleList[top] = tmp;
             }
 
-        console.log("Make new shuffleList");
+        console.log('Make new shuffleList');
         return shuffleList;
     }
 
     function NextSong(index, passNext = false) {
         // Send "next song" outside the iframe
-        if ("/embed/" == window.location.pathname) {
+        if ('/embed/' == window.location.pathname) {
             if (!passNext) {
-                parent.postMessage("song end", "*");
+                parent.postMessage('song end', '*');
             } else {
-                parent.postMessage(index, "*");
+                parent.postMessage(index, '*');
             }
             return;
         }
@@ -516,16 +532,16 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
 
         var nextSong = myPlaylist[index];
 
-        urlParams.set("t", nextSong[1]);
-        urlParams.set("end", nextSong[2]);
+        urlParams.set('t', nextSong[1]);
+        urlParams.set('end', nextSong[2]);
 
         if (nextSong[0].length > 20) {
             // Google Drive
-            urlParams.delete("v");
+            urlParams.delete('v');
             document.location.href = `https://drive.google.com/file/d/${nextSong[0]}/view?${urlParams.toString()}`;
         } else {
             // Youtube
-            urlParams.set("v", nextSong[0]);
+            urlParams.set('v', nextSong[0]);
             document.location.href = `https://www.youtube.com/watch?${urlParams.toString()}`;
         }
     }
