@@ -2,7 +2,7 @@
 // @name         Youtube Clip Playlist
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      7.3
+// @version      7.4
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @grant        GM_setValue
@@ -30,6 +30,7 @@
  * 3. 專案架構調整
  * 4. 更改歌單repo名稱為Playlists，歌單做minify
  * 5. 字幕支援: webvtt、ass
+ * 6. 增加Playlist: '伊冬ユナ' '羽宮くぅ'
  */
 
 var myPlaylist = typeof myPlaylist === 'undefined' ? [] : myPlaylist;
