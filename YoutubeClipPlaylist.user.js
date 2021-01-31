@@ -246,7 +246,7 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
             }
         }
 
-        var ass, observer;
+        var ass, observer, assContainer;
 
         // Add custom subtitle
         function MakeSubtitle(currentIndex) {
@@ -272,7 +272,7 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
                             player.appendChild(track);
                         } else if (response.responseText.startsWith('[Script Info]')) {
                             // ass
-                            var assContainer = document.createElement('div');
+                            assContainer = document.createElement('div');
                             player.parentNode.appendChild(assContainer);
                             ass = new ASS(response.responseText, player, { container: assContainer });
 
@@ -300,6 +300,7 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
             if (ass) {
                 ass.destroy();
                 observer.disconnect();
+                if (assContainer) assContainer.remove();
             }
             // Clean webvtt sub
             var first = player.firstElementChild;
