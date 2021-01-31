@@ -2,7 +2,7 @@
 // @name         Youtube Clip Playlist
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      7.1
+// @version      7.2
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @grant        GM_setValue
@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /**
- * 版本更新提要: v7(.1)
+ * 版本更新提要: v7
  * 1. 更改本repo名稱為YoutubeClipPlaylist
  * 2. 更改default branch為master
  * 3. 專案架構調整
@@ -246,7 +246,7 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
             }
         }
 
-        var ass;
+        var ass, observer;
 
         // Add custom subtitle
         function MakeSubtitle(currentIndex) {
@@ -272,7 +272,23 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
                             player.appendChild(track);
                         } else if (response.responseText.startsWith('[Script Info]')) {
                             // ass
-                            ass = new ASS(response.responseText, player);
+                            var assContainer = document.createElement('div');
+                            player.parentNode.appendChild(assContainer);
+                            ass = new ASS(response.responseText, player, { container: assContainer });
+
+                            // For player resize
+                            assContainer.style.position = 'absolute';
+                            assContainer.style.top = 0;
+                            assContainer.style.left = player.style.left;
+
+                            observer = new MutationObserver(function(mutations) {
+                                mutations.forEach(function(mutationRecord) {
+                                    ass.resize();
+                                    assContainer.style.left = player.style.left;
+                                });
+                            });
+
+                            observer.observe(player, { attributes: true, attributeFilter: ['style'], subtree: false });
                         }
                     },
                 });
@@ -281,8 +297,10 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
 
         function DestroySubtitle() {
             // Clean ass sub
-            if (ass) ass.destroy();
-
+            if (ass) {
+                ass.destroy();
+                observer.disconnect();
+            }
             // Clean webvtt sub
             var first = player.firstElementChild;
             while (first) {
