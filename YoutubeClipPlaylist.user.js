@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         Youtube Clip Playlist
+// @name         Youtube Clip Playlist (LittleRice-Fork)
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      7.3
-// @author       琳(jim60105)
+// @version      7.3-beta
+// @author       小飯(LittleRice)
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -19,6 +19,7 @@
 // @require      https://github.com/jim60105/Playlists/raw/minify/QuonTama/QuonTamaMemberSongList.js
 // @require      https://github.com/jim60105/Playlists/raw/minify/QuonTama/QuonTamaBackupSongList.js
 // @require      https://github.com/jim60105/Playlists/raw/minify/QuonTama/QuonTamaRadioQTamaList.js
+// @require      https://github.com/LittleRice1007/SongList/raw/main/ItouYuna/ItouYunaSongList.js
 // ==/UserScript==
 
 /**
@@ -29,6 +30,11 @@
  * 4. 更改歌單repo名稱為Playlists，歌單做minify
  * 5. 字幕支援: webvtt、ass
  */
+
+/** 小飯分支差異簡介: v7.3-beta
+  * 1. 加入伊冬ユナ的歌單
+  * 2. 名稱差異，更新主分支版本不影響新增的歌單
+  */
 
 var myPlaylist = typeof myPlaylist === 'undefined' ? [] : myPlaylist;
 
