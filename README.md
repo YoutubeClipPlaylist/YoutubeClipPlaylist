@@ -4,7 +4,7 @@
 https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 
 ## 和主版本的差異
-    增加了伊冬ユナ的歌單
+    增加了伊冬ユナ的歌單(https://www.youtube.com/?startplaylist&playlistinclude=ItouYuna)
 
 ## 預計新增
     羽宮くぅ
