@@ -2,12 +2,13 @@
 // @name         Youtube Clip Playlist
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      7.4
+// @version      8
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_xmlhttpRequest
+// @grant        GM_getResourceText
 // @connect      github.com
 // @connect      gitlab.com
 // @connect      githubusercontent.com
@@ -15,15 +16,13 @@
 // @include      https://drive.google.com/file/*
 // @include      https://youtube.googleapis.com/*
 // @require      https://github.com/jim60105/ASS/raw/master/dist/ass.min.js
-// @require      https://github.com/jim60105/Playlists/raw/minify/QuonTama/QuonTamaSongList.js
-// @require      https://github.com/jim60105/Playlists/raw/minify/QuonTama/QuonTamaMemberSongList.js
-// @require      https://github.com/jim60105/Playlists/raw/minify/QuonTama/QuonTamaBackupSongList.js
-// @require      https://github.com/jim60105/Playlists/raw/minify/QuonTama/QuonTamaRadioQTamaList.js
-// @require      https://github.com/jim60105/Playlists/raw/minify/ItouYuna/ItouYunaSongList.js
-// @require      https://github.com/jim60105/Playlists/raw/minify/HaneMiya/HaneMiyaSongList.js
+// @resource     playlist https://github.com/jim60105/Playlists/raw/minify/Playlists.jsonc
 // ==/UserScript==
 
 /**
+ * 版本更新提要: v8
+ * 1. 修改歌單載入模式: 不再全下載後判斷，而是先下載歌單名稱和標籤，判斷後只載需要的檔案
+ * 
  * 版本更新提要: v7
  * 1. 更改本repo名稱為YoutubeClipPlaylist
  * 2. 更改default branch為master
@@ -33,46 +32,67 @@
  * 6. 增加Playlist: '伊冬ユナ' '羽宮くぅ'
  */
 
-var myPlaylist = typeof myPlaylist === 'undefined' ? [] : myPlaylist;
-
-function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
-    // TODO 只載入必要歌單
-    var urlParams = new URLSearchParams(window.location.search);
-    var flag = false;
-
-    var include = urlParams.has('playlistinclude') ? urlParams.get('playlistinclude').toString().toLowerCase() : '';
-    if ('' != include) {
-        for (var i in tags) {
-            if (include == tags[i].toLowerCase()) {
-                flag = true;
-                break;
-            }
-        }
-    } else {
-        flag = true;
-    }
-
-    var exclude = urlParams.has('playlistexclude') ? urlParams.get('playlistexclude').toString().toLowerCase() : '';
-    if ('' != exclude) {
-        for (var j in tags) {
-            if (exclude == tags[j].toLowerCase()) {
-                flag = false;
-                console.log(`Exclude ${listName} with tag: ${tags[j]}`);
-                break;
-            }
-        }
-    }
-
-    if (flag) {
-        myPlaylist = myPlaylist.concat(newPlaylist);
-        console.log('Load %s: %o', listName, newPlaylist);
-    }
-}
-
 // Main
 (function() {
     'use strict';
+    if (window.location.pathname == "/live_chat_replay") return;
+
+    var myPlaylist = [];
+
     var urlParams = new URLSearchParams(window.location.search);
+
+    var Playlists = JSON.parse(GM_getResourceText('playlist'));
+    var LoadedCount = 0;
+    Playlists.forEach((playlist) => {
+        CheckAndLoadPlaylist(playlist.name, playlist.tag, playlist.route);
+    });
+
+    function CheckAndLoadPlaylist(listName, tags, route) {
+        var flag = false;
+
+        var include = urlParams.has('playlistinclude') ? urlParams.get('playlistinclude').toString().toLowerCase() : '';
+        if ('' != include) {
+            for (var i in tags) {
+                if (include == tags[i].toLowerCase()) {
+                    flag = true;
+                    break;
+                }
+            }
+        } else {
+            flag = true;
+        }
+
+        var exclude = urlParams.has('playlistexclude') ? urlParams.get('playlistexclude').toString().toLowerCase() : '';
+        if ('' != exclude) {
+            for (var j in tags) {
+                if (exclude == tags[j].toLowerCase()) {
+                    flag = false;
+                    console.log(`Exclude ${listName} with tag: ${tags[j]}`);
+                    break;
+                }
+            }
+        }
+
+        if (flag) {
+            var baseURL = 'https://raw.githubusercontent.com/jim60105/Playlists/minify/'
+            GM_xmlhttpRequest({
+                method: 'GET',
+                url: baseURL + route,
+                responseType: 'json',
+                onload: (response) => {
+                    if (response.status != 200) {
+                        console.error('Load playlist %s failed: %s', listName, response.url);
+                    } else {
+                        myPlaylist = myPlaylist.concat(response.response);
+                        console.log('Load %s: %o', listName, response.response);
+                    }
+                    LoadedCount++;
+                },
+            });
+        } else {
+            LoadedCount++;
+        }
+    }
 
     // Set shuffle
     var shuffle = urlParams.has('shuffle') && urlParams.get('shuffle') != 0;
@@ -83,23 +103,26 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
         console.log('Shuffle List: %o', shuffleList);
     }
 
-    //Start Playlist
-    if (urlParams.has('startplaylist') || shuffleList.length > myPlaylist.length) {
-        urlParams.delete('startplaylist');
-
-        shuffleList = [0];
-
-        GM_setValue('shuffleList', shuffleList);
-        NextSong(-1);
-        return;
-    }
-
     var player;
 
     //Wait for DOM
     var interval = setInterval(function() {
-        WaitForDOMLoad();
-    }, 1000);
+        if (Playlists.length <= LoadedCount) {
+            //start playlist
+            if (urlParams.has('startplaylist') || shuffleList.length > myPlaylist.length) {
+                clearInterval(interval);
+                urlParams.delete('startplaylist');
+
+                shuffleList = [0];
+
+                GM_setValue('shuffleList', shuffleList);
+                NextSong(-1);
+                return;
+            }
+
+            WaitForDOMLoad();
+        }
+    }, 500);
 
     function WaitForDOMLoad() {
         if (window.location.pathname.match(/^\/file\/d\/.*\/view$/i)) {
@@ -474,7 +497,7 @@ function CheckAndLoadPlaylist(listName, tags, newPlaylist) {
     }
 
     function CheckList() {
-        urlParams = new URLSearchParams(window.location.search);
+        // urlParams = new URLSearchParams(window.location.search);
         if (!urlParams.has('end')) return -1;
 
         //Check myPlaylist
