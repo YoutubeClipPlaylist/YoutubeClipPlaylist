@@ -1,6 +1,7 @@
 ﻿# Youtube 影片截選播放清單 (Youtube Clip Playlist)
 
 ![pic](pic/demo.png)
+![GitHub tag](https://img.shields.io/github/tag/jim60105/YoutubeClipPlaylist?style=for-the-badge) ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/jim60105/YoutubeClipPlaylist?label=LAST%20UPDATE&style=for-the-badge) ![GitHub](https://img.shields.io/github/license/jim60105/YoutubeClipPlaylist?style=for-the-badge) ![Tampermonkey](https://img.shields.io/static/v1?style=for-the-badge&message=Tampermonkey&color=00485B&logo=Tampermonkey&logoColor=FFFFFF&label=) ![YouTube](https://img.shields.io/static/v1?style=for-the-badge&message=YouTube&color=FF0000&logo=YouTube&logoColor=FFFFFF&label=) ![JavaScript](https://img.shields.io/static/v1?style=for-the-badge&message=JavaScript&color=222222&logo=JavaScript&logoColor=F7DF1E&label=)\
 https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 
 ## Youtube 網址格式
@@ -57,6 +58,8 @@ https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 
 ## 啟動連結範例
 
+> 目前非歌曲的內容只有「RadioQTama廣播」，其它人其實是可以省略NotSongs排除
+
 | 說明               | 連結                                                                                           |
 | ------------------ | ---------------------------------------------------------------------------------------------- |
 | 全清單循序         | https://www.youtube.com/?startplaylist                                                         |
@@ -74,12 +77,15 @@ https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 
 ## 歌單
 
-目前內建的是久遠たま的歌單\
-你完全可以做一份你自己的
+目前內建的是久遠たま、伊冬ユナ、羽宮くぅ的歌單\
+伊冬ユナ和羽宮くぅ的歌單由[小飯](https://twitter.com/LittleRice1007)維護\
+如果願意參與，請參考[此repo](https://github.com/jim60105/Playlists)的合作模式 
 
 ### 建立
 
-歌單的建立請參考[這裡](https://github.com/jim60105/Playlists/blob/master/QuonTama/QuonTamaSongList.js)
+歌單的格式是JSON with comment，建立請參考[這裡](https://github.com/jim60105/Playlists/blob/master/QuonTama/QuonTamaSongList.jsonc)\
+在[這裡](https://github.com/jim60105/Playlists/blob/master/Playlists.jsonc)有總表，標示清單名稱和標籤\
+"maintainer"目前沒有實作功能 
 
 Array 中儲存項目: [VideoID, StartTime, EndTime, Title?, SubSrc?]
 
@@ -88,11 +94,6 @@ Array 中儲存項目: [VideoID, StartTime, EndTime, Title?, SubSrc?]
 -   EndTime: 必須是非負數，為數字型態。如果要播放至尾，輸入 0
 -   Title?: 必須用引號包住，為字串型態，可選
 -   SubSrc?: 必須用引號包住，為字串型態，可選
-
-### 載入
-
-[在腳本註解中加上@require](https://github.com/jim60105/YoutubeClipPlaylist/blob/master/YoutubeClipPlaylist.user.js#L16-19)，寫上歌單直鏈\
-支援載入複數歌單，會依照給定條件全部合併在一起播放
 
 ### 更新
 
@@ -103,6 +104,5 @@ Array 中儲存項目: [VideoID, StartTime, EndTime, Title?, SubSrc?]
 
 ## 字幕
 
-此工具支援載入 WebVTT 字幕(.vtt)，請將字幕直鏈傳入歌單之 SubSrc\
-範例: [這裡是 WebVTT 檔案](https://github.com/jim60105/Playlists/blob/master/QuonTama/Sub/RadioQTama/0.vtt)，並[在此處傳入連結](https://github.com/jim60105/Playlists/blob/253d9cf826a54733abb99f874283632270cc4175/QuonTama/QuonTamaRadioQTamaList.js#L23)
+此工具支援載入WebVTT字幕(.vtt)、ASS字幕(.ass)，請將字幕直鏈傳入歌單之SubSrc
 ![pic](pic/demo_sub.png)
