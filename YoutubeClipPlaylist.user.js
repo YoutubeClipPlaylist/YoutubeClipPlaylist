@@ -2,13 +2,15 @@
 // @name         Youtube Clip Playlist
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      8
+// @version      9.0
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_xmlhttpRequest
 // @grant        GM_getResourceText
+// @grant        GM_registerMenuCommand
+// @grant        GM_unregisterMenuCommand
 // @connect      github.com
 // @connect      gitlab.com
 // @connect      githubusercontent.com
@@ -20,10 +22,17 @@
 // ==/UserScript==
 
 /**
- * 版本更新提要: v8
- * 1. 修改歌單載入模式: 不再全下載後判斷，而是先下載歌單名稱和標籤，判斷後只載需要的檔案
+ * 版本更新提要:
+ * v9
+ * 1. 增加「右上角選單列」，可以在此切換隨機/不隨機模式
+ * 2. 增加「禁用歌單」功能，可在選單列啟用/禁用
+ * 3. 隨機模式，在歌曲播完後將之插入到歌單尾 (原來會直接移除)
  * 
- * 版本更新提要: v7
+ * v8
+ * 1. 修改歌單載入模式: 不再全下載後判斷，而是先下載歌單名稱和標籤，判斷後只載需要的檔案
+ * 2. 修正在Youtube中「並非歌單播放模式時」也會下載歌單的問題
+ * 
+ * v7
  * 1. 更改本repo名稱為YoutubeClipPlaylist
  * 2. 更改default branch為master
  * 3. 專案架構調整
@@ -41,88 +50,186 @@
 
     var urlParams = new URLSearchParams(window.location.search);
 
-    var Playlists = JSON.parse(GM_getResourceText('playlist'));
-    var LoadedCount = 0;
-    Playlists.forEach((playlist) => {
-        CheckAndLoadPlaylist(playlist.name, playlist.tag, playlist.route);
-    });
+    if (!urlParams.has('end') && !urlParams.has('startplaylist')) return;
 
-    function CheckAndLoadPlaylist(listName, tags, route) {
-        var flag = false;
-
-        var include = urlParams.has('playlistinclude') ? urlParams.get('playlistinclude').toString().toLowerCase() : '';
-        if ('' != include) {
-            for (var i in tags) {
-                if (include == tags[i].toLowerCase()) {
-                    flag = true;
-                    break;
-                }
-            }
-        } else {
-            flag = true;
-        }
-
-        var exclude = urlParams.has('playlistexclude') ? urlParams.get('playlistexclude').toString().toLowerCase() : '';
-        if ('' != exclude) {
-            for (var j in tags) {
-                if (exclude == tags[j].toLowerCase()) {
-                    flag = false;
-                    console.log(`Exclude ${listName} with tag: ${tags[j]}`);
-                    break;
-                }
-            }
-        }
-
-        if (flag) {
-            var baseURL = 'https://raw.githubusercontent.com/jim60105/Playlists/minify/'
-            GM_xmlhttpRequest({
-                method: 'GET',
-                url: baseURL + route,
-                responseType: 'json',
-                onload: (response) => {
-                    if (response.status != 200) {
-                        console.error('Load playlist %s failed: %s', listName, response.url);
-                    } else {
-                        myPlaylist = myPlaylist.concat(response.response);
-                        console.log('Load %s: %o', listName, response.response);
-                    }
-                    LoadedCount++;
-                },
-            });
-        } else {
-            LoadedCount++;
-        }
-    }
+    var DisabledPlaylists = GM_getValue('disabledLists', []);
+    var MenuLists = {};
 
     // Set shuffle
     var shuffle = urlParams.has('shuffle') && urlParams.get('shuffle') != 0;
     console.log('Shuffle: %o', shuffle);
-
     var shuffleList = GM_getValue('shuffleList', []);
-    if (shuffle) {
-        console.log('Shuffle List: %o', shuffleList);
+
+    addShuffleMenu();
+
+    function addShuffleMenu() {
+        if (shuffle) {
+            console.log('Shuffle List: %o', shuffleList);
+            MenuLists.shuffle = {
+                menuID: GM_registerMenuCommand('🔀Shuffle', toggleShuffle, 's')
+            }
+        } else {
+            MenuLists.shuffle = {
+                menuID: GM_registerMenuCommand('🔃Playing', toggleShuffle, 's')
+            }
+        }
     }
 
+    function toggleShuffle() {
+        if (shuffle) {
+            urlParams.delete('shuffle');
+        } else {
+            urlParams.append('shuffle', 1);
+        }
+        GM_unregisterMenuCommand(MenuLists.shuffle.menuID);
+        shuffle ^= true;
+        addShuffleMenu();
+        NextSong(-1);
+    }
+
+    var Playlists = JSON.parse(GM_getResourceText('playlist'));
+    var LoadedCount = 0;
     var player;
+    var interval;
 
-    //Wait for DOM
-    var interval = setInterval(function() {
-        if (Playlists.length <= LoadedCount) {
-            //start playlist
-            if (urlParams.has('startplaylist') || shuffleList.length > myPlaylist.length) {
-                clearInterval(interval);
-                urlParams.delete('startplaylist');
+    LoadPlaylists();
 
-                shuffleList = [0];
+    function LoadPlaylists(callback) {
+        LoadedCount = 0;
+        Playlists.forEach((playlist) => {
+            CheckAndLoadPlaylist(playlist.name, playlist.tag, playlist.route);
+        });
 
-                GM_setValue('shuffleList', shuffleList);
-                NextSong(-1);
-                return;
+        //Wait for DOM
+        interval = setInterval(function() {
+            if (Playlists.length <= LoadedCount) {
+                //start playlist
+                if (urlParams.has('startplaylist') || shuffleList.length > myPlaylist.length) {
+                    clearInterval(interval);
+                    urlParams.delete('startplaylist');
+
+                    shuffleList = [0];
+
+                    GM_setValue('shuffleList', shuffleList);
+                    NextSong(-1);
+                    return;
+                }
+
+                WaitForDOMLoad();
+                (callback && typeof(callback) === "function") && callback();
+            }
+        }, 500);
+
+        function CheckAndLoadPlaylist(listName, tags, route) {
+            var flag = false;
+
+            var include = urlParams.has('playlistinclude') ? urlParams.get('playlistinclude').toString().toLowerCase() : '';
+            if ('' != include) {
+                for (var i in tags) {
+                    if (include == tags[i].toLowerCase()) {
+                        flag = true;
+                        break;
+                    }
+                }
+            } else {
+                flag = true;
             }
 
-            WaitForDOMLoad();
+            var exclude = urlParams.has('playlistexclude') ? urlParams.get('playlistexclude').toString().toLowerCase() : '';
+            if ('' != exclude) {
+                for (var j in tags) {
+                    if (exclude == tags[j].toLowerCase()) {
+                        flag = false;
+                        console.log(`Exclude ${listName} with tag: ${tags[j]}`);
+                        break;
+                    }
+                }
+            }
+
+            if (flag) {
+                if (DisabledPlaylists.includes(listName)) {
+                    MenuLists[listName] = {
+                        menuID: addDisabledMenuList(listName)
+                    };
+                    console.log(`Disabled ${listName}. Please click the menu to enable it again.`);
+                    LoadedCount++;
+                } else {
+                    var baseURL = 'https://raw.githubusercontent.com/jim60105/Playlists/minify/';
+                    GM_xmlhttpRequest({
+                        method: 'GET',
+                        url: baseURL + route,
+                        responseType: 'json',
+                        onload: (response) => {
+                            if (response.status != 200) {
+                                console.error('Load playlist %s failed: %s', listName, response.url);
+                            } else {
+                                MenuLists[listName] = {
+                                    menuID: addEnabledMenuList(listName)
+                                };
+                                myPlaylist = myPlaylist.concat(response.response);
+                                console.log('Load %s: %o', listName, response.response);
+                            }
+                            LoadedCount++;
+                        },
+                    });
+                }
+            } else {
+                // GM_registerMenuCommand(`Not Loaded: ${listName}`);
+                LoadedCount++;
+            }
+
+            function addEnabledMenuList(listName) {
+                return GM_registerMenuCommand(
+                    `✅ ${listName}`,
+                    () => {
+                        // Disable list on click
+                        if (!confirm(`Are you sure you want to disable ${listName}?`)) { return; }
+
+                        // Add listname to DisabledPlaylists
+                        DisabledPlaylists.push(listName);
+                        GM_setValue('disabledLists', DisabledPlaylists);
+
+                        // Reregister menu
+                        GM_unregisterMenuCommand(MenuLists[listName].menuID);
+                        MenuLists[listName].menuID = addDisabledMenuList(listName);
+                        console.log(`Disabled: ${listName}`);
+                        reloadPage();
+                    }
+                )
+            }
+
+            function addDisabledMenuList(listName) {
+                return GM_registerMenuCommand(
+                    `🚫 ${listName}`,
+                    () => {
+                        // Enable list on click
+                        // Remove listname to DisabledPlaylists
+                        let i = DisabledPlaylists.indexOf(listName);
+                        while (i >= 0) {
+                            DisabledPlaylists.splice(i, 1);
+                            i = DisabledPlaylists.indexOf(listName);
+                        }
+
+                        GM_setValue('disabledLists', DisabledPlaylists);
+
+                        // Reregister menu
+                        GM_unregisterMenuCommand(MenuLists[listName].menuID);
+                        MenuLists[listName].menuID = addEnabledMenuList(listName);
+                        console.log(`Enabled: ${listName}`);
+                        reloadPage();
+                    }
+                )
+            }
         }
-    }, 500);
+
+        function reloadPage() {
+            myPlaylist = [];
+            shuffleList = [];
+            GM_setValue('shuffleList', []);
+            LoadPlaylists(() => { NextSong(-1) });
+        }
+    }
+
 
     function WaitForDOMLoad() {
         if (window.location.pathname.match(/^\/file\/d\/.*\/view$/i)) {
@@ -193,10 +300,7 @@
 
         // This check is performed here because youtube did not reload the page on some page changes, but only reloaded the page content and video.
         if (!urlParams.has('end')) {
-            console.log('Clear end parameter function');
-            player.ontimeupdate = null;
-            DestroySubtitle();
-            HideUI();
+            CleanUp();
             return;
         }
 
@@ -246,13 +350,22 @@
 
             //Clear ontimeupdate when it is detected that the current time is less than the start time.
             if (player.currentTime < urlParams.get('t')) {
-                console.log('Clear end parameter function');
+                CleanUp();
                 console.log('It is detected that the current time is less than the start time.');
-                player.ontimeupdate = null;
-                DestroySubtitle();
-                HideUI();
             }
         };
+
+        function CleanUp() {
+            console.log('Clear end parameter function');
+            player.ontimeupdate = null;
+            DestroySubtitle();
+            HideUI();
+
+            Object.keys(MenuLists).forEach(function(key) {
+                GM_unregisterMenuCommand(MenuLists[key].menuID);
+                delete MenuLists[key];
+            });
+        }
 
         // Get rid of the Youtube "automatic video pause" function
         function DisableAutoVideoPause() {
@@ -551,6 +664,11 @@
     }
 
     function NextSong(index, passNext = false) {
+        if (myPlaylist.length == 0) {
+            console.error('No playlists!');
+            return;
+        }
+
         // Send "next song" outside the iframe
         if ('/embed/' == window.location.pathname) {
             if (!passNext) {
@@ -564,15 +682,19 @@
         if (!passNext) {
             // Step the index
             if (shuffle) {
-                shuffleList.shift();
+                var tmpSong = shuffleList.shift();
+                if (shuffleList.length > 0) {
+                    shuffleList.push(tmpSong);
+                }
                 if (0 == shuffleList.length) shuffleList = MakeShufflelist(myPlaylist.length);
                 GM_setValue('shuffleList', shuffleList);
                 index = shuffleList[0];
             } else {
-                index = index + 1;
+                index++;
                 index %= myPlaylist.length;
+                index |= 0;
             }
-            console.log(`Next Song ${index} by song end`);
+            // console.log(`Next Song ${index} by song end`);
         }
 
         var nextSong = myPlaylist[index];
