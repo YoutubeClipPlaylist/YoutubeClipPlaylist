@@ -377,7 +377,7 @@
                 GM_unregisterMenuCommand(MenuLists[key].menuID);
                 delete MenuLists[key];
             });
-            addShuffleMenu();
+            addStartMenu();
         }
 
         // Get rid of the Youtube "automatic video pause" function
