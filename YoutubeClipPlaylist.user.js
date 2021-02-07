@@ -2,7 +2,7 @@
 // @name         Youtube Clip Playlist
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      9.1
+// @version      9.2
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @grant        GM_setValue
@@ -28,6 +28,7 @@
  * 2. 增加「禁用歌單」功能，可在選單列啟用/禁用
  * 3. 隨機模式，在歌曲播完後將之插入到歌單尾 (原來會直接移除)
  * 4. 增加「StartPlaylist」選單按鈕
+ * 5. Exclude、Include功能，增加可以以「_」底線分隔來同時傳入多個標籤
  * 
  * v8
  * 1. 修改歌單載入模式: 不再全下載後判斷，而是先下載歌單名稱和標籤，判斷後只載需要的檔案
@@ -137,8 +138,9 @@
 
             var include = urlParams.has('playlistinclude') ? urlParams.get('playlistinclude').toString().toLowerCase() : '';
             if ('' != include) {
+                var includes = include.split('_');
                 for (var i in tags) {
-                    if (include == tags[i].toLowerCase()) {
+                    if (includes.includes(tags[i].toLowerCase())) {
                         flag = true;
                         break;
                     }
@@ -149,8 +151,9 @@
 
             var exclude = urlParams.has('playlistexclude') ? urlParams.get('playlistexclude').toString().toLowerCase() : '';
             if ('' != exclude) {
+                var excludes = exclude.split('_');
                 for (var j in tags) {
-                    if (exclude == tags[j].toLowerCase()) {
+                    if (excludes.includes(tags[j].toLowerCase())) {
                         flag = false;
                         console.log(`Exclude ${listName} with tag: ${tags[j]}`);
                         break;

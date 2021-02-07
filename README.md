@@ -31,8 +31,8 @@
 -   `t`: 影片播放開始時間
 -   `end`: 設定在指定秒數停止播放影片
 -   `shuffle`: Playlist 隨機播放
--   `playlistinclude`: 讀入 Playlist 標籤
--   `playlistexclude`: 排除 Playlist 標籤
+-   `playlistinclude`: 讀入 Playlist 標籤，可以以「_」底線分隔傳入多個標籤
+-   `playlistexclude`: 排除 Playlist 標籤，可以以「_」底線分隔傳入多個標籤
 
 ## 功能
 
@@ -67,15 +67,13 @@
 | 全清單循序         | https://www.youtube.com/?startplaylist                                                         |
 | 全清單隨機         | https://www.youtube.com/?startplaylist&shuffle=1                                               |
 | 久遠たま全歌單循序 | https://www.youtube.com/?startplaylist&playlistinclude=tama&playlistexclude=NotSongs           |
+|久遠たま歌單(排除會限)|https://www.youtube.com/?startplaylist&playlistinclude=tama&playlistexclude=member_NotSongs|
 | 久遠たま全歌單隨機 | https://www.youtube.com/?startplaylist&playlistinclude=tama&playlistexclude=NotSongs&shuffle=1 |
 | RadioQTama 廣播    | https://www.youtube.com/?startplaylist&playlistinclude=RadioQTama                              |
 | 伊冬ユナ全歌單循序 | https://www.youtube.com/?startplaylist&playlistinclude=ItouYuna&playlistexclude=NotSongs           |
 | 伊冬ユナ全歌單隨機 | https://www.youtube.com/?startplaylist&playlistinclude=ItouYuna&playlistexclude=NotSongs&shuffle=1 |
 | 羽宮くぅ全歌單循序 | https://www.youtube.com/?startplaylist&playlistinclude=HaneMiya&playlistexclude=NotSongs           |
 | 羽宮くぅ全歌單隨機 | https://www.youtube.com/?startplaylist&playlistinclude=HaneMiya&playlistexclude=NotSongs&shuffle=1 |
-
-<!-- TODO 多標籤邏輯  -->
-<!-- |久遠たま歌單(排除會限)|https://www.youtube.com/?startplaylist&playlistinclude=tama&playlistexclude=member| -->
 
 ## 歌單
 
