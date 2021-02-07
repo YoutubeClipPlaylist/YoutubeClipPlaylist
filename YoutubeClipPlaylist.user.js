@@ -2,7 +2,7 @@
 // @name         Youtube Clip Playlist
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      9.0
+// @version      9.1
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @grant        GM_setValue
@@ -27,6 +27,7 @@
  * 1. 增加「右上角選單列」，可以在此切換隨機/不隨機模式
  * 2. 增加「禁用歌單」功能，可在選單列啟用/禁用
  * 3. 隨機模式，在歌曲播完後將之插入到歌單尾 (原來會直接移除)
+ * 4. 增加「StartPlaylist」選單按鈕
  * 
  * v8
  * 1. 修改歌單載入模式: 不再全下載後判斷，而是先下載歌單名稱和標籤，判斷後只載需要的檔案
@@ -50,7 +51,18 @@
 
     var urlParams = new URLSearchParams(window.location.search);
 
-    if (!urlParams.has('end') && !urlParams.has('startplaylist')) return;
+    if (!urlParams.has('end') && !urlParams.has('startplaylist')) {
+        addStartMenu();
+        return;
+    }
+
+    function addStartMenu() {
+        GM_registerMenuCommand('️🔛Start Playlist', () => {
+            urlParams.append('startplaylist', 1);
+            console.log(urlParams.toString());
+            document.location.href = 'https://www.youtube.com/?startplaylist'
+        }, 'p')
+    }
 
     var DisabledPlaylists = GM_getValue('disabledLists', []);
     var MenuLists = {};
@@ -365,6 +377,7 @@
                 GM_unregisterMenuCommand(MenuLists[key].menuID);
                 delete MenuLists[key];
             });
+            addShuffleMenu();
         }
 
         // Get rid of the Youtube "automatic video pause" function
