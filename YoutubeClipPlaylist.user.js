@@ -2,9 +2,11 @@
 // @name         Youtube Clip Playlist
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      9.2
+// @version      9.3
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
+// @run-at       document-start
+// @grant        GM_addElement
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_xmlhttpRequest
@@ -17,7 +19,7 @@
 // @include      https://www.youtube.com/*
 // @include      https://drive.google.com/file/*
 // @include      https://youtube.googleapis.com/*
-// @require      https://github.com/jim60105/ASS/raw/master/dist/ass.min.js
+// @resource     ass https://github.com/jim60105/ASS/raw/master/dist/ass.min.js
 // @resource     playlist https://github.com/jim60105/Playlists/raw/minify/Playlists.jsonc
 // ==/UserScript==
 
@@ -60,7 +62,7 @@
     function addStartMenu() {
         GM_registerMenuCommand('️🔛Start Playlist', () => {
             urlParams.append('startplaylist', 1);
-            console.log(urlParams.toString());
+            console.debug(urlParams.toString());
             document.location.href = 'https://www.youtube.com/?startplaylist'
         }, 'p')
     }
@@ -77,7 +79,7 @@
 
     function addShuffleMenu() {
         if (shuffle) {
-            console.log('Shuffle List: %o', shuffleList);
+            console.debug('Shuffle List: %o', shuffleList);
             MenuLists.shuffle = {
                 menuID: GM_registerMenuCommand('🔀Shuffle', toggleShuffle, 's')
             }
@@ -104,6 +106,7 @@
     var LoadedCount = 0;
     var player;
     var interval;
+    var plBox;
 
     LoadPlaylists();
 
@@ -127,6 +130,8 @@
                     NextSong(-1);
                     return;
                 }
+
+                MakePlaylistUIContainer();
 
                 WaitForDOMLoad();
                 (callback && typeof(callback) === "function") && callback();
@@ -166,7 +171,7 @@
                     MenuLists[listName] = {
                         menuID: addDisabledMenuList(listName)
                     };
-                    console.log(`Disabled ${listName}. Please click the menu to enable it again.`);
+                    console.warn(`Disabled ${listName}. Please click the menu to enable it again.`);
                     LoadedCount++;
                 } else {
                     var baseURL = 'https://raw.githubusercontent.com/jim60105/Playlists/minify/';
@@ -235,16 +240,21 @@
                     }
                 )
             }
+
+            function reloadPage() {
+                myPlaylist = [];
+                shuffleList = [];
+                GM_setValue('shuffleList', []);
+                LoadPlaylists(() => { NextSong(-1) });
+            }
         }
 
-        function reloadPage() {
-            myPlaylist = [];
-            shuffleList = [];
-            GM_setValue('shuffleList', []);
-            LoadPlaylists(() => { NextSong(-1) });
+        function MakePlaylistUIContainer() {
+            if ('undefined' === typeof plBox) {
+                plBox = GM_addElement(document.body, 'div', {});
+            }
         }
     }
-
 
     function WaitForDOMLoad() {
         if (window.location.pathname.match(/^\/file\/d\/.*\/view$/i)) {
@@ -293,33 +303,32 @@
             }
 
             player = document.getElementsByTagName('video')[0];
-            if ('undefined' !== typeof player) {
+            if ('undefined' !== typeof player &&
+                'undefined' !== typeof plBox) {
                 clearInterval(interval);
+                eval(GM_getResourceText('ass'));
                 player.play().then(() => {
                     // Set the start time manually here to prevent YouTube from skipping it when t == 0.
                     if (urlParams.has('t') && urlParams.get('t') == 0 && player.currentTime > 2) {
                         player.currentTime = urlParams.get('t');
                     }
 
+                    DoOnVideoChange();
+
                     // For situations where the webpage does not reload, such as clicking a link on YouTube.
                     player.onloadedmetadata = DoOnVideoChange;
-
-                    DoOnVideoChange();
                 });
             }
         }
     }
 
-    function DoOnVideoChange() {
-        urlParams = new URLSearchParams(window.location.search);
+    var ass, observer, assContainer;
 
-        // This check is performed here because youtube did not reload the page on some page changes, but only reloaded the page content and video.
-        if (!urlParams.has('end')) {
-            CleanUp();
-            return;
-        }
+    function DoOnVideoChange(loadedmetadata) {
+        var init = 'undefined' === typeof loadedmetadata;
+        player.ontimeupdate = CheckTimeUp;
 
-        var currentIndex = CheckList();
+        var currentIndex = CheckList(init);
         if (currentIndex >= 0) {
             DisableAutoVideoPause();
 
@@ -327,27 +336,31 @@
             if (shuffle) {
                 if (shuffleList[0] != currentIndex) {
                     shuffleList.unshift(currentIndex);
-                    // console.log(`Unshift back ${currentIndex}`);
+                    // console.debug(`Unshift back ${currentIndex}`);
                 }
                 GM_setValue('shuffleList', shuffleList);
             }
 
-            MakePlaylistUI(currentIndex);
+            MakePlaylistUIContent(currentIndex);
 
             MakeSubtitle(currentIndex);
+        } else {
+            if (!init) {
+                CleanUp();
+            }
         }
 
         //Stop the player when the end time is up.
-        player.ontimeupdate = function() {
+        function CheckTimeUp() {
             // Handle Keyboard Media Key "NextTrack"
             if (currentIndex >= 0)
                 navigator.mediaSession.setActionHandler('nexttrack', function() {
-                    console.log('Media Key trigger');
+                    console.debug('Media Key trigger');
                     player.ontimeupdate = null;
                     NextSong(currentIndex);
                 });
 
-            //console.log(player.currentTime);
+            //console.debug(player.currentTime);
             var flag = player.currentTime > urlParams.get('end');
             if (0 == urlParams.get('end')) flag = false;
             if (player.ended) flag = true;
@@ -368,10 +381,10 @@
                 CleanUp();
                 console.log('It is detected that the current time is less than the start time.');
             }
-        };
+        }
 
         function CleanUp() {
-            console.log('Clear end parameter function');
+            console.log('Clean up!');
             player.ontimeupdate = null;
             DestroySubtitle();
             HideUI();
@@ -381,6 +394,12 @@
                 delete MenuLists[key];
             });
             addStartMenu();
+
+            function HideUI() {
+                if ('undefined' !== typeof plBox) {
+                    plBox.style.display = 'none';
+                }
+            }
         }
 
         // Get rid of the Youtube "automatic video pause" function
@@ -393,15 +412,13 @@
                         btns.forEach((btn) => {
                             btn.click();
                             btn.outerHTML = '';
-                            // console.log("Keep Playing~");
+                            console.log("Skip Video Pause!");
                         });
                         btns = document.querySelectorAll('a.yt-simple-endpoint.style-scope.yt-button-renderer');
                     }
                 };
             }
         }
-
-        var ass, observer, assContainer;
 
         // Add custom subtitle
         function MakeSubtitle(currentIndex) {
@@ -452,32 +469,23 @@
 
         function DestroySubtitle() {
             // Clean ass sub
-            if (ass) {
+            if ('undefined' !== typeof ass) {
                 ass.destroy();
                 observer.disconnect();
                 if (assContainer) assContainer.remove();
             }
             // Clean webvtt sub
             var first = player.firstElementChild;
-            while (first) {
+            while ('undefined' !== typeof first && first) {
                 first.remove();
                 first = player.firstElementChild;
             }
         }
 
-        function HideUI() {
-            var plBox = document.getElementById('plBox');
-            if (undefined !== typeof plBox) {
-                plBox.style.display = 'none';
-            }
-        }
-
-        function MakePlaylistUI(currentIndex) {
-            var plBox = document.getElementById('plBox');
-            if (null == plBox) {
-                plBox = document.createElement('div');
-                plBox.id = 'plBox';
-                document.body.appendChild(plBox);
+        function MakePlaylistUIContent(currentIndex) {
+            if ('undefined' === typeof plBox) {
+                console.error("Playlist UI Container in undefined!");
+                return;
             }
 
             // Make Playlist
@@ -529,12 +537,6 @@
                     function() {
                         player.ontimeupdate = null;
                         if (shuffle) {
-                            // console.log(`Splice on ${plIndex}`);
-                            var tmp = pl.splice(plIndex, 1);
-                            // console.log(`Spliced ${tmp}`);
-
-                            // console.log(`Save shuffleList:`);
-                            // console.log(pl);
                             GM_setValue('shuffleList', pl);
                         }
                         console.log(`Next Song ${plElement} by UI click`);
@@ -625,9 +627,23 @@
         }
     }
 
-    function CheckList() {
-        // urlParams = new URLSearchParams(window.location.search);
-        if (!urlParams.has('end')) return -1;
+    function CheckList(renewURLParams) {
+        if (renewURLParams) {
+            var _urlParams = new URLSearchParams(window.location.search);
+
+            _urlParams.forEach(function(value, key) {
+                switch (key) {
+                    case 't':
+                        //Youtube有時會自動在t後面帶上個s(秒)，在這裡把它去掉
+                        urlParams.set(key, value.replace('s', ''));
+                        break;
+                    default:
+                        urlParams.set(key, value);
+                        break;
+                }
+            });
+        }
+        console.debug(urlParams.toString());
 
         //Check myPlaylist
         //myPlaylist is declared in @require
@@ -710,7 +726,7 @@
                 index %= myPlaylist.length;
                 index |= 0;
             }
-            // console.log(`Next Song ${index} by song end`);
+            console.log(`Next Song ${index} by song end`);
         }
 
         var nextSong = myPlaylist[index];
