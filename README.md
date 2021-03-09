@@ -8,17 +8,22 @@
 
 ## 安裝步驟
 
-1. 安裝瀏覧器擴充: [Tampermonkey](https://www.tampermonkey.net/)
-2. 安裝腳本: [Youtube Clip Playlist](https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js)
-3. 修改 Tampermonkey 設定，每次播放都重載歌單
-    1. 一般 → 設定模式: 進階
-    2. 外部 → 更新週期: **永遠**
-4. 播放Playlist
-   1. [由網址啟動](#啟動連結)
-   2. [由啟動UI啟動](#啟動UI)
-
 > 如果是使用 Firefox，需要關閉「阻擋媒體自動播放」功能，請參閱: \
 > <https://support.mozilla.org/en-US/kb/block-autoplay>
+
+1. 安裝瀏覧器擴充: [Tampermonkey](https://www.tampermonkey.net/)
+    > **2021/3/9 警告**\
+    > Youtube改版了新功能，現在會自動清空所有非正規網址參數\
+    > 我調整了script執行時間以解決這問題，運用到了一個在TamperMonkey **v4.12.6121**引入的新api\
+    > 請**Chrome**用戶改裝右側的紅色**Tampermonkey Beta**\
+    > *直到v4.12.6121版本成為Chrome的正式版為止*
+1. 安裝腳本: [Youtube Clip Playlist](https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js)
+1. 修改 Tampermonkey 設定，每次播放都重載歌單
+    1. 一般 → 設定模式: 進階
+    2. 外部 → 更新週期: **永遠**
+1. 播放Playlist
+   1. [由網址啟動](#啟動連結)
+   2. [由啟動UI啟動](#啟動UI)
 
 ## Youtube 網址格式
 
@@ -82,18 +87,18 @@
 ### 啟動UI
 
 在Youtube網站下點開TamperMonkey選單，單擊「Start Playlist」 \
-這相當於 **啟動連結—全清單循序 (https://www.youtube.com/?startplaylist)** \
+這相當於 **啟動連結—全清單循序 (<https://www.youtube.com/?startplaylist>)** \
 ![pic](pic/UI1.png)
 
 ### 禁用歌單功能
 
 在個別播放清單上單擊可以啟用、禁用該播放清單 \
-若你完全不聽廣播，可以把RadioQTamaList禁用，再去使用全循序/隨機播放功能 \
+*若你完全不聽廣播，可以把RadioQTamaList禁用，再使用全循序/隨機播放功能* \
 ![pic](pic/UI2.png)
 
 ## 歌單(Playlist)
 
-目前內建的是久遠たま、伊冬ユナ、羽宮くぅ的歌單\
+目前內建的是**久遠たま、伊冬ユナ、羽宮くぅ**的歌單\
 久遠たま的歌單由[琳](https://twitter.com/jim60105)維護；伊冬ユナ和羽宮くぅ的歌單由[小飯](https://twitter.com/LittleRice1007)維護\
 如果想要參與編寫，請參考[此repo](https://github.com/jim60105/Playlists)的合作模式
 
@@ -115,6 +120,6 @@
 此工具支援載入WebVTT字幕(.vtt)、ASS字幕(.ass)，請將字幕直鏈傳入歌單之SubSrc欄位
 > 我在[RadioQTama播放清單](https://www.youtube.com/?startplaylist&playlistinclude=RadioQTama)中使用了來自[アルバート](https://twitter.com/alubto)的翻譯字幕，是直接由[他的repo](https://gitlab.com/alubaato/tama-subs)取得內容\
 > 我使用了一支[.Net Core程式](https://github.com/jim60105/Playlists/blob/master/QuonTama/CreateRadioQTamaSubtitles/CreateRadioQTamaSubtitles/Program.cs)和[Github Workflow](https://github.com/jim60105/Playlists/blob/master/.github/workflows/CreateRadioQTamaSubtitles.yml)做CI\
-> 定時由他的gitlab取得ass直鏈，並重寫歌單
+> 定時由他的gitlab取得ass直鏈，並重寫歌單；自動Commit、PR、Merge
 
 ![pic](pic/sub.png)
