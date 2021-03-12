@@ -20,7 +20,7 @@
 // @include      https://drive.google.com/file/*
 // @include      https://youtube.googleapis.com/*
 // @resource     ass https://github.com/jim60105/ASS/raw/master/dist/ass.min.js
-// @resource     playlist https://github.com/jim60105/Playlists/raw/minify/Playlists.jsonc
+// @resource     playlist https://github.com/jim60105/Playlists/raw/dev/Onedrive/Playlists.jsonc
 // ==/UserScript==
 
 /**
@@ -174,7 +174,7 @@
                     console.warn(`Disabled ${listName}. Please click the menu to enable it again.`);
                     LoadedCount++;
                 } else {
-                    var baseURL = 'https://raw.githubusercontent.com/jim60105/Playlists/minify/';
+                    var baseURL = 'https://raw.githubusercontent.com/jim60105/Playlists/dev/Onedrive/';
                     GM_xmlhttpRequest({
                         method: 'GET',
                         url: baseURL + route,
