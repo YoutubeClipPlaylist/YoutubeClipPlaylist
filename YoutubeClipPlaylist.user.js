@@ -739,7 +739,13 @@
 
         if (nextSong[0].indexOf('http') >= 0) {
             // URL
-            document.location.href = `${nextSong[0]}?${urlParams.toString()}`;
+            if (nextSong[0].indexOf('?' > 0)) {
+                var newParams = new URLSearchParams(nextSong[0]);
+                newParams.forEach(function(value, key) {
+                    urlParams.set(key, value);
+                });
+            }
+            document.location.href = `${nextSong[0].split('?')[0]}?${urlParams.toString()}`;
         } else {
             // ID
             if (nextSong[0].length > 20) {
