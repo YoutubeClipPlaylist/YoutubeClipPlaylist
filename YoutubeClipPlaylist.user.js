@@ -2,7 +2,7 @@
 // @name         Youtube Clip Playlist
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      9.3
+// @version      10
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @run-at       document-start
@@ -19,6 +19,8 @@
 // @include      https://www.youtube.com/*
 // @include      https://drive.google.com/file/*
 // @include      https://youtube.googleapis.com/*
+// @include      /^https:\/\/[\w\-]*my\.sharepoint\.com\/.*$/
+// @include      https://onedrive.live.com/*
 // @resource     ass https://github.com/jim60105/ASS/raw/master/dist/ass.min.js
 // @resource     playlist https://github.com/jim60105/Playlists/raw/dev/Onedrive/Playlists.jsonc
 // ==/UserScript==
@@ -731,17 +733,23 @@
 
         var nextSong = myPlaylist[index];
 
+        urlParams.delete('v');
         urlParams.set('t', nextSong[1]);
         urlParams.set('end', nextSong[2]);
 
-        if (nextSong[0].length > 20) {
-            // Google Drive
-            urlParams.delete('v');
-            document.location.href = `https://drive.google.com/file/d/${nextSong[0]}/view?${urlParams.toString()}`;
+        if (nextSong[0].indexOf('http') >= 0) {
+            // URL
+            document.location.href = `${nextSong[0]}?${urlParams.toString()}`;
         } else {
-            // Youtube
-            urlParams.set('v', nextSong[0]);
-            document.location.href = `https://www.youtube.com/watch?${urlParams.toString()}`;
+            // ID
+            if (nextSong[0].length > 20) {
+                // Google Drive
+                document.location.href = `https://drive.google.com/file/d/${nextSong[0]}/view?${urlParams.toString()}`;
+            } else {
+                // Youtube
+                urlParams.set('v', nextSong[0]);
+                document.location.href = `https://www.youtube.com/watch?${urlParams.toString()}`;
+            }
         }
     }
 })();
