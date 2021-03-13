@@ -740,8 +740,9 @@
         if (nextSong[0].indexOf('http') >= 0) {
             // URL
             if (nextSong[0].indexOf('?' > 0)) {
-                var newParams = new URLSearchParams(nextSong[0]);
-                newParams.forEach(function(value, key) {
+
+                var url = new URL(nextSong[0]);
+                url.searchParams.forEach(function(value, key) {
                     urlParams.set(key, value);
                 });
             }
