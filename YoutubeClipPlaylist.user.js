@@ -9,6 +9,7 @@
 // @grant        GM_addElement
 // @grant        GM_setValue
 // @grant        GM_getValue
+// @grant        GM_deleteValue
 // @grant        GM_xmlhttpRequest
 // @grant        GM_getResourceText
 // @grant        GM_registerMenuCommand
@@ -55,6 +56,11 @@
     var myPlaylist = [];
 
     var urlParams = new URLSearchParams(window.location.search);
+
+    if (GM_getValue('params')) {
+        urlParams = new URLSearchParams(GM_getValue('params'));
+        GM_deleteValue('params');
+    }
 
     if (!urlParams.has('end') && !urlParams.has('startplaylist')) {
         addStartMenu();
@@ -311,7 +317,7 @@
                 eval(GM_getResourceText('ass'));
                 player.play().then(() => {
                     // Set the start time manually here to prevent YouTube from skipping it when t == 0.
-                    if (urlParams.has('t') && urlParams.get('t') == 0 && player.currentTime > 2) {
+                    if (urlParams.has('t')) {
                         player.currentTime = urlParams.get('t');
                     }
 
@@ -660,9 +666,13 @@
                 }
             }
         } else {
-            // Google Drive iframe
+            // Google Drive iframe, OneDrive, Others
             for (i = 0; i < myPlaylist.length; i++) {
-                if (document.location.href.includes(myPlaylist[i][0]) && (myPlaylist[i][1] == urlParams.get('t') || myPlaylist[i][1] == urlParams.get('start')) && myPlaylist[i][2] == urlParams.get('end')) {
+                if (
+                    (myPlaylist[i][0]) == urlParams.get('v') &&
+                    (myPlaylist[i][1] == urlParams.get('t') ||
+                        myPlaylist[i][1] == urlParams.get('start')) &&
+                    myPlaylist[i][2] == urlParams.get('end')) {
                     flag = true;
                     break;
                 }
@@ -733,19 +743,19 @@
 
         var nextSong = myPlaylist[index];
 
-        urlParams.delete('v');
+        urlParams.set('v', nextSong[0]);
         urlParams.set('t', nextSong[1]);
         urlParams.set('end', nextSong[2]);
 
         if (nextSong[0].indexOf('http') >= 0) {
             // URL
             if (nextSong[0].indexOf('?' > 0)) {
-
                 var url = new URL(nextSong[0]);
                 url.searchParams.forEach(function(value, key) {
                     urlParams.set(key, value);
                 });
             }
+            GM_setValue('params', params.toString());
             document.location.href = `${nextSong[0].split('?')[0]}?${urlParams.toString()}`;
         } else {
             // ID
@@ -754,7 +764,6 @@
                 document.location.href = `https://drive.google.com/file/d/${nextSong[0]}/view?${urlParams.toString()}`;
             } else {
                 // Youtube
-                urlParams.set('v', nextSong[0]);
                 document.location.href = `https://www.youtube.com/watch?${urlParams.toString()}`;
             }
         }
