@@ -1,5 +1,12 @@
 ﻿# Youtube 影片截選播放清單 (Youtube Clip Playlist)
 
+## 2021/3/9 警告
+
+> > Youtube改版了新功能，現在會自動清空所有非正規網址參數\
+> > 我已在v9.3修正了這問題，運用到了一個在TamperMonkey v4.12.6121引入的新api\
+> > 請Chrome用戶改裝右側的紅色**Tampermonkey Beta**\
+> > 直到v4.12版本成為Chrome的正式版為止
+
 [![pic](pic/demo.png)](https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html)
 [![GitHub tag](https://img.shields.io/github/tag/jim60105/YoutubeClipPlaylist?style=for-the-badge)](https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js)
 [![GitHub last commit (branch)](https://img.shields.io/github/last-commit/jim60105/YoutubeClipPlaylist?label=LAST%20UPDATE&style=for-the-badge)](https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js)

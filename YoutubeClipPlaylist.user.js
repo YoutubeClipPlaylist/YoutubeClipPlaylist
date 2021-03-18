@@ -26,8 +26,19 @@
 // @resource     playlist https://github.com/jim60105/Playlists/raw/minify/Playlists.jsonc
 // ==/UserScript==
 
-/**
- * 版本更新提要:
+/* *********
+ * 2021/3/9 警告
+ * Youtube改版了新功能，現在會自動清空所有非正規網址參數
+ * 我已在v9.3修正了這問題，運用到了一個在TamperMonkey v4.12.6121引入的新api
+ * 請Chrome用戶改裝右側的紅色Tampermonkey Beta
+ * 直到v4.12版本成為Chrome的正式版為止 
+ * *********
+ */
+
+/* 版本更新提要:
+ * v10
+ * 1. 支援OneDrive (支援一般帳戶和企業帳戶)，請將完整網址做為影片ID填入
+ * 
  * v9
  * 1. 增加「右上角選單列」，可以在此切換隨機/不隨機模式
  * 2. 增加「禁用歌單」功能，可在選單列啟用/禁用
@@ -35,17 +46,8 @@
  * 4. 增加「StartPlaylist」選單按鈕
  * 5. Exclude、Include功能，增加可以以「_」底線分隔來同時傳入多個標籤
  * 
- * v8
- * 1. 修改歌單載入模式: 不再全下載後判斷，而是先下載歌單名稱和標籤，判斷後只載需要的檔案
- * 2. 修正在Youtube中「並非歌單播放模式時」也會下載歌單的問題
- * 
- * v7
- * 1. 更改本repo名稱為YoutubeClipPlaylist
- * 2. 更改default branch為master
- * 3. 專案架構調整
- * 4. 更改歌單repo名稱為Playlists，歌單做minify
- * 5. 字幕支援: webvtt、ass
- * 6. 增加Playlist: '伊冬ユナ' '羽宮くぅ'
+ * 琳的備忘手札 - [UserScript] Youtube影片截選播放清單 (Youtube Clip Playlist) 
+ * https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
  */
 
 // Main
