@@ -23,7 +23,7 @@
 // @include      /^https:\/\/[\w\-]*my\.sharepoint\.com\/.*$/
 // @include      https://onedrive.live.com/*
 // @resource     ass https://github.com/jim60105/ASS/raw/master/dist/ass.min.js
-// @resource     playlist https://github.com/jim60105/Playlists/raw/dev/Onedrive/Playlists.jsonc
+// @resource     playlist https://github.com/jim60105/Playlists/raw/minify/Playlists.jsonc
 // ==/UserScript==
 
 /**
@@ -182,7 +182,7 @@
                     console.warn(`Disabled ${listName}. Please click the menu to enable it again.`);
                     LoadedCount++;
                 } else {
-                    var baseURL = 'https://raw.githubusercontent.com/jim60105/Playlists/dev/Onedrive/';
+                    var baseURL = 'https://raw.githubusercontent.com/jim60105/Playlists/minify/';
                     GM_xmlhttpRequest({
                         method: 'GET',
                         url: baseURL + route,
