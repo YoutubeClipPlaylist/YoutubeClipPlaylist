@@ -2,7 +2,7 @@
 // @name         Youtube Clip Playlist
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      10
+// @version      10.1
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @run-at       document-start
@@ -26,18 +26,10 @@
 // @resource     playlist https://github.com/jim60105/Playlists/raw/minify/Playlists.jsonc
 // ==/UserScript==
 
-/* *********
- * 2021/3/9 警告
- * Youtube改版了新功能，現在會自動清空所有非正規網址參數
- * 我已在v9.3修正了這問題，運用到了一個在TamperMonkey v4.12.6121引入的新api
- * 請Chrome用戶改裝右側的紅色Tampermonkey Beta
- * 直到v4.12版本成為Chrome的正式版為止 
- * *********
- */
-
 /* 版本更新提要:
  * v10
  * 1. 支援OneDrive (支援一般帳戶和企業帳戶)，請將完整網址做為影片ID填入
+ * (v10.1) 修正Youtbe換影片時，未正確清空程式參數的問題
  * 
  * v9
  * 1. 增加「右上角選單列」，可以在此切換隨機/不隨機模式
@@ -51,7 +43,7 @@
  */
 
 // Main
-(function() {
+(function () {
     'use strict';
     if (window.location.pathname == "/live_chat_replay") return;
 
@@ -127,7 +119,7 @@
         });
 
         //Wait for DOM
-        interval = setInterval(function() {
+        interval = setInterval(function () {
             if (Playlists.length <= LoadedCount) {
                 //start playlist
                 if (urlParams.has('startplaylist') || shuffleList.length > myPlaylist.length) {
@@ -144,7 +136,7 @@
                 MakePlaylistUIContainer();
 
                 WaitForDOMLoad();
-                (callback && typeof(callback) === "function") && callback();
+                (callback && typeof (callback) === "function") && callback();
             }
         }, 500);
 
@@ -213,7 +205,9 @@
                     `✅ ${listName}`,
                     () => {
                         // Disable list on click
-                        if (!confirm(`Are you sure you want to disable ${listName}?`)) { return; }
+                        if (!confirm(`Are you sure you want to disable ${listName}?`)) {
+                            return;
+                        }
 
                         // Add listname to DisabledPlaylists
                         DisabledPlaylists.push(listName);
@@ -255,7 +249,9 @@
                 myPlaylist = [];
                 shuffleList = [];
                 GM_setValue('shuffleList', []);
-                LoadPlaylists(() => { NextSong(-1) });
+                LoadPlaylists(() => {
+                    NextSong(-1)
+                });
             }
         }
 
@@ -287,13 +283,13 @@
                 var iframeURL = new URL(iframe.src);
                 var iframeUrlParams = iframeURL.searchParams;
                 iframeUrlParams.set('autoplay', 1);
-                urlParams.forEach(function(value, key) {
+                urlParams.forEach(function (value, key) {
                     iframeUrlParams.set(key, value);
                 });
                 iframe.src = iframeURL.toString();
 
                 // NextSong after play end
-                window.addEventListener('message', function(event) {
+                window.addEventListener('message', function (event) {
                     if ('song end' == event.data) {
                         NextSong(CheckList());
                     } else {
@@ -364,7 +360,7 @@
         function CheckTimeUp() {
             // Handle Keyboard Media Key "NextTrack"
             if (currentIndex >= 0)
-                navigator.mediaSession.setActionHandler('nexttrack', function() {
+                navigator.mediaSession.setActionHandler('nexttrack', function () {
                     console.debug('Media Key trigger');
                     player.ontimeupdate = null;
                     NextSong(currentIndex);
@@ -396,10 +392,11 @@
         function CleanUp() {
             console.log('Clean up!');
             player.ontimeupdate = null;
+            urlParams = new URLSearchParams(window.location.search);
             DestroySubtitle();
             HideUI();
 
-            Object.keys(MenuLists).forEach(function(key) {
+            Object.keys(MenuLists).forEach(function (key) {
                 GM_unregisterMenuCommand(MenuLists[key].menuID);
                 delete MenuLists[key];
             });
@@ -415,7 +412,7 @@
         // Get rid of the Youtube "automatic video pause" function
         function DisableAutoVideoPause() {
             if (window.location.pathname.match(/^\/watch$/i)) {
-                player.onpause = function() {
+                player.onpause = function () {
                     var btns = document.querySelectorAll('a.yt-simple-endpoint.style-scope.yt-button-renderer');
                     while (btns.length > 0) {
                         player.play();
@@ -456,21 +453,27 @@
                             // ass
                             assContainer = document.createElement('div');
                             player.parentNode.appendChild(assContainer);
-                            ass = new ASS(response.responseText, player, { container: assContainer });
+                            ass = new ASS(response.responseText, player, {
+                                container: assContainer
+                            });
 
                             // For player resize
                             assContainer.style.position = 'absolute';
                             assContainer.style.top = 0;
                             assContainer.style.left = player.style.left;
 
-                            observer = new MutationObserver(function(mutations) {
-                                mutations.forEach(function(mutationRecord) {
+                            observer = new MutationObserver(function (mutations) {
+                                mutations.forEach(function (mutationRecord) {
                                     ass.resize();
                                     assContainer.style.left = player.style.left;
                                 });
                             });
 
-                            observer.observe(player, { attributes: true, attributeFilter: ['style'], subtree: false });
+                            observer.observe(player, {
+                                attributes: true,
+                                attributeFilter: ['style'],
+                                subtree: false
+                            });
                         }
                     },
                 });
@@ -531,7 +534,7 @@
             liTemplate.style.listStyleType = 'disclosure-closed'; // Not function in chrome
 
             // Make list
-            pl.forEach(function(plElement, plIndex) {
+            pl.forEach(function (plElement, plIndex) {
                 var li = liTemplate.cloneNode();
                 // 顯示歌曲文字
                 if (myPlaylist[plElement].length >= 4) {
@@ -544,7 +547,7 @@
                 // Onclick
                 li.addEventListener(
                     'click',
-                    function() {
+                    function () {
                         player.ontimeupdate = null;
                         if (shuffle) {
                             GM_setValue('shuffleList', pl);
@@ -620,7 +623,7 @@
             // 滑鼠點擊開閉UI
             plTitle.addEventListener(
                 'click',
-                function() {
+                function () {
                     toggleDisplay(!isOpen);
                 },
                 false
@@ -641,7 +644,7 @@
         if (renewURLParams) {
             var _urlParams = new URLSearchParams(window.location.search);
 
-            _urlParams.forEach(function(value, key) {
+            _urlParams.forEach(function (value, key) {
                 switch (key) {
                     case 't':
                         //Youtube有時會自動在t後面帶上個s(秒)，在這裡把它去掉
@@ -753,7 +756,7 @@
             // URL
             if (nextSong[0].indexOf('?' > 0)) {
                 var url = new URL(nextSong[0]);
-                url.searchParams.forEach(function(value, key) {
+                url.searchParams.forEach(function (value, key) {
                     urlParams.set(key, value);
                 });
             }
