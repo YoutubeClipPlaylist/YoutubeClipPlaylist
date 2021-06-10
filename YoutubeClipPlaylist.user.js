@@ -2,7 +2,7 @@
 // @name         Youtube Clip Playlist
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      10.1
+// @version      10.2
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @run-at       document-start
@@ -30,15 +30,16 @@
  * v10
  * 1. 支援OneDrive (支援一般帳戶和企業帳戶)，請將完整網址做為影片ID填入
  * (v10.1) 修正Youtbe換影片時，未正確清空程式參數的問題
- * 
+ * (v10.2) Bug fix typo、修正OneDrive UI
+ *
  * v9
  * 1. 增加「右上角選單列」，可以在此切換隨機/不隨機模式
  * 2. 增加「禁用歌單」功能，可在選單列啟用/禁用
  * 3. 隨機模式，在歌曲播完後將之插入到歌單尾 (原來會直接移除)
  * 4. 增加「StartPlaylist」選單按鈕
  * 5. Exclude、Include功能，增加可以以「_」底線分隔來同時傳入多個標籤
- * 
- * 琳的備忘手札 - [UserScript] Youtube影片截選播放清單 (Youtube Clip Playlist) 
+ *
+ * 琳的備忘手札 - [UserScript] Youtube影片截選播放清單 (Youtube Clip Playlist)
  * https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
  */
 
@@ -524,11 +525,15 @@
             plBox.appendChild(plTitle);
             var plContent = document.createElement('ul');
             plBox.appendChild(plContent);
+            plContent.style.padding = '0';
+            plContent.style.margin = '0';
+            plContent.style.border = '0';
+            plContent.style.background = 'transparent';
 
             // Make li template
             var liTemplate = document.createElement('li');
             liTemplate.style.color = 'white';
-            liTemplate.style.fontSize = '2em';
+            liTemplate.style.fontSize = '20px';
             liTemplate.style.margin = '12px';
             liTemplate.style.marginLeft = '36px';
             liTemplate.style.listStyleType = 'disclosure-closed'; // Not function in chrome
@@ -561,7 +566,7 @@
             });
 
             // Styling Now-Playing li
-            plContent.firstChild.style.fontSize = '2.5em';
+            plContent.firstChild.style.fontSize = '25px';
             plContent.firstChild.style.fontWeight = 'bold';
             plContent.firstChild.style.textAlign = 'center';
             plContent.firstChild.style.listStyleType = 'none';
@@ -760,7 +765,7 @@
                     urlParams.set(key, value);
                 });
             }
-            GM_setValue('params', params.toString());
+            GM_setValue('params', urlParams.toString());
             document.location.href = `${nextSong[0].split('?')[0]}?${urlParams.toString()}`;
         } else {
             // ID
