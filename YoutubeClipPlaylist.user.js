@@ -151,8 +151,6 @@
                     return;
                 }
 
-                MakePlaylistUIContainer();
-
                 waitDOMInterval = setInterval(function () {
                     WaitForDOMLoad();
                 }, 500);
@@ -280,12 +278,6 @@
                 });
             }
         }
-
-        function MakePlaylistUIContainer() {
-            if ('undefined' === typeof plBox) {
-                plBox = GM_addElement(document.body, 'div', {});
-            }
-        }
     }
 
     function WaitForDOMLoad() {
@@ -335,8 +327,7 @@
             }
 
             player = document.getElementsByTagName('video')[0];
-            if ('undefined' !== typeof player &&
-                'undefined' !== typeof plBox) {
+            if ('undefined' !== typeof player) {
                 clearInterval(waitDOMInterval);
                 eval(GM_getResourceText('ass'));
                 player.play().then(() => {
@@ -374,7 +365,7 @@
             //     GM_setValue('shuffleList', shuffleList);
             // }
 
-            MakePlaylistUIContent(currentIndex);
+            MakePlaylistUI(currentIndex);
 
             MakeSubtitle(currentIndex);
         } else {
@@ -536,10 +527,10 @@
             }
         }
 
-        function MakePlaylistUIContent(currentIndex) {
+        function MakePlaylistUI(currentIndex) {
             if ('undefined' === typeof plBox) {
-                console.error("Playlist UI Container in undefined!");
-                return;
+                // plBox = GM_addElement(document.body, 'div', {});
+                plBox = document.body.appendChild(document.createElement('div'));
             }
 
             // Make Playlist
