@@ -29,8 +29,10 @@
 /* 版本更新提要:
  * v10
  * 1. 支援OneDrive (支援一般帳戶和企業帳戶)，請將完整網址做為影片ID填入
- * (v10.1) 修正Youtbe換影片時，未正確清空程式參數的問題
- * (v10.2) Bug fix typo、修正OneDrive UI
+ * 2. 修正Youtbe換影片時，未正確清空程式參數的問題
+ * 3. 修正OneDrive UI
+ * (v10.3) 修正ShuffleList UI Click表現
+ * (v10.3) 修正PlaylistContainer被重覆初始的問題
  *
  * v9
  * 1. 增加「右上角選單列」，可以在此切換隨機/不隨機模式
