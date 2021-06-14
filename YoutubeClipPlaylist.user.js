@@ -2,7 +2,7 @@
 // @name         Youtube Clip Playlist
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      10.2
+// @version      10.3
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @run-at       document-start
@@ -102,7 +102,8 @@
         GM_unregisterMenuCommand(MenuLists.shuffle.menuID);
         shuffle ^= true;
         addShuffleMenu();
-        NextSong(-1);
+        GM_setValue('shuffleList', []);
+        NextSong(0);
     }
 
     var Playlists = JSON.parse(GM_getResourceText('playlist'));
@@ -122,15 +123,24 @@
         //Wait for DOM
         interval = setInterval(function () {
             if (Playlists.length <= LoadedCount) {
-                //start playlist
-                if (urlParams.has('startplaylist') || shuffleList.length > myPlaylist.length) {
-                    clearInterval(interval);
-                    urlParams.delete('startplaylist');
+                clearInterval(interval);
 
-                    shuffleList = [0];
+                if (urlParams.has('startplaylist') || shuffleList.length != myPlaylist.length) {
+                    shuffleList = MakeShuffleList(myPlaylist.length);
 
                     GM_setValue('shuffleList', shuffleList);
-                    NextSong(-1);
+                }
+
+                //start playlist
+                if (urlParams.has('startplaylist')) {
+                    urlParams.delete('startplaylist');
+
+                    if (shuffle) {
+                        NextSong(shuffleList[0]);
+                    } else {
+                        NextSong(0);
+                    }
+
                     return;
                 }
 
@@ -251,7 +261,8 @@
                 shuffleList = [];
                 GM_setValue('shuffleList', []);
                 LoadPlaylists(() => {
-                    NextSong(-1)
+                    MakeShuffleList(myPlaylist.length);
+                    NextSong(0);
                 });
             }
         }
@@ -292,7 +303,7 @@
                 // NextSong after play end
                 window.addEventListener('message', function (event) {
                     if ('song end' == event.data) {
-                        NextSong(CheckList());
+                        NextSong(CheckList() + 1);
                     } else {
                         // Next on UI click
                         if (Number.isInteger(event.data)) {
@@ -306,7 +317,7 @@
             // Skip the song if it is on Google Drive and play in the background.
             if ('/embed/' == window.location.pathname && 'hidden' == document.visibilityState) {
                 clearInterval(interval);
-                NextSong(CheckList());
+                NextSong(CheckList() + 1);
             }
 
             player = document.getElementsByTagName('video')[0];
@@ -342,6 +353,7 @@
             // Always put currentIndex first in the shuffle list
             if (shuffle) {
                 if (shuffleList[0] != currentIndex) {
+                    shuffleList.splice(shuffleList.findIndex((element) => element === currentIndex), 1);
                     shuffleList.unshift(currentIndex);
                     // console.debug(`Unshift back ${currentIndex}`);
                 }
@@ -364,7 +376,11 @@
                 navigator.mediaSession.setActionHandler('nexttrack', function () {
                     console.debug('Media Key trigger');
                     player.ontimeupdate = null;
-                    NextSong(currentIndex);
+                    if (shuffle) {
+                        StepShuffle();
+                    } else {
+                        NextSong(currentIndex + 1);
+                    }
                 });
 
             //console.debug(player.currentTime);
@@ -378,7 +394,11 @@
                 console.log('Pause player at ' + player.currentTime);
 
                 if (currentIndex >= 0) {
-                    NextSong(currentIndex);
+                    if (shuffle) {
+                        StepShuffle();
+                    } else {
+                        NextSong(currentIndex + 1);
+                    }
                 }
                 return;
             }
@@ -388,6 +408,12 @@
                 CleanUp();
                 console.log('It is detected that the current time is less than the start time.');
             }
+        }
+
+        function StepShuffle() {
+            shuffleList.append(shuffleList.pop());
+            GM_setValue('shuffleList', shuffleList);
+            NextSong(shuffleList[0]);
         }
 
         function CleanUp() {
@@ -557,7 +583,6 @@
                         if (shuffle) {
                             GM_setValue('shuffleList', pl);
                         }
-                        console.log(`Next Song ${plElement} by UI click`);
                         NextSong(plElement, true);
                     },
                     false
@@ -697,7 +722,7 @@
         return i;
     }
 
-    function MakeShufflelist(length) {
+    function MakeShuffleList(length) {
         var shuffleList = [];
         for (var i = 0; i < length; ++i) shuffleList[i] = i;
 
@@ -717,7 +742,7 @@
         return shuffleList;
     }
 
-    function NextSong(index, passNext = false) {
+    function NextSong(index, UIClick = false) {
         if (myPlaylist.length == 0) {
             console.error('No playlists!');
             return;
@@ -725,7 +750,7 @@
 
         // Send "next song" outside the iframe
         if ('/embed/' == window.location.pathname) {
-            if (!passNext) {
+            if (!UIClick) {
                 parent.postMessage('song end', '*');
             } else {
                 parent.postMessage(index, '*');
@@ -733,22 +758,10 @@
             return;
         }
 
-        if (!passNext) {
-            // Step the index
-            if (shuffle) {
-                var tmpSong = shuffleList.shift();
-                if (shuffleList.length > 0) {
-                    shuffleList.push(tmpSong);
-                }
-                if (0 == shuffleList.length) shuffleList = MakeShufflelist(myPlaylist.length);
-                GM_setValue('shuffleList', shuffleList);
-                index = shuffleList[0];
-            } else {
-                index++;
-                index %= myPlaylist.length;
-                index |= 0;
-            }
-            console.log(`Next Song ${index} by song end`);
+        if (UIClick) {
+            console.log(`Next Song ${index} by UI click`);
+        } else {
+            console.log(`Next Song ${index}`);
         }
 
         var nextSong = myPlaylist[index];
