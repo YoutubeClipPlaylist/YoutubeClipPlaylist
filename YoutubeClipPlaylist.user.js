@@ -108,13 +108,14 @@
 
     var Playlists = JSON.parse(GM_getResourceText('playlist'));
     var LoadedCount = 0;
+    var LoadedPlaylists = new Map();
     var player;
     var interval;
     var plBox;
 
-    LoadPlaylists();
+    Load();
 
-    function LoadPlaylists(callback) {
+    function Load(callback) {
         LoadedCount = 0;
         Playlists.forEach((playlist) => {
             CheckAndLoadPlaylist(playlist.name, playlist.tag, playlist.route);
@@ -124,6 +125,12 @@
         interval = setInterval(function () {
             if (Playlists.length <= LoadedCount) {
                 clearInterval(interval);
+
+                Playlists.forEach((playlist) => {
+                    if (LoadedPlaylists.has(playlist.name)) {
+                        myPlaylist = myPlaylist.concat(LoadedPlaylists.get(playlist.name));
+                    }
+                })
 
                 if (urlParams.has('startplaylist') || shuffleList.length != myPlaylist.length) {
                     shuffleList = MakeShuffleList(myPlaylist.length);
@@ -199,7 +206,8 @@
                                 MenuLists[listName] = {
                                     menuID: addEnabledMenuList(listName)
                                 };
-                                myPlaylist = myPlaylist.concat(response.response);
+                                // myPlaylist = myPlaylist.concat(response.response);
+                                LoadedPlaylists.set(listName, response.response);
                                 console.log('Load %s: %o', listName, response.response);
                             }
                             LoadedCount++;
@@ -259,10 +267,14 @@
             function reloadPage() {
                 myPlaylist = [];
                 shuffleList = [];
+                LoadedPlaylists = new Map();
                 GM_setValue('shuffleList', []);
-                LoadPlaylists(() => {
-                    MakeShuffleList(myPlaylist.length);
-                    NextSong(0);
+                Load(() => {
+                    if (shuffle) {
+                        NextSong(shuffleList[0]);
+                    } else {
+                        NextSong(0);
+                    }
                 });
             }
         }
