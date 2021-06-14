@@ -110,7 +110,7 @@
     var LoadedCount = 0;
     var LoadedPlaylists = new Map();
     var player;
-    var interval;
+    var waitDOMInterval;
     var plBox;
 
     Load();
@@ -122,9 +122,9 @@
         });
 
         //Wait for DOM
-        interval = setInterval(function () {
+        var loadListInterval = setInterval(function () {
             if (Playlists.length <= LoadedCount) {
-                clearInterval(interval);
+                clearInterval(loadListInterval);
 
                 Playlists.forEach((playlist) => {
                     if (LoadedPlaylists.has(playlist.name)) {
@@ -153,7 +153,9 @@
 
                 MakePlaylistUIContainer();
 
-                WaitForDOMLoad();
+                waitDOMInterval = setInterval(function () {
+                    WaitForDOMLoad();
+                }, 500);
                 (callback && typeof (callback) === "function") && callback();
             }
         }, 500);
@@ -291,7 +293,7 @@
             // Google Drive files
             var iframe = document.getElementById('drive-viewer-video-player-object-0');
             if (iframe && 'IFRAME' == iframe.tagName) {
-                clearInterval(interval);
+                clearInterval(waitDOMInterval);
 
                 // Display the thumb video forcely
                 iframe.parentNode.parentNode.childNodes[1].style.visibility = 'hidden';
@@ -328,14 +330,14 @@
         } else {
             // Skip the song if it is on Google Drive and play in the background.
             if ('/embed/' == window.location.pathname && 'hidden' == document.visibilityState) {
-                clearInterval(interval);
+                clearInterval(waitDOMInterval);
                 NextSong(CheckList() + 1);
             }
 
             player = document.getElementsByTagName('video')[0];
             if ('undefined' !== typeof player &&
                 'undefined' !== typeof plBox) {
-                clearInterval(interval);
+                clearInterval(waitDOMInterval);
                 eval(GM_getResourceText('ass'));
                 player.play().then(() => {
                     // Set the start time manually here to prevent YouTube from skipping it when t == 0.
