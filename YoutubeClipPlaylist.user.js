@@ -350,15 +350,15 @@
         if (currentIndex >= 0) {
             DisableAutoVideoPause();
 
-            // Always put currentIndex first in the shuffle list
-            if (shuffle) {
-                if (shuffleList[0] != currentIndex) {
-                    shuffleList.splice(shuffleList.findIndex((element) => element === currentIndex), 1);
-                    shuffleList.unshift(currentIndex);
-                    // console.debug(`Unshift back ${currentIndex}`);
-                }
-                GM_setValue('shuffleList', shuffleList);
-            }
+            // // Always put currentIndex first in the shuffle list
+            // if (shuffle) {
+            //     if (shuffleList[0] != currentIndex) {
+            //         shuffleList.splice(shuffleList.findIndex((element) => element === currentIndex), 1);
+            //         shuffleList.unshift(currentIndex);
+            //         // console.debug(`Unshift back ${currentIndex}`);
+            //     }
+            //     GM_setValue('shuffleList', shuffleList);
+            // }
 
             MakePlaylistUIContent(currentIndex);
 
@@ -411,7 +411,7 @@
         }
 
         function StepShuffle() {
-            shuffleList.append(shuffleList.pop());
+            shuffleList.push(shuffleList.shift());
             GM_setValue('shuffleList', shuffleList);
             NextSong(shuffleList[0]);
         }
@@ -759,6 +759,12 @@
         }
 
         if (UIClick) {
+            // Modify Shuffle List on UI Click
+            if (shuffle) {
+                var indexInShuffleList = shuffleList.findIndex((element) => element === index);
+                shuffleList = shuffleList.slice(indexInShuffleList).concat(shuffleList.slice(0, indexInShuffleList));
+                GM_setValue('shuffleList', shuffleList);
+            }
             console.log(`Next Song ${index} by UI click`);
         } else {
             console.log(`Next Song ${index}`);
