@@ -2,7 +2,7 @@
 // @name         Youtube Clip Playlist
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      10.3
+// @version      11
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @run-at       document-start
@@ -22,17 +22,17 @@
 // @include      https://youtube.googleapis.com/*
 // @include      /^https:\/\/[\w\-]*my\.sharepoint\.com\/.*$/
 // @include      https://onedrive.live.com/*
+// @include      /^https:\/\/twitcasting\.tv\/.*movie.*/
 // @resource     ass https://github.com/jim60105/ASS/raw/master/dist/ass.min.js
 // @resource     playlist https://github.com/jim60105/Playlists/raw/minify/Playlists.jsonc
 // ==/UserScript==
 
 /* 版本更新提要:
+ * v11
+ * -. 支援twitcasting ツイキャス (https://twitcasting.tv/[channel]/movie/[id])
+ *
  * v10
- * 1. 支援OneDrive (支援一般帳戶和企業帳戶)，請將完整網址做為影片ID填入
- * 2. 修正Youtbe換影片時，未正確清空程式參數的問題
- * 3. 修正OneDrive UI
- * (v10.3) 修正ShuffleList UI Click表現
- * (v10.3) 修正PlaylistContainer被重覆初始的問題
+ * -. 支援OneDrive (支援一般帳戶和企業帳戶)，請將完整網址做為影片ID填入
  *
  * v9
  * 1. 增加「右上角選單列」，可以在此切換隨機/不隨機模式
@@ -326,6 +326,12 @@
             if ('/embed/' == window.location.pathname && 'hidden' == document.visibilityState) {
                 clearInterval(waitDOMInterval);
                 NextSong(CheckList() + 1);
+            }
+
+            if ('twitcasting.tv' == window.location.hostname) {
+                document.getElementById('player').classList.remove('vjs-paused');
+                document.getElementById('player').classList.add('vjs-playing');
+                document.getElementById('player').classList.add('vjs-has-started');
             }
 
             player = document.getElementsByTagName('video')[0];
