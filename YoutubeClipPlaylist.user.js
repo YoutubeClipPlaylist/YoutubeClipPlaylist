@@ -2,7 +2,7 @@
 // @name         Youtube Clip Playlist
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      11
+// @version      11.1
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @run-at       document-start
@@ -717,7 +717,8 @@
             // Google Drive iframe, OneDrive, Others
             for (i = 0; i < myPlaylist.length; i++) {
                 if (
-                    (myPlaylist[i][0]) == urlParams.get('v') &&
+                    (myPlaylist[i][0] == urlParams.get('v') ||
+                        myPlaylist[i][0] == window.location.origin + window.location.pathname) &&
                     (myPlaylist[i][1] == urlParams.get('t') ||
                         myPlaylist[i][1] == urlParams.get('start')) &&
                     myPlaylist[i][2] == urlParams.get('end')) {
