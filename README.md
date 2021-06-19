@@ -76,18 +76,21 @@
 
 > 目前非歌曲的內容只有「RadioQTama廣播」，其它人其實是可以省略NotSongs排除
 
-| 說明               | 連結                                                                                           |
-| ------------------ | ---------------------------------------------------------------------------------------------- |
-| 全清單 循序         | <https://www.youtube.com/?startplaylist>                                                         |
-| 全清單 隨機         | <https://www.youtube.com/?startplaylist&shuffle=1>                                               |
-| 久遠たま全歌單循序 | <https://www.youtube.com/?startplaylist&playlistinclude=tama&playlistexclude=NotSongs>           |
-|久遠たま歌單(排除會限)|<https://www.youtube.com/?startplaylist&playlistinclude=tama&playlistexclude=member_NotSongs>|
-| 久遠たま全歌單隨機 | <https://www.youtube.com/?startplaylist&playlistinclude=tama&playlistexclude=NotSongs&shuffle=1> |
-| RadioQTama 廣播    | <https://www.youtube.com/?startplaylist&playlistinclude=RadioQTama>                              |
-| 伊冬ユナ全歌單循序 | <https://www.youtube.com/?startplaylist&playlistinclude=ItouYuna&playlistexclude=NotSongs>           |
-| 伊冬ユナ全歌單隨機 | <https://www.youtube.com/?startplaylist&playlistinclude=ItouYuna&playlistexclude=NotSongs&shuffle=1> |
-| 羽宮くぅ全歌單循序 | <https://www.youtube.com/?startplaylist&playlistinclude=HaneMiya&playlistexclude=NotSongs>           |
-| 羽宮くぅ全歌單隨機 | <https://www.youtube.com/?startplaylist&playlistinclude=HaneMiya&playlistexclude=NotSongs&shuffle=1> |
+| 說明                  | 連結                                                                                             |
+|---------------------|--------------------------------------------------------------------------------------------------|
+| 全清單 循序           | <https://www.youtube.com/?startplaylist>                                                         |
+| 全清單 隨機           | <https://www.youtube.com/?startplaylist&shuffle=1>                                               |
+| 久遠たま全歌單循序      | <https://www.youtube.com/?startplaylist&playlistinclude=tama&playlistexclude=NotSongs>           |
+| 久遠たま歌單(排除會限)  | <https://www.youtube.com/?startplaylist&playlistinclude=tama&playlistexclude=member_NotSongs>    |
+| 久遠たま全歌單隨機      | <https://www.youtube.com/?startplaylist&playlistinclude=tama&playlistexclude=NotSongs&shuffle=1> |
+| 久遠たまtwitcasting歌單 | <https://www.youtube.com/?startplaylist&playlistinclude=twitcasting>                             |
+| RadioQTama 廣播       | <https://www.youtube.com/?startplaylist&playlistinclude=RadioQTama>                              |
+| 須多夜花全歌單循序    | <https://www.youtube.com/?startplaylist&playlistinclude=yoruka>                                  |
+| 須多夜花全歌單隨機    | <https://www.youtube.com/?startplaylist&playlistinclude=yoruka&shuffle=1>                        |
+| 伊冬ユナ全歌單循序      | <https://www.youtube.com/?startplaylist&playlistinclude=ItouYuna>                                |
+| 伊冬ユナ全歌單隨機      | <https://www.youtube.com/?startplaylist&playlistinclude=ItouYuna&shuffle=1>                      |
+| 羽宮くぅ全歌單循序      | <https://www.youtube.com/?startplaylist&playlistinclude=HaneMiya>                                |
+| 羽宮くぅ全歌單隨機      | <https://www.youtube.com/?startplaylist&playlistinclude=HaneMiya&shuffle=1>                      |
 
 ## TamperMonkey UI選單
 
@@ -105,8 +108,8 @@
 
 ## 歌單(Playlist)
 
-目前內建的是**久遠たま、伊冬ユナ、羽宮くぅ**的歌單\
-久遠たま的歌單由[琳](https://twitter.com/jim60105)維護；伊冬ユナ和羽宮くぅ的歌單由[小飯](https://twitter.com/LittleRice1007)維護\
+目前內建的是**久遠たま、須多夜花、伊冬ユナ、羽宮くぅ**的歌單\
+久遠たま、須多夜花的歌單由[琳](https://twitter.com/jim60105)維護；伊冬ユナ和羽宮くぅ的歌單由[小飯](https://twitter.com/LittleRice1007)維護\
 如果想要參與編寫，請參考[此repo](https://github.com/jim60105/Playlists)的合作模式
 
 ### 歌單格式
