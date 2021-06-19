@@ -1,12 +1,5 @@
 ﻿# Youtube 影片截選播放清單 (Youtube Clip Playlist)
 
-## 2021/3/9 警告
-
-> > Youtube改版了新功能，現在會自動清空所有非正規網址參數\
-> > 我已在v9.3修正了這問題，運用到了一個在TamperMonkey v4.12.6121引入的新api\
-> > 請Chrome用戶改裝右側的紅色**Tampermonkey Beta**\
-> > 直到v4.12版本成為Chrome的正式版為止
-
 [![pic](pic/demo.png)](https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html)
 [![GitHub tag](https://img.shields.io/github/tag/jim60105/YoutubeClipPlaylist?style=for-the-badge)](https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js)
 [![GitHub last commit (branch)](https://img.shields.io/github/last-commit/jim60105/YoutubeClipPlaylist?label=LAST%20UPDATE&style=for-the-badge)](https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js)
@@ -51,9 +44,19 @@
      playlistinclude=quon &
      playlistexclude=member
 
+## 其它網址格式 (目前支援OneDrive、twitcasting)
+
+其它格式是以原網址直接當做VideoID傳入
+
+    https://twitcasting.tv/quon01tama/movie/688324697
+     t=1470 &
+     end=1653 &
+     shuffle=1 &
+     playlistinclude=twitcasting
+
 ## 參數
 
-- VideoID: 在 Youtube 原生為`v`參數，在 Google Drive 是在路徑中
+- VideoID: 在 Youtube 原生為`v`參數；Google Drive 是在路徑中；其它為原始網址
 - `t`: 影片播放開始時間
 - `end`: 設定在指定秒數停止播放影片
 - `shuffle`: Playlist 隨機播放，1為啟用；0為禁用(等同不傳入)
