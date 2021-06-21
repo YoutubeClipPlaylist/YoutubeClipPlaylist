@@ -2,7 +2,7 @@
 // @name         Youtube Clip Playlist
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      11.1
+// @version      11.2
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @run-at       document-start
@@ -28,6 +28,8 @@
 // ==/UserScript==
 
 /* 版本更新提要:
+ * v11.2 支援twitcasting的多影片存檔播放
+ *
  * v11
  * -. 支援twitcasting ツイキャス (https://twitcasting.tv/[channel]/movie/[id])
  *
@@ -153,9 +155,29 @@
                     return;
                 }
 
-                waitDOMInterval = setInterval(function () {
-                    WaitForDOMLoad();
-                }, 500);
+                if ('twitcasting.tv' == window.location.hostname) {
+                    // Change twitcasting archive video through hash
+                    let videoNum = parseInt(location.hash.replace('#', ''));
+                    if (!isNaN(videoNum) && videoNum > 0) {
+                        let twitcastingChangeVideoInterval = setInterval(function () {
+                            let videoList = document.getElementsByClassName('vjs-playlist-item');
+                            if (videoList.length > 0) {
+                                clearInterval(twitcastingChangeVideoInterval);
+                                if (videoList.length >= videoNum) {
+                                    videoList[videoNum - 1].click();
+                                    // WaitDOM after changed video
+                                    waitDOMInterval = setInterval(function () {
+                                        WaitForDOMLoad();
+                                    }, 500);
+                                }
+                            }
+                        }, 500);
+                    }
+                } else {
+                    waitDOMInterval = setInterval(function () {
+                        WaitForDOMLoad();
+                    }, 500);
+                }
                 (callback && typeof (callback) === "function") && callback();
             }
         }, 500);
@@ -328,15 +350,17 @@
                 NextSong(CheckList() + 1);
             }
 
-            if ('twitcasting.tv' == window.location.hostname) {
-                document.getElementById('player').classList.remove('vjs-paused');
-                document.getElementById('player').classList.add('vjs-playing');
-                document.getElementById('player').classList.add('vjs-has-started');
-            }
-
             player = document.getElementsByTagName('video')[0];
             if ('undefined' !== typeof player) {
                 clearInterval(waitDOMInterval);
+
+                // Change twitcasting CSS to playing style
+                if ('twitcasting.tv' == window.location.hostname) {
+                    document.getElementById('player').classList.remove('vjs-paused');
+                    document.getElementById('player').classList.add('vjs-playing');
+                    document.getElementById('player').classList.add('vjs-has-started');
+                }
+
                 eval(GM_getResourceText('ass'));
                 player.play().then(() => {
                     // Set the start time manually here to prevent YouTube from skipping it when t == 0.
