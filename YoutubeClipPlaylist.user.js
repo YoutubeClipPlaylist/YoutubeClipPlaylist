@@ -2,7 +2,7 @@
 // @name         Youtube Clip Playlist
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      11.2
+// @version      11.3
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @run-at       document-start
@@ -158,29 +158,35 @@
                 if ('twitcasting.tv' == window.location.hostname) {
                     // Change twitcasting archive video through hash
                     let videoNum = parseInt(location.hash.replace('#', ''));
-                    if (!isNaN(videoNum) && videoNum > 0) {
-                        let twitcastingChangeVideoInterval = setInterval(function () {
-                            let videoList = document.getElementsByClassName('vjs-playlist-item');
-                            if (videoList.length > 0) {
-                                clearInterval(twitcastingChangeVideoInterval);
-                                if (videoList.length >= videoNum) {
-                                    videoList[videoNum - 1].click();
-                                    // WaitDOM after changed video
-                                    waitDOMInterval = setInterval(function () {
-                                        WaitForDOMLoad();
-                                    }, 500);
-                                }
-                            }
-                        }, 500);
+
+                    if (isNaN(videoNum) || videoNum <= 0) {
+                        doWaitDOM();
                     }
-                } else {
-                    waitDOMInterval = setInterval(function () {
-                        WaitForDOMLoad();
+
+                    let twitcastingChangeVideoInterval = setInterval(function () {
+                        let videoList = document.getElementsByClassName('vjs-playlist-item');
+                        if (videoList.length > 0) {
+                            clearInterval(twitcastingChangeVideoInterval);
+                            if (videoList.length >= videoNum) {
+                                videoList[videoNum - 1].click();
+                                // WaitDOM after changed video
+                                doWaitDOM();
+                            }
+                        }
                     }, 500);
+                } else {
+                    doWaitDOM();
                 }
-                (callback && typeof (callback) === "function") && callback();
             }
         }, 500);
+
+        function doWaitDOM() {
+            waitDOMInterval = setInterval(function () {
+                WaitForDOMLoad();
+            }, 500);
+            (callback && typeof (callback) === "function") && callback();
+            return;
+        }
 
         function CheckAndLoadPlaylist(listName, tags, route) {
             var flag = false;
@@ -823,7 +829,7 @@
                 });
             }
             GM_setValue('params', urlParams.toString());
-            document.location.href = `${nextSong[0].split('?')[0]}?${urlParams.toString()}${url.hash}`;
+            document.location.href = `${url.origin}${url.pathname}?${urlParams.toString()}${url.hash}`;
         } else {
             // ID
             if (nextSong[0].length > 20) {
