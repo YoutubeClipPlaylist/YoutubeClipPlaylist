@@ -2,7 +2,7 @@
 // @name         Youtube Clip Playlist
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      11.3
+// @version      11.4
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @run-at       document-start
@@ -28,10 +28,9 @@
 // ==/UserScript==
 
 /* 版本更新提要:
- * v11.2 支援twitcasting的多影片存檔播放
- *
  * v11
- * -. 支援twitcasting ツイキャス (https://twitcasting.tv/[channel]/movie/[id])
+ * 1. 支援twitcasting ツイキャス (https://twitcasting.tv/[channel]/movie/[id])
+ * 2. 支援twitcasting的多影片存檔播放
  *
  * v10
  * -. 支援OneDrive (支援一般帳戶和企業帳戶)，請將完整網址做為影片ID填入
@@ -746,9 +745,9 @@
         } else {
             // Google Drive iframe, OneDrive, Others
             for (i = 0; i < myPlaylist.length; i++) {
-                if (
-                    (myPlaylist[i][0] == urlParams.get('v') ||
-                        myPlaylist[i][0] == window.location.origin + window.location.pathname) &&
+                if ((myPlaylist[i][0] == urlParams.get('v') ||
+                        myPlaylist[i][0] == window.location.origin + window.location.pathname ||
+                        myPlaylist[i][0] == window.location.origin + window.location.pathname + location.hash) &&
                     (myPlaylist[i][1] == urlParams.get('t') ||
                         myPlaylist[i][1] == urlParams.get('start')) &&
                     myPlaylist[i][2] == urlParams.get('end')) {
