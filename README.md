@@ -12,11 +12,6 @@
 > <https://support.mozilla.org/en-US/kb/block-autoplay>
 
 1. 安裝瀏覧器擴充: [Tampermonkey](https://www.tampermonkey.net/)
-    > **2021/3/9 警告**\
-    > Youtube改版了新功能，現在會自動清空所有非正規網址參數\
-    > 我已在v9.3修正了這問題，運用到了一個在TamperMonkey **v4.12.6121**引入的新api\
-    > 請**Chrome**用戶改裝右側的紅色**Tampermonkey Beta**\
-    > *直到v4.12.6121版本成為Chrome的正式版為止*
 1. 安裝腳本: [Youtube Clip Playlist](https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js)
 1. 修改 Tampermonkey 設定，每次播放都重載歌單
     1. 一般 → 設定模式: 進階
