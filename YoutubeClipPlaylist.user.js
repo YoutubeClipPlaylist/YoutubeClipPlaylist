@@ -816,14 +816,14 @@
 
         if (nextSong[0].indexOf('http') >= 0) {
             // URL
+            var url = new URL(nextSong[0]);
             if (nextSong[0].indexOf('?' > 0)) {
-                var url = new URL(nextSong[0]);
                 url.searchParams.forEach(function (value, key) {
                     urlParams.set(key, value);
                 });
             }
             GM_setValue('params', urlParams.toString());
-            document.location.href = `${nextSong[0].split('?')[0]}?${urlParams.toString()}`;
+            document.location.href = `${nextSong[0].split('?')[0]}?${urlParams.toString()}${url.hash}`;
         } else {
             // ID
             if (nextSong[0].length > 20) {
