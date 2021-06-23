@@ -2,7 +2,7 @@
 // @name         Youtube Clip Playlist
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      11.4
+// @version      11.5
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @run-at       document-start
@@ -105,8 +105,13 @@
         GM_unregisterMenuCommand(MenuLists.shuffle.menuID);
         shuffle ^= true;
         addShuffleMenu();
-        GM_setValue('shuffleList', []);
-        NextSong(0);
+        if (shuffle) {
+            shuffleList = MakeShuffleList(myPlaylist.length)
+            GM_setValue('shuffleList', shuffleList);
+            NextSong(shuffleList[0]);
+        } else {
+            NextSong(0);
+        }
     }
 
     var Playlists = JSON.parse(GM_getResourceText('playlist'));
