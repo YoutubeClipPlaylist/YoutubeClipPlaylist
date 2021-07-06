@@ -72,7 +72,7 @@
 
 ![pic](pic/bookmark.png)
 
-> 目前非歌曲的內容只有「RadioQTama廣播」，其它人其實是可以省略NotSongs排除
+> 目前非歌曲的內容只有「RadioQTama廣播」，其它人可以省略NotSongs排除
 
 | 說明                  | 連結                                                                                             |
 |---------------------|--------------------------------------------------------------------------------------------------|
@@ -85,10 +85,16 @@
 | RadioQTama 廣播       | <https://www.youtube.com/?startplaylist&playlistinclude=RadioQTama>                              |
 | 須多夜花全歌單循序    | <https://www.youtube.com/?startplaylist&playlistinclude=yoruka>                                  |
 | 須多夜花全歌單隨機    | <https://www.youtube.com/?startplaylist&playlistinclude=yoruka&shuffle=1>                        |
+| 間取かける歌單循序       | <https://www.youtube.com/?startplaylist&playlistinclude=kakeru>                                  |
+| 間取かける歌單隨機       | <https://www.youtube.com/?startplaylist&playlistinclude=kakeru&shuffle=1>                        |
 | 伊冬ユナ全歌單循序      | <https://www.youtube.com/?startplaylist&playlistinclude=ItouYuna>                                |
 | 伊冬ユナ全歌單隨機      | <https://www.youtube.com/?startplaylist&playlistinclude=ItouYuna&shuffle=1>                      |
 | 羽宮くぅ全歌單循序      | <https://www.youtube.com/?startplaylist&playlistinclude=HaneMiya>                                |
 | 羽宮くぅ全歌單隨機      | <https://www.youtube.com/?startplaylist&playlistinclude=HaneMiya&shuffle=1>                      |
+| 町田ちま全歌單循序      | <https://www.youtube.com/?startplaylist&playlistinclude=MachitaChima>                            |
+| 町田ちま全歌單隨機      | <https://www.youtube.com/?startplaylist&playlistinclude=MachitaChima&shuffle=1>                  |
+| 牧野白全歌單循序      | <https://www.youtube.com/?startplaylist&playlistinclude=MakinoShiro>                             |
+| 牧野白全歌單隨機      | <https://www.youtube.com/?startplaylist&playlistinclude=MakinoShiro&shuffle=1>                   |
 
 ## TamperMonkey UI選單
 
