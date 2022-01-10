@@ -2,7 +2,7 @@
 // @name         Youtube Clip Playlist
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      11.6
+// @version      11.7
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @run-at       document-start
@@ -813,6 +813,11 @@
         if (myPlaylist.length == 0) {
             console.error('No playlists!');
             return;
+        }
+
+        if (index >= myPlaylist.length) {
+            urlParams.append('startplaylist', 1);
+            index = 0;
         }
 
         // Send "next song" outside the iframe
