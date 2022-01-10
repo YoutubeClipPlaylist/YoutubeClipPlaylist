@@ -2,7 +2,7 @@
 // @name         Youtube Clip Playlist
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      11.5
+// @version      11.6
 // @author       琳(jim60105)
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @run-at       document-start
@@ -69,8 +69,8 @@
         GM_registerMenuCommand('️🔛Start Playlist', () => {
             urlParams.append('startplaylist', 1);
             console.debug(urlParams.toString());
-            document.location.href = 'https://www.youtube.com/?startplaylist'
-        }, 'p')
+            document.location.href = 'https://www.youtube.com/?startplaylist';
+        }, 'p');
     }
 
     var DisabledPlaylists = GM_getValue('disabledLists', []);
@@ -88,11 +88,11 @@
             console.debug('Shuffle List: %o', shuffleList);
             MenuLists.shuffle = {
                 menuID: GM_registerMenuCommand('🔀Shuffle', toggleShuffle, 's')
-            }
+            };
         } else {
             MenuLists.shuffle = {
                 menuID: GM_registerMenuCommand('🔃Playing', toggleShuffle, 's')
-            }
+            };
         }
     }
 
@@ -106,7 +106,7 @@
         shuffle ^= true;
         addShuffleMenu();
         if (shuffle) {
-            shuffleList = MakeShuffleList(myPlaylist.length)
+            shuffleList = MakeShuffleList(myPlaylist.length);
             GM_setValue('shuffleList', shuffleList);
             NextSong(shuffleList[0]);
         } else {
@@ -138,7 +138,7 @@
                     if (LoadedPlaylists.has(playlist.name)) {
                         myPlaylist = myPlaylist.concat(LoadedPlaylists.get(playlist.name));
                     }
-                })
+                });
 
                 if (urlParams.has('startplaylist') || shuffleList.length != myPlaylist.length) {
                     shuffleList = MakeShuffleList(myPlaylist.length);
@@ -272,7 +272,7 @@
                         console.log(`Disabled: ${listName}`);
                         reloadPage();
                     }
-                )
+                );
             }
 
             function addDisabledMenuList(listName) {
@@ -295,7 +295,7 @@
                         console.log(`Enabled: ${listName}`);
                         reloadPage();
                     }
-                )
+                );
             }
 
             function reloadPage() {
@@ -362,6 +362,12 @@
 
             player = document.getElementsByTagName('video')[0];
             if ('undefined' !== typeof player) {
+                // Wait until the player is ready.
+                if (player.readyState !== 1
+                    && player.readyState !== 4) {
+                    player.pause();
+                    return;
+                }
                 clearInterval(waitDOMInterval);
 
                 // Change twitcasting CSS to playing style
@@ -372,17 +378,30 @@
                 }
 
                 eval(GM_getResourceText('ass'));
-                player.play().then(() => {
-                    // Set the start time manually here to prevent YouTube from skipping it when t == 0.
-                    if (urlParams.has('t')) {
-                        player.currentTime = urlParams.get('t');
-                    }
 
+                // Set the start time manually here:
+                // - Youtube skipped it when t == 0, and start from last history.
+                // - Onedrive always go to 0.
+                if (urlParams.has('t')) {
+                    // Onedrive use videojs, and it cannot set currentTime directly on the element.
+                    if (typeof videojs === 'function') {
+                        let vjsPlayers = videojs.getPlayers();
+                        let vjsPlayer = vjsPlayers[Object.keys(vjsPlayers)[0]];
+                        vjsPlayer.currentTime(~~urlParams.get('t'));
+                        vjsPlayer.play();
+                    } else {
+                        player.currentTime = ~~urlParams.get('t');
+                        player.play();
+                    }
+                }
+
+                // Callbacks are too hard to handle, just wait 1 second for the player to start playing.
+                setTimeout(() => {
                     DoOnVideoChange();
 
                     // For situations where the webpage does not reload, such as clicking a link on YouTube.
                     player.onloadedmetadata = DoOnVideoChange;
-                });
+                }, 1000);
             }
         }
     }
@@ -751,8 +770,8 @@
             // Google Drive iframe, OneDrive, Others
             for (i = 0; i < myPlaylist.length; i++) {
                 if ((myPlaylist[i][0] == urlParams.get('v') ||
-                        myPlaylist[i][0] == window.location.origin + window.location.pathname ||
-                        myPlaylist[i][0] == window.location.origin + window.location.pathname + location.hash) &&
+                    myPlaylist[i][0] == window.location.origin + window.location.pathname ||
+                    myPlaylist[i][0] == window.location.origin + window.location.pathname + location.hash) &&
                     (myPlaylist[i][1] == urlParams.get('t') ||
                         myPlaylist[i][1] == urlParams.get('start')) &&
                     myPlaylist[i][2] == urlParams.get('end')) {
