@@ -2,8 +2,9 @@
 // @name         Youtube Clip Playlist
 // @updateURL    https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
 // @downloadURL  https://github.com/jim60105/YoutubeClipPlaylist/raw/master/YoutubeClipPlaylist.user.js
-// @version      11.7
+// @version      11.8
 // @author       琳(jim60105)
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
 // @homepage     https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html
 // @run-at       document-start
 // @grant        GM_addElement
