@@ -13,11 +13,11 @@
         "service_worker": "background.js"
     },
     "action": {
-        "default_icon": "pic/icon64.png",
+        "default_icon": "icon64.png",
         "default_popup": "popup.html" // optional
     },
     "icons": {
-        "64": "pic/icon64.png"
+        "64": "icon64.png"
     },
     // https://developer.chrome.com/docs/extensions/mv3/content_scripts/
     "content_scripts": [{

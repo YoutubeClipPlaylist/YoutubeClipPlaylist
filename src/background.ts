@@ -1,5 +1,5 @@
 (function () {
-    let urlParams;
+    let urlParams:URLSearchParams;
     let DisabledPlaylists = [];
     let MenuLists = {};
     let shuffle = false;
@@ -27,14 +27,16 @@
             }
         }
 
-        async function GetParams(_params) {
-            _result = await chrome.storage.local.get(['params']);
+        async function GetParams(_params:string|undefined) {
+            let _result = await chrome.storage.local.get(['params']);
             chrome.storage.local.remove(['params']);
             return new URLSearchParams(new URL(_result.params ?? _params).search);
         }
 
-        const hasParam = _urlParams => _urlParams.has('end')
-                                    || _urlParams.has('startplaylist');
+        function hasParam(_urlParams:URLSearchParams) {
+            return _urlParams.has('end')
+                || _urlParams.has('startplaylist');
+        }
 
         function getStorageLists() {
             let promises = [
@@ -48,7 +50,7 @@
     });
 
     function Load() {
-        shuffle = urlParams.has('shuffle') && urlParams.get('shuffle') != 0;
+        shuffle = urlParams.has('shuffle') && urlParams.get('shuffle') !== '0';
         console.log('Shuffle: %o', shuffle);
 
         console.log('START!!');

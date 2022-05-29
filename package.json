@@ -1,0 +1,28 @@
+{
+  "name": "youtube-clip-playlist",
+  "version": "1.0.0",
+  "description": "Youtube影片截選播放清單。此腳本專門設計來聽Vtuber的歌枠",
+  "main": "background.js",
+  "scripts": {
+    "build": "webpack --config webpack/webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jim60105/YoutubeClipPlaylist.git"
+  },
+  "keywords": [],
+  "author": "jim60105",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jim60105/YoutubeClipPlaylist/issues"
+  },
+  "homepage": "https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html",
+  "devDependencies": {
+    "@types/chrome": "^0.0.188",
+    "copy-webpack-plugin": "^11.0.0",
+    "ts-loader": "^9.3.0",
+    "typescript": "^4.7.2",
+    "webpack": "^5.72.1",
+    "webpack-cli": "^4.9.2"
+  }
+}
