@@ -16,35 +16,34 @@
         .then(response => response.json())
         .then(json => Playlists = json);
 
-    chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-        if (message
-            && message === 'Start Youtube Clip Playlist!') {
-
+    chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
+        if (message && message === 'Start Youtube Clip Playlist!') {
             console.log('Message received from contentScript.js: ' + message);
 
-            const GetParams = _params =>
-                chrome.storage.local.get(['params'])
-                    .then(_result => {
-                        chrome.storage.local.remove(['params']);
-                        return new URLSearchParams(new URL(_result.params ?? _params).search);
-                    });
+            urlParams = await GetParams(sender.url);
+            if (hasParam(urlParams)) {
+                await getStorageLists();
+                Load();
+            }
+        }
 
-            const hasParam = _urlParams => _urlParams.has('end') || _urlParams.has('startplaylist');
+        async function GetParams(_params) {
+            _result = await chrome.storage.local.get(['params']);
+            chrome.storage.local.remove(['params']);
+            return new URLSearchParams(new URL(_result.params ?? _params).search);
+        }
 
-            GetParams(sender.url)
-                .then(_urlParams => {
-                    urlParams = _urlParams;
-                    if (hasParam(_urlParams)) {
-                        let promises = [
-                            chrome.storage.local.get(['disabledLists'])
-                                .then(_result => DisabledPlaylists = _result.disabledLists),
-                            chrome.storage.local.get(['shuffleList'])
-                                .then(_result => shuffleList = _result.shuffleList)
-                        ];
-                        Promise.all(promises)
-                            .then(Load);
-                    }
-                });
+        const hasParam = _urlParams => _urlParams.has('end')
+                                    || _urlParams.has('startplaylist');
+
+        function getStorageLists() {
+            let promises = [
+                chrome.storage.local.get(['disabledLists'])
+                    .then(_result => DisabledPlaylists = _result.disabledLists),
+                chrome.storage.local.get(['shuffleList'])
+                    .then(_result => shuffleList = _result.shuffleList)
+            ];
+            return Promise.all(promises);
         }
     });
 
