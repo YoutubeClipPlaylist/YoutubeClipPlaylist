@@ -3,11 +3,16 @@
     "description": "這是截選播放清單功能，專門設計來聽Vtuber的歌枠",
     "version": "1.0",
     "manifest_version": 3,
-    "permissions": ["storage"],
+    "permissions": [
+        "storage",
+        "tabs",
+        "unlimitedStorage"
+    ],
     // https://developer.chrome.com/docs/extensions/mv3/match_patterns/
     "host_permissions": [
-        "https://github.com/jim60105/Playlists/raw/minify/Playlists.jsonc",
-        "https://github.com/jim60105/ASS/raw/master/dist/ass.min.js"
+        "https://github.com/*",
+        "https://gitlab.com/*",
+        "https://*.githubusercontent.com/*"
     ],
     "background": {
         "service_worker": "background.js"

@@ -18,11 +18,17 @@
   },
   "homepage": "https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html",
   "devDependencies": {
-    "@types/chrome": "^0.0.188",
+    "@types/chrome": "^0.0.190",
+    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/parser": "^5.27.1",
     "copy-webpack-plugin": "^11.0.0",
+    "eslint": "^8.17.0",
     "ts-loader": "^9.3.0",
     "typescript": "^4.7.2",
     "webpack": "^5.72.1",
     "webpack-cli": "^4.9.2"
+  },
+  "dependencies": {
+    "assjs": "^0.0.11"
   }
 }
