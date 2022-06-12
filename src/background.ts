@@ -2,9 +2,8 @@
 import { IPlaylist } from './Models/IPlaylist';
 import { IMessage } from './Models/Message';
 import * as UrlHelper from './UrlHelper';
-import { urlParams } from './UrlHelper';
+import { urlParams, url } from './UrlHelper';
 
-let url: URL;
 let DisabledPlaylists: string[] = [];
 let shuffle = false;
 let shuffleList: number[] = [];
@@ -12,15 +11,16 @@ let shuffleList: number[] = [];
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let myPlaylist: any[][] = [];
 let Playlists: IPlaylist[] = [];
-const LoadedPlaylists = new Map();
 
-function fetchPlaylists() {
-    fetch('https://github.com/jim60105/Playlists/raw/minify/Playlists.jsonc')
-        .then(response => response.json())
-        .then(json => Playlists = json);
+async function fetchPlaylists(): Promise<unknown> {
+    const response = await fetch('https://github.com/jim60105/Playlists/raw/minify/Playlists.jsonc');
+    const json = await response.json();
+    return Playlists = json;
 }
 
 async function LoadPlayLists() {
+    const LoadedPlaylists = new Map();
+
     function getStorageLists(): Promise<unknown[]> {
         const promises = [
             chrome.storage.local.get({ disabledLists: [] })
@@ -88,6 +88,9 @@ async function LoadPlayLists() {
     }
 
     async function LoadAllPlaylists(): Promise<void[]> {
+        if (!Playlists || Playlists.length === 0)
+            await fetchPlaylists();
+
         const promises: Promise<void>[] = [];
 
         Playlists.forEach((playlist) => {
@@ -149,23 +152,34 @@ async function LoadPlayLists() {
 }
 
 function CheckList(): number {
-    urlParams.forEach(function (value, key) {
-        switch (key) {
-            case 't':
-                //Youtube有時會自動在t後面帶上個s(秒)，在這裡把它去掉
-                urlParams.set(key, value.replace('s', ''));
-                break;
-        }
-    });
-    console.debug(urlParams.toString());
+    UrlHelper.CleanUpParameters();
 
+    /**
+     * ["VideoID", StartTime, EndTime, "Title"]
+     * VideoID: 必須用引號包住，為字串型態。
+     * StartTime: 只能是非負數。如果要從頭播放，輸入0
+     * EndTime: 只能是非負數。如果要播放至尾，輸入0
+     * Title: 必須用引號包住，為字串型態
+     */
     //Check myPlaylist
     let i = -1;
     let flag = false;
+    const nowPlaying = {
+        v: urlParams.get('v'),
+        t: urlParams.get('t'),
+        end: urlParams.get('end'),
+        start: urlParams.get('start')
+    };
+
     if (url.pathname.match(/^\/watch$/i)) {
         // Youtube
         for (i = 0; i < myPlaylist.length; i++) {
-            if (myPlaylist[i][0] == urlParams.get('v') && myPlaylist[i][1] == urlParams.get('t') && myPlaylist[i][2] == urlParams.get('end')) {
+            // VideoId
+            if (myPlaylist[i][0] == nowPlaying.v
+                // StartTime
+                && myPlaylist[i][1] == nowPlaying.t
+                // EndTime
+                && myPlaylist[i][2] == nowPlaying.end) {
                 flag = true;
                 break;
             }
@@ -173,19 +187,26 @@ function CheckList(): number {
     } else {
         // Google Drive iframe, OneDrive, Others
         for (i = 0; i < myPlaylist.length; i++) {
-            if ((myPlaylist[i][0] == urlParams.get('v') ||
-                myPlaylist[i][0] == url.origin + url.pathname ||
-                myPlaylist[i][0] == url.origin + url.pathname + url.hash) &&
-                (myPlaylist[i][1] == urlParams.get('t') ||
-                    myPlaylist[i][1] == urlParams.get('start')) &&
-                myPlaylist[i][2] == urlParams.get('end')) {
+            // VideoId
+            if ((myPlaylist[i][0] == nowPlaying.v
+                || myPlaylist[i][0] == url.origin + url.pathname
+                || myPlaylist[i][0] == url.origin + url.pathname + url.hash)
+                // StartTime
+                && (myPlaylist[i][1] == nowPlaying.t
+                    || myPlaylist[i][1] == nowPlaying.start)
+                // EndTime
+                && myPlaylist[i][2] == nowPlaying.end) {
                 flag = true;
                 break;
             }
         }
     }
     if (flag) {
-        console.log('Playing on Playlist No.%d', i);
+        console.log(`Playing on Playlist No.${i}`);
+        console.log(`Name : ${myPlaylist[i][3]}`);
+        console.log(`URL  : ${myPlaylist[i][0]}`);
+        console.log(`Start: ${myPlaylist[i][1]}`);
+        console.log(`End  : ${myPlaylist[i][2]}`);
     } else {
         console.log('Not playing in the playlist.');
         i = -1;
@@ -237,15 +258,15 @@ async function NextSong(index: number, tabId: number, UIClick = false) {
     urlParams.set('end', nextSong[2]);
 
     if (nextSong[0].indexOf('http') >= 0) {
-        // URL
-        const url = new URL(nextSong[0]);
+        // URL (Onedrive)
+        const _url = new URL(nextSong[0]);
         if (nextSong[0].indexOf('?') > 0) {
-            url.searchParams.forEach(function (value, key) {
+            _url.searchParams.forEach(function (value, key) {
                 urlParams.set(key, value);
             });
         }
         await UrlHelper.SaveToStorage();
-        chrome.tabs.update(tabId, { url: `${url.origin}${url.pathname}?${urlParams.toString()}${url.hash}` });
+        chrome.tabs.update(tabId, { url: `${_url.origin}${_url.pathname}?${urlParams.toString()}${_url.hash}` });
     } else {
         await UrlHelper.SaveToStorage();
         // ID

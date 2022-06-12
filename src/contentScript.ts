@@ -1,6 +1,6 @@
 import { Message } from './Models/Message';
 import * as UrlHelper from './UrlHelper';
-import { urlParams } from './UrlHelper';
+import { urlParams, url } from './UrlHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const videojs: any;
@@ -47,7 +47,7 @@ declare const ASS: any;
         // Google Drive files in iframe
         if (window.location.pathname.match(/^\/file\/d\/.*\/view$/i)) {
             const iframe = await elementReady('#drive-viewer-video-player-object-0') as HTMLIFrameElement;
-            // Display the thumb video forcely
+            // Forcibly display the thumbnail video
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             (iframe.parentNode!.parentNode!.childNodes[1]! as HTMLImageElement).style.visibility = 'hidden';
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -94,7 +94,7 @@ declare const ASS: any;
         player = await elementReady('video') as HTMLVideoElement;
         return new Promise((resolve, reject) => {
             const checkPlayerReadyState = setInterval(() => {
-                player.pause();
+                // player.pause();
                 if (player.readyState === 1
                     || player.readyState === 4) {
                     clearInterval(checkPlayerReadyState);
@@ -486,8 +486,7 @@ declare const ASS: any;
     //     await ChangeTwitcastingArchiveVideoThroughHash();
     // }
 
-    const url = window.location.href;
-    await UrlHelper.prepareUrlParams(url);
+    await UrlHelper.prepareUrlParams(window.location.href);
 
     /* 
     * State 0: init
