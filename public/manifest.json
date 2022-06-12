@@ -1,4 +1,3 @@
-// https://developer.chrome.com/docs/extensions/mv3/manifest/
 {
     "name": "Youtube影片截選播放清單 (Youtube Clip Playlist)",
     "description": "這是截選播放清單功能，專門設計來聽Vtuber的歌枠",
@@ -10,7 +9,6 @@
         "activeTab",
         "unlimitedStorage"
     ],
-    // https://developer.chrome.com/docs/extensions/mv3/match_patterns/
     "host_permissions": [
         "https://github.com/*",
         "https://gitlab.com/*",
@@ -33,17 +31,16 @@
         "48": "icon48.png",
         "128": "icon128.png"
     },
-    // https://developer.chrome.com/docs/extensions/mv3/content_scripts/
     "content_scripts": [{
             "matches": [
                 "https://www.youtube.com/*",
                 "https://drive.google.com/*",
-                // "https://youtube.googleapis.com/*",
+                "https://youtube.googleapis.com/*",
                 "https://*.sharepoint.com/*",
                 "https://onedrive.live.com/*",
                 "https://twitcasting.tv/*"
             ],
-            "run_at": "document_start", //"document_idle", "document_start", "document_end"
+            "run_at": "document_start",
             "match_origin_as_fallback": true,
             "js": ["contentScript.js"]
         },
@@ -51,12 +48,12 @@
             "matches": [
                 "https://www.youtube.com/*",
                 "https://drive.google.com/*",
-                // "https://youtube.googleapis.com/*",
+                "https://youtube.googleapis.com/*",
                 "https://*.sharepoint.com/*",
                 "https://onedrive.live.com/*",
                 "https://twitcasting.tv/*"
             ],
-            "run_at": "document_idle", //"document_idle", "document_start", "document_end"
+            "run_at": "document_idle",
             "match_origin_as_fallback": true,
             "js": ["ass.min.js"]
         }

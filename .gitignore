@@ -258,3 +258,6 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+*.crx
+*.pem
+dist.zip
