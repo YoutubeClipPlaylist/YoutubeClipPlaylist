@@ -528,13 +528,6 @@ declare const ASS: any;
 
         await SetTheStartTimeManually();
 
-        const tabId = (await chrome.tabs.query({ active: true, currentWindow: true }))[0].id ?? 0;
-        // Load ASS js
-        await chrome.scripting.executeScript({
-            target: { tabId: tabId },
-            files: ['ass.min.js'],
-        });
-
         await DoOnVideoChange();
 
         // For situations where the webpage does not reload, such as clicking a link on YouTube.

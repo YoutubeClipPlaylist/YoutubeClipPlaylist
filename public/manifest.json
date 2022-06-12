@@ -6,6 +6,7 @@
     "permissions": [
         "storage",
         "tabs",
+        "activeTab",
         "unlimitedStorage"
     ],
     // https://developer.chrome.com/docs/extensions/mv3/match_patterns/
@@ -26,16 +27,30 @@
     },
     // https://developer.chrome.com/docs/extensions/mv3/content_scripts/
     "content_scripts": [{
-        "matches": [
-            "https://www.youtube.com/*",
-            "https://drive.google.com/*",
-            // "https://youtube.googleapis.com/*",
-            "https://*.sharepoint.com/*",
-            "https://onedrive.live.com/*",
-            "https://twitcasting.tv/*"
-        ],
-        "run_at": "document_start", //"document_idle", "document_start", "document_end"
-        "match_origin_as_fallback": true,
-        "js": ["contentScript.js"]
-    }]
+            "matches": [
+                "https://www.youtube.com/*",
+                "https://drive.google.com/*",
+                // "https://youtube.googleapis.com/*",
+                "https://*.sharepoint.com/*",
+                "https://onedrive.live.com/*",
+                "https://twitcasting.tv/*"
+            ],
+            "run_at": "document_start", //"document_idle", "document_start", "document_end"
+            "match_origin_as_fallback": true,
+            "js": ["contentScript.js"]
+        },
+        {
+            "matches": [
+                "https://www.youtube.com/*",
+                "https://drive.google.com/*",
+                // "https://youtube.googleapis.com/*",
+                "https://*.sharepoint.com/*",
+                "https://onedrive.live.com/*",
+                "https://twitcasting.tv/*"
+            ],
+            "run_at": "document_idle", //"document_idle", "document_start", "document_end"
+            "match_origin_as_fallback": true,
+            "js": ["ass.min.js"]
+        }
+    ]
 }
