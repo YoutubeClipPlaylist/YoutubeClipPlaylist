@@ -1,7 +1,8 @@
+// https://developer.chrome.com/docs/extensions/mv3/manifest/
 {
     "name": "Youtube影片截選播放清單 (Youtube Clip Playlist)",
     "description": "這是截選播放清單功能，專門設計來聽Vtuber的歌枠",
-    "version": "1.0",
+    "version": "12.0",
     "manifest_version": 3,
     "permissions": [
         "storage",
@@ -19,11 +20,18 @@
         "service_worker": "background.js"
     },
     "action": {
-        "default_icon": "icon64.png",
-        "default_popup": "popup.html" // optional
+        "default_icon": {
+            "16": "icon16.png",
+            "24": "icon24.png",
+            "32": "icon32.png"
+        },
+        "default_popup": "popup.html"
     },
     "icons": {
-        "64": "icon64.png"
+        "16": "icon16.png",
+        "32": "icon32.png",
+        "48": "icon48.png",
+        "128": "icon128.png"
     },
     // https://developer.chrome.com/docs/extensions/mv3/content_scripts/
     "content_scripts": [{
