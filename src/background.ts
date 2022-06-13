@@ -27,6 +27,17 @@ async function fetchPlaylists(): Promise<void> {
     return chrome.storage.local.set({ 'Playlists': Playlists });
 }
 
+function updateTabId(_tabId: number | undefined) {
+    // Don't change the tabId inside Google Drive iframe
+    if ('/embed/' !== url.pathname
+        // Don't change the tabId when tab is from popup (-1)
+        && _tabId
+        && _tabId !== chrome.tabs.TAB_ID_NONE) {
+        console.debug('Update tabId: %d', _tabId);
+        tabId = _tabId;
+    }
+}
+
 function addListeners() {
     function _addListener<T>(_name: string, callback: (message: IMessage<T>, sender: chrome.runtime.MessageSender, sendResponse: (response?: unknown) => void) => void) {
         chrome.runtime.onMessage.addListener(function (message: IMessage<T>, sender, sendResponse) {
@@ -42,24 +53,14 @@ function addListeners() {
         'LoadPlaylists',
         async (message, sender, sendResponse) => {
             await UrlHelper.prepareUrlParams(message.Data);
-            // Don't change the tabId inside Google Drive iframe
-            if ('/embed/' !== url.pathname
-                && typeof sender.tab?.id !== 'undefined'
-                && sender.tab.id >= 0) {
-                console.debug('TabId: %d', sender.tab.id);
-                tabId = sender.tab.id;
-            }
+            updateTabId(sender.tab?.id);
             await LoadPlayLists();
             sendResponse();
-        });
-    _addListener<string>(
-        'CheckList',
-        (message, sender, sendResponse) => {
-            sendResponse(CheckList());
         });
     _addListener<{ 'index': number, 'UIClick': boolean; }>(
         'NextSongToBackground',
         (message, sender, sendResponse) => {
+            updateTabId(sender.tab?.id);
             NextSong(message.Data.index, message.Data.UIClick);
             sendResponse();
         });
@@ -68,8 +69,14 @@ function addListeners() {
         (message, sender, sendResponse) => {
             shuffleList.push(shuffleList.shift() ?? 0);
             chrome.storage.local.set({ 'shuffleList': shuffleList });
+            updateTabId(sender.tab?.id);
             NextSong(shuffleList[0]);
             sendResponse();
+        });
+    _addListener<string>(
+        'CheckList',
+        (message, sender, sendResponse) => {
+            sendResponse(CheckList());
         });
     _addListener<boolean>(
         'GetNowPlaying',
