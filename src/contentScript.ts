@@ -55,8 +55,7 @@ import { player } from './Helper/DOMHelper';
     await DoOnVideoChange();
 
     // For situations where the webpage does not reload, such as clicking a link on YouTube.
-    if (typeof player !== 'undefined')
-        player.onloadedmetadata = DoOnVideoChange;
+    player.onloadedmetadata = DoOnVideoChange;
 
     async function LoadPlaylists(): Promise<void> {
         await chrome.runtime.sendMessage(new Message('LoadPlaylists', url));

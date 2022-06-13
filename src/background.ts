@@ -20,10 +20,11 @@ addListeners();
 fetchPlaylists();
 
 
-async function fetchPlaylists(): Promise<unknown> {
+async function fetchPlaylists(): Promise<void> {
     const response = await fetch('https://github.com/jim60105/Playlists/raw/minify/Playlists.jsonc');
     const json = await response.json();
-    return Playlists = json;
+    Playlists = json;
+    return chrome.storage.local.set({ 'Playlists': Playlists });
 }
 
 function addListeners() {
@@ -42,8 +43,11 @@ function addListeners() {
         async (message, sender, sendResponse) => {
             await UrlHelper.prepareUrlParams(message.Data);
             // Don't change the tabId inside Google Drive iframe
-            if ('/embed/' !== url.pathname) {
-                tabId = sender.tab?.id ?? -1;
+            if ('/embed/' !== url.pathname
+                && typeof sender.tab?.id !== 'undefined'
+                && sender.tab.id >= 0) {
+                console.debug('TabId: %d', sender.tab.id);
+                tabId = sender.tab.id;
             }
             await LoadPlayLists();
             sendResponse();
@@ -56,8 +60,7 @@ function addListeners() {
     _addListener<{ 'index': number, 'UIClick': boolean; }>(
         'NextSongToBackground',
         (message, sender, sendResponse) => {
-            if (sender.tab?.id)
-                NextSong(message.Data.index, message.Data.UIClick);
+            NextSong(message.Data.index, message.Data.UIClick);
             sendResponse();
         });
     _addListener<boolean>(
@@ -65,8 +68,7 @@ function addListeners() {
         (message, sender, sendResponse) => {
             shuffleList.push(shuffleList.shift() ?? 0);
             chrome.storage.local.set({ 'shuffleList': shuffleList });
-            if (sender.tab?.id)
-                NextSong(shuffleList[0]);
+            NextSong(shuffleList[0]);
             sendResponse();
         });
     _addListener<boolean>(
@@ -145,20 +147,7 @@ async function LoadPlayLists() {
             if (DisabledPlaylists.includes(listName)) {
                 console.warn(`Disabled ${listName}. Please click the menu to enable it again.`);
             } else {
-                const baseURL = 'https://raw.githubusercontent.com/jim60105/Playlists/minify/';
-                return fetch(baseURL + route)
-                    .then(response => {
-                        if (!response.ok) {
-                            console.error('Load playlist %s failed: %s', listName, response.url);
-                        } else {
-                            return response.json();
-                        }
-                    })
-                    .then(_playlist => {
-                        LoadedPlaylists.set(listName, _playlist);
-                        console.log('Load %s', listName);
-                        console.table(_playlist);
-                    });
+                return LoadOnePlaylist(route, listName);
             }
         } else {
             console.log('Skip %s', listName);
@@ -166,14 +155,39 @@ async function LoadPlayLists() {
         }
     }
 
+    function LoadOnePlaylist(route: string, listName: string): Promise<void> {
+        const baseURL = 'https://raw.githubusercontent.com/jim60105/Playlists/minify/';
+        return fetch(baseURL + route)
+            .then(response => {
+                if (!response.ok) {
+                    console.error('Load playlist %s failed: %s', listName, response.url);
+                } else {
+                    return response.json();
+                }
+            })
+            .then(_playlist => {
+                LoadedPlaylists.set(listName, _playlist);
+                console.log('Load %s', listName);
+                console.table(_playlist);
+            });
+    }
+
     async function LoadAllPlaylists(): Promise<void[]> {
         if (!Playlists || Playlists.length === 0)
             await fetchPlaylists();
 
+        const listName = urlParams.get('playlist');
+
         const promises: Promise<void>[] = [];
 
         Playlists.forEach((playlist) => {
-            promises.push(CheckAndLoadPlaylist(playlist));
+            if (listName) {
+                if (listName === playlist.name) {
+                    promises.push(LoadOnePlaylist(playlist.route, playlist.name));
+                }
+            } else {
+                promises.push(CheckAndLoadPlaylist(playlist));
+            }
         });
 
         return Promise.all(promises);
@@ -287,8 +301,10 @@ async function NextSong(index: number, UIClick = false) {
     const shuffle = urlParams.has('shuffle') && urlParams.get('shuffle') !== '0';
 
     if (tabId < 0) {
-        console.error('TabId not defined!');
-        return;
+        console.warn('TabId not defined!');
+        tabId = (await chrome.tabs.create({})).id ?? -1;
+
+        if (tabId < 0) return;
     }
 
     if (myPlaylist.length == 0) {

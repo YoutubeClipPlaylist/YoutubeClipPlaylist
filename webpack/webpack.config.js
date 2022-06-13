@@ -8,6 +8,7 @@ module.exports = {
    entry: {
       background: path.resolve(__dirname, "..", "src", "background.ts"),
       contentScript: path.resolve(__dirname, "..", "src", "contentScript.ts"),
+      popup: path.resolve(__dirname, "..", "src", "popup.ts"),
    },
    output: {
       path: path.join(__dirname, "../dist"),
@@ -40,6 +41,7 @@ module.exports = {
             { from: "manifest.json", to: "." },
             { from: "icon", to: ".", context: "pic", filter: (file) => file.endsWith(".png") },
             { from: "node_modules/assjs/dist/ass.js", to: "ass.min.js" },
+            { from: "node_modules/bootstrap/dist/css/bootstrap.min.css", to: "bootstrap.min.css" },
             { from: "NOTICE", to: "." },
             { from: "LICENSE", to: "." },
             { from: "README.md", to: "." }

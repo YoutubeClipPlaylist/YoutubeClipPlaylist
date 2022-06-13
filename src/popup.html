@@ -1,17 +1,12 @@
 <script src="popup.js"></script>
-<style src="bootstrap.min.css"></style>
+<link href="bootstrap.min.css" rel="stylesheet">
 
-<ul class="list-group">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      A list item
-      <span class="badge bg-primary rounded-pill">14</span>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      A second list item
-      <span class="badge bg-primary rounded-pill">2</span>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      A third list item
-      <span class="badge bg-primary rounded-pill">1</span>
-    </li>
-  </ul>
+<ul id="PlayListContainer" class="list-group">
+</ul>
+
+<template id="liTemplate">
+  <li class="list-group-item list-group-item-action list-group-flush d-flex justify-content-between align-items-center">
+    <span name="liText"></span>
+    <!-- <span name="badge" class="badge bg-primary rounded-pill"></span> -->
+  </li>
+</template>
