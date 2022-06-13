@@ -1,5 +1,8 @@
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
+const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
+const JsonMinimizerPlugin = require("json-minimizer-webpack-plugin");
+
 module.exports = {
    mode: "production",
    entry: {
@@ -20,12 +23,21 @@ module.exports = {
             loader: "ts-loader",
             exclude: /node_modules/,
          },
+         {
+            test: /\.html$/i,
+            type: "asset/resource",
+         },
+         {
+            test: /\.json$/i,
+            type: "asset/resource",
+         },
       ],
    },
    plugins: [
       new CopyPlugin({
          patterns: [
-            { from: ".", to: ".", context: "public" },
+            { from: "src/*.html", to: "[name][ext]" },
+            { from: "manifest.json", to: "." },
             { from: "icon", to: ".", context: "pic", filter: (file) => file.endsWith(".png") },
             { from: "node_modules/assjs/dist/ass.js", to: "ass.min.js" },
             { from: "NOTICE", to: "." },
@@ -34,4 +46,13 @@ module.exports = {
          ]
       }),
    ],
+   optimization: {
+      minimize: true,
+      minimizer: [
+         // For webpack@5 you can use the `...` syntax to extend existing minimizers (i.e. `terser-webpack-plugin`), uncomment the next line
+         `...`,
+         new HtmlMinimizerPlugin(),
+         new JsonMinimizerPlugin(),
+      ],
+   },
 };
