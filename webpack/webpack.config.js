@@ -27,7 +27,10 @@ module.exports = {
          patterns: [
             { from: ".", to: ".", context: "public" },
             { from: "icon", to: ".", context: "pic", filter: (file) => file.endsWith(".png") },
-            { from: "node_modules/assjs/dist/ass.js", to: "ass.min.js" }
+            { from: "node_modules/assjs/dist/ass.js", to: "ass.min.js" },
+            { from: "NOTICE", to: "." },
+            { from: "LICENSE", to: "." },
+            { from: "README.md", to: "." }
          ]
       }),
    ],
