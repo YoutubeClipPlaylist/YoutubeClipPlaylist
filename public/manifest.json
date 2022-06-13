@@ -41,7 +41,7 @@
                 "https://twitcasting.tv/*"
             ],
             "run_at": "document_start",
-            "match_origin_as_fallback": true,
+            "all_frames": true,
             "js": ["contentScript.js"]
         },
         {
@@ -54,7 +54,7 @@
                 "https://twitcasting.tv/*"
             ],
             "run_at": "document_idle",
-            "match_origin_as_fallback": true,
+            "all_frames": true,
             "js": ["ass.min.js"]
         }
     ]

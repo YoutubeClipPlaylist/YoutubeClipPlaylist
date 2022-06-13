@@ -11,6 +11,8 @@ let shuffleList: number[] = [];
 let myPlaylist: any[][] = [];
 let Playlists: IPlaylist[] = [];
 
+let tabId = -1;
+
 // Clear storage
 chrome.storage.local.remove(['shuffleList', 'myPlaylist', 'params']);
 
@@ -39,6 +41,10 @@ function addListeners() {
         'LoadPlaylists',
         async (message, sender, sendResponse) => {
             await UrlHelper.prepareUrlParams(message.Data);
+            // Don't change the tabId inside Google Drive iframe
+            if ('/embed/' !== url.pathname) {
+                tabId = sender.tab?.id ?? -1;
+            }
             await LoadPlayLists();
             sendResponse();
         });
@@ -51,7 +57,7 @@ function addListeners() {
         'NextSongToBackground',
         (message, sender, sendResponse) => {
             if (sender.tab?.id)
-                NextSong(message.Data.index, sender.tab.id, message.Data.UIClick);
+                NextSong(message.Data.index, message.Data.UIClick);
             sendResponse();
         });
     _addListener<boolean>(
@@ -60,7 +66,7 @@ function addListeners() {
             shuffleList.push(shuffleList.shift() ?? 0);
             chrome.storage.local.set({ 'shuffleList': shuffleList });
             if (sender.tab?.id)
-                NextSong(shuffleList[0], sender.tab.id);
+                NextSong(shuffleList[0]);
             sendResponse();
         });
     _addListener<boolean>(
@@ -92,7 +98,6 @@ async function LoadPlayLists() {
     console.log('StartPlayList: ', urlParams.has('startplaylist'));
     await MakeNewShuffleList();
     return Promise.resolve(true);
-
 
     function getStorageLists(): Promise<unknown[]> {
         const promises = [
@@ -278,8 +283,14 @@ function CheckList(): number {
     return i;
 }
 
-async function NextSong(index: number, tabId: number, UIClick = false) {
+async function NextSong(index: number, UIClick = false) {
     const shuffle = urlParams.has('shuffle') && urlParams.get('shuffle') !== '0';
+
+    if (tabId < 0) {
+        console.error('TabId not defined!');
+        return;
+    }
+
     if (myPlaylist.length == 0) {
         console.warn('Playlist not loaded! Reloading playlists...');
         await LoadPlayLists();
@@ -290,16 +301,6 @@ async function NextSong(index: number, tabId: number, UIClick = false) {
         await LoadPlayLists();
         index = 0;
     }
-
-    // // Send 'next song' outside the iframe
-    // if ('/embed/' == window.location.pathname) {
-    //     if (!UIClick) {
-    //         parent.postMessage('song end', '*');
-    //     } else {
-    //         parent.postMessage(index, '*');
-    //     }
-    //     return;
-    // }
 
     if (UIClick) {
         // Modify Shuffle List on UI Click

@@ -11,19 +11,21 @@ let ass: any, observer: MutationObserver, assContainer: HTMLDivElement;
 
 export let player: HTMLVideoElement;
 
-export function elementReady(selector: string): Promise<Element> {
+export function elementReady(selector: string, tagName?: string): Promise<Element> {
     return new Promise((resolve, reject) => {
-        const el = document.querySelector(selector);
-        if (el) {
-            resolve(el);
+        const element = document.querySelector(selector);
+        if (element && tagNameMatch(element, tagName)) {
+            resolve(element);
             return;
         }
         new MutationObserver((mutationRecords, observer) => {
             // Query for elements matching the specified selector
-            Array.from(document.querySelectorAll(selector)).forEach((element) => {
-                resolve(element);
-                //Once we have resolved we don't need the observer anymore.
-                observer.disconnect();
+            Array.from(document.querySelectorAll(selector)).forEach((_element) => {
+                if (tagNameMatch(_element, tagName)) {
+                    resolve(_element);
+                    //Once we have resolved we don't need the observer anymore.
+                    observer.disconnect();
+                }
             });
         })
             .observe(document.documentElement, {
@@ -31,11 +33,16 @@ export function elementReady(selector: string): Promise<Element> {
                 subtree: true
             });
     });
+
+    function tagNameMatch(_element: Element, _tagName?: string): boolean {
+        return typeof _tagName === 'undefined'
+            || _element.tagName.toLowerCase() === _tagName.toLowerCase();
+    }
 }
 
 export async function WaitUntilThePlayerIsReady(): Promise<HTMLVideoElement> {
     // Wait until the player is ready.
-    player = await elementReady('video') as HTMLVideoElement;
+    player = await elementReady('video', 'video') as HTMLVideoElement;
     return new Promise((resolve, reject) => {
         const waitPlayerInterval = setInterval(() => {
             player.pause();

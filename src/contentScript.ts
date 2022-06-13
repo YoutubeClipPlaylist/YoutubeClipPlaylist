@@ -14,43 +14,49 @@ import { player } from './Helper/DOMHelper';
 
     await UrlHelper.prepareUrlParams(window.location.href);
 
-    let loaded = false;
     if (!UrlHelper.HasMonitoredParameters()) {
         return;
     }
 
-    loaded = await WaitForDOMLoaded();
-
-    await LoadPlaylists();
-
-    if (loaded) {
-        // first start
-        if (urlParams.has('startplaylist')) {
-            const shuffle = urlParams.has('shuffle') && urlParams.get('shuffle') !== '0';
-            console.debug('Get Shuffle: %s', shuffle);
-            if (shuffle) {
-                NextSong((await chrome.storage.local.get('shuffleList')).shuffleList[0]);
-            } else {
-                NextSong(0);
+    try {
+        await LoadPlaylists();
+        await WaitForDOMLoaded();
+    } catch (e) {
+        if (e instanceof Error)
+            switch (e.message) {
+                case 'Skip the song if it is on Google Drive and play in the background.':
+                    NextSong(await CheckList() + 1);
+                    break;
+                case 'Google Drive files in iframe':
+                    // ==> And then this contentScript will triggered inside iframe.
+                    return;
+                default:
+                    throw e;
             }
-            return;
+    }
+
+    // first start
+    if (urlParams.has('startplaylist')) {
+        const shuffle = urlParams.has('shuffle') && urlParams.get('shuffle') !== '0';
+        console.debug('Get Shuffle: %s', shuffle);
+        if (shuffle) {
+            NextSong((await chrome.storage.local.get('shuffleList')).shuffleList[0]);
+        } else {
+            NextSong(0);
         }
+        return;
     }
 
-    if (!loaded) {
-        NextSong(await CheckList() + 1);
-    } else {
-        // Change twitcasting CSS to playing style
-        DOMHelper.ChangeTwitcastingCSSToPlayingStyle();
+    // Change twitcasting CSS to playing style
+    DOMHelper.ChangeTwitcastingCSSToPlayingStyle();
 
-         DOMHelper.SetTheStartTimeManually();
+    DOMHelper.SetTheStartTimeManually();
 
-        await DoOnVideoChange();
+    await DoOnVideoChange();
 
-        // For situations where the webpage does not reload, such as clicking a link on YouTube.
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        player!.onloadedmetadata = DoOnVideoChange;
-    }
+    // For situations where the webpage does not reload, such as clicking a link on YouTube.
+    if (typeof player !== 'undefined')
+        player.onloadedmetadata = DoOnVideoChange;
 
     async function LoadPlaylists(): Promise<void> {
         await chrome.runtime.sendMessage(new Message('LoadPlaylists', url));
@@ -68,16 +74,15 @@ import { player } from './Helper/DOMHelper';
         chrome.runtime.sendMessage(new Message('StepShuffle'));
     }
 
-    async function WaitForDOMLoaded(): Promise<boolean> {
+    async function WaitForDOMLoaded(): Promise<void> {
         // Gateway
-        if (window.location.host === 'www.youtube.com'
-            && window.location.pathname === '/') {
-            return true;
+        if (url.host === 'www.youtube.com' && url.pathname === '/') {
+            return;
         }
 
         // Google Drive files in iframe
-        if (window.location.pathname.match(/^\/file\/d\/.*\/view$/i)) {
-            const iframe = await DOMHelper.elementReady('#drive-viewer-video-player-object-0') as HTMLIFrameElement;
+        if (url.pathname.match(/^\/file(\/u\/\d)?\/d\/.*\/view$/i)) {
+            const iframe = await DOMHelper.elementReady('#drive-viewer-video-player-object-0', 'iframe') as HTMLIFrameElement;
             // Forcibly display the thumbnail video
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             (iframe.parentNode!.parentNode!.childNodes[1]! as HTMLImageElement).style.visibility = 'hidden';
@@ -101,28 +106,16 @@ import { player } from './Helper/DOMHelper';
             });
             iframe.src = iframeURL.toString();
 
-            // // NextSong after play end
-            // window.addEventListener('message', async function (event) {
-            //     if ('song end' == event.data) {
-            //         NextSong(await CheckList() + 1, false);
-            //     } else {
-            //         // Next on UI click
-            //         if (Number.isInteger(event.data)) {
-            //             NextSong(event.data, true);
-            //         }
-            //     }
-            // });
-            return true;
-            // ==> And then this script will triggered inside iframe.
+            throw new Error('Google Drive files in iframe');
         }
 
         // Skip the song if it is on Google Drive and play in the background.
-        if ('/embed/' === window.location.pathname && 'hidden' === document.visibilityState) {
-            return false;
+        if ('/embed/' === url.pathname && 'hidden' === document.visibilityState) {
+            throw new Error('Skip the song if it is on Google Drive and play in the background.');
         }
 
         await DOMHelper.WaitUntilThePlayerIsReady();
-        return true;
+        return;
     }
 
     async function DoOnVideoChange(loadedmetadata: unknown = undefined) {
@@ -143,7 +136,7 @@ import { player } from './Helper/DOMHelper';
                 CleanUp();
             }
         }
-        
+
         //Stop the player when the end time is up.
         function CheckTimeUp() {
             // Handle Keyboard Media Key 'NextTrack'
