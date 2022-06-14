@@ -330,27 +330,31 @@ export function SetTheStartTimeManually(): Promise<void> {
     // - Youtube skipped it when t == 0, and start from last history.
     // - Onedrive always go to 0.
     if (urlParams.has('t')) {
-        // // Onedrive use videojs, and it cannot set currentTime directly on the element.
-        // if (url.hostname.indexOf('sharepoint.com') > 0
-        //     || url.hostname.indexOf('onedrive.live.com') > 0) {
-        //     const vjsPlayers = videojs.getPlayers();
-        //     const vjsPlayer = vjsPlayers[Object.keys(vjsPlayers)[0]];
-        //     vjsPlayer.currentTime(~~(urlParams.get('t') ?? 0));
-        //     await vjsPlayer.play();
-        // } else {
-        player.currentTime = ~~(urlParams.get('t') ?? 0);
-        try {
-            if (player.paused) {
-                return player.play();
-            }
-        } catch (error: unknown) {
-            if (error instanceof DOMException) {
-                // Ignore DOMException
-                // DOMException: The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22
-                console.error(error);
+        // Onedrive use videojs, and it cannot set currentTime directly on the element.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if (typeof (window as any).videojs === 'function'
+            && (url.hostname.indexOf('sharepoint.com') > 0
+                || url.hostname.indexOf('onedrive.live.com') > 0)) {
+            console.debug('videojs detected!');
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const vjsPlayers = (window as any).videojs.getPlayers();
+            const vjsPlayer = vjsPlayers[Object.keys(vjsPlayers)[0]];
+            vjsPlayer.currentTime(~~(urlParams.get('t') ?? 0));
+            vjsPlayer.play();
+        } else {
+            player.currentTime = ~~(urlParams.get('t') ?? 0);
+            try {
+                if (player.paused) {
+                    return player.play();
+                }
+            } catch (error: unknown) {
+                if (error instanceof DOMException) {
+                    // Ignore DOMException
+                    // DOMException: The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22
+                    console.error(error);
+                }
             }
         }
-        // }
     }
     return Promise.resolve();
 }
