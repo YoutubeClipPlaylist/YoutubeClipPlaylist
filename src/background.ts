@@ -254,7 +254,7 @@ function CheckList(): number {
     //Check myPlaylist
     let i = -1;
     let flag = false;
-    const nowPlaying = {
+    const nowParameters = {
         v: urlParams.get('v'),
         t: urlParams.get('t'),
         end: urlParams.get('end'),
@@ -265,11 +265,11 @@ function CheckList(): number {
         // Youtube
         for (i = 0; i < myPlaylist.length; i++) {
             // VideoId
-            if (myPlaylist[i][0] == nowPlaying.v
+            if (myPlaylist[i][0] == nowParameters.v
                 // StartTime
-                && myPlaylist[i][1] == nowPlaying.t
+                && myPlaylist[i][1] == nowParameters.t
                 // EndTime
-                && myPlaylist[i][2] == nowPlaying.end) {
+                && myPlaylist[i][2] == nowParameters.end) {
                 flag = true;
                 break;
             }
@@ -278,27 +278,30 @@ function CheckList(): number {
         // Google Drive iframe, OneDrive, Others
         for (i = 0; i < myPlaylist.length; i++) {
             // VideoId
-            if ((myPlaylist[i][0] == nowPlaying.v
+            if ((myPlaylist[i][0] == nowParameters.v
                 || myPlaylist[i][0] == url.origin + url.pathname
                 || myPlaylist[i][0] == url.origin + url.pathname + url.hash)
                 // StartTime
-                && (myPlaylist[i][1] == nowPlaying.t
-                    || myPlaylist[i][1] == nowPlaying.start)
+                && (myPlaylist[i][1] == nowParameters.t
+                    || myPlaylist[i][1] == nowParameters.start)
                 // EndTime
-                && myPlaylist[i][2] == nowPlaying.end) {
+                && myPlaylist[i][2] == nowParameters.end) {
                 flag = true;
                 break;
             }
         }
     }
     if (flag) {
+        console.group('Check List');
         console.log(`Playing on Playlist No.${i}`);
-        console.debug(`Name : ${myPlaylist[i][3]}`);
-        console.debug(`URL  : ${myPlaylist[i][0]}`);
-        console.debug(`Start: ${myPlaylist[i][1]}`);
-        console.debug(`End  : ${myPlaylist[i][2]}`);
+        console.log(`Name : ${myPlaylist[i][3]}`);
+        console.log(`URL  : ${myPlaylist[i][0]}`);
+        console.log(`Start: ${myPlaylist[i][1]}`);
+        console.log(`End  : ${myPlaylist[i][2]}`);
+        console.groupEnd();
     } else {
         console.log('Not playing in the playlist.');
+        console.log('CheckList with parameters: %o', nowParameters);
         i = -1;
     }
     return i;

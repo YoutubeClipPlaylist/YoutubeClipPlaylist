@@ -20,6 +20,7 @@ import { player } from './Helper/DOMHelper';
 
     try {
         await LoadPlaylists();
+        UrlHelper.RemoveFromStorage();
         await WaitForDOMLoaded();
     } catch (e) {
         if (e instanceof Error)

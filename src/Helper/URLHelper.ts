@@ -1,4 +1,4 @@
-export let url:URL = new URL('https://www.youtube.com/');
+export let url: URL = new URL('https://www.youtube.com/');
 export let urlParams: URLSearchParams = url.searchParams;
 
 export async function prepareUrlParams(urlString: string): Promise<URLSearchParams> {
@@ -10,8 +10,8 @@ export async function prepareUrlParams(urlString: string): Promise<URLSearchPara
         ? urlSearch
         : await GetFromStorage(urlSearch);
     urlParams = new URLSearchParams(search);
-    console.log('Get URL: %o', url);
-    console.log('Get Search: %s', search);
+    console.debug('Get URL: %o', url);
+    console.debug('Get Search: %s', search);
     console.log('Get URLSearchParams: %s', urlParams.toString());
     return urlParams;
 }
@@ -22,15 +22,26 @@ export function HasMonitoredParameters(_urlParams?: URLSearchParams): boolean {
         || _urlParams.has('startplaylist');
 }
 
-export function SaveToStorage(): Promise<void> {
-    return chrome.storage.local.set({ params: urlParams.toString() });
+export async function RemoveFromStorage(): Promise<void>{
+    await chrome.storage.local.remove('params');
+    console.debug('Remove params from storage');
+}
+
+export async function SaveToStorage(_urlSearch?:string): Promise<void> {
+    if (typeof _urlSearch === 'undefined') {
+        _urlSearch = urlParams.toString();
+    }
+    console.debug('Save params to storage: %s', _urlSearch);
+    await chrome.storage.local.set({ params: _urlSearch });
 }
 
 export async function GetFromStorage(defaultValue: string): Promise<string> {
-    return (await chrome.storage.local.get({ params: defaultValue })).params;
+    const result: string = (await chrome.storage.local.get({ params: defaultValue })).params;
+    console.debug('Get params from storage: %s', result);
+    return result;
 }
 
-export function CleanUpParameters(_urlParams?:URLSearchParams): URLSearchParams{
+export function CleanUpParameters(_urlParams?: URLSearchParams): URLSearchParams {
     _urlParams = _urlParams || urlParams;
     _urlParams.forEach(function (value, key) {
         switch (key) {
@@ -40,7 +51,7 @@ export function CleanUpParameters(_urlParams?:URLSearchParams): URLSearchParams{
                 break;
         }
     });
-    
-    console.log('Clean up URLSearchParams: %s', urlParams.toString());
+
+    console.debug('Clean up URLSearchParams: %s', urlParams.toString());
     return _urlParams;
 }
