@@ -45,7 +45,9 @@ export async function WaitUntilThePlayerIsReady(): Promise<HTMLVideoElement> {
     player = await elementReady('video', 'video') as HTMLVideoElement;
     return new Promise((resolve, reject) => {
         const waitPlayerInterval = setInterval(() => {
-            player.pause();
+            if (!player.paused) {
+                player.pause();
+            }
             if (player.readyState === 1
                 || player.readyState === 4) {
                 clearInterval(waitPlayerInterval);
@@ -324,7 +326,7 @@ export function ChangeTwitcastingCSSToPlayingStyle() {
 //     }
 // }
 
-export function SetTheStartTimeManually() {
+export function SetTheStartTimeManually(): Promise<void> {
     // - Youtube skipped it when t == 0, and start from last history.
     // - Onedrive always go to 0.
     if (urlParams.has('t')) {
@@ -339,7 +341,7 @@ export function SetTheStartTimeManually() {
         player.currentTime = ~~(urlParams.get('t') ?? 0);
         try {
             if (player.paused) {
-                player.play();
+                return player.play();
             }
         } catch (error: unknown) {
             if (error instanceof DOMException) {
@@ -350,6 +352,7 @@ export function SetTheStartTimeManually() {
         }
         // }
     }
+    return Promise.resolve();
 }
 
 function NextSong(index: number, UIClick = false): void {

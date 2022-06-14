@@ -50,7 +50,7 @@ import { player } from './Helper/DOMHelper';
     // Change twitcasting CSS to playing style
     DOMHelper.ChangeTwitcastingCSSToPlayingStyle();
 
-    DOMHelper.SetTheStartTimeManually();
+    await DOMHelper.SetTheStartTimeManually();
 
     await DoOnVideoChange();
 
