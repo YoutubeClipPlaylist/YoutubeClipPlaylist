@@ -5,7 +5,10 @@ import * as DOMHelper from './Helper/DOMHelper';
 import { player } from './Helper/DOMHelper';
 
 (async function () {
-    if (window.location.pathname == '/live_chat_replay') return;
+    if (window.location.pathname in [
+        '/live_chat',
+        '/live_chat_replay'
+    ]) return;
 
     // if ('twitcasting.tv' == window.location.hostname) {
     //     // Change twitcasting archive video through hash
