@@ -1,7 +1,7 @@
 {
     "name": "Youtube影片截選播放清單 (Youtube Clip Playlist)",
     "description": "這是截選播放清單功能，專門設計來聽Vtuber的歌枠",
-    "version": "12.2",
+    "version": "12.3",
     "manifest_version": 3,
     "permissions": [
         "storage",
