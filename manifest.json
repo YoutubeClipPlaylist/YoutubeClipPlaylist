@@ -6,7 +6,6 @@
     "permissions": [
         "storage",
         "tabs",
-        "activeTab",
         "unlimitedStorage"
     ],
     "host_permissions": [
