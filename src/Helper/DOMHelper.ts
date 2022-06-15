@@ -343,6 +343,7 @@ export async function SetTheStartTimeManually(): Promise<void> {
             await vjsPlayer.play();
         } else {
             player.currentTime = ~~(urlParams.get('t') ?? 0);
+            console.debug('Set player.currentTime to %d', player.currentTime);
             try {
                 if (player.paused) {
                     await player.play();

@@ -56,10 +56,16 @@ import { player } from './Helper/DOMHelper';
 
     await DOMHelper.SetTheStartTimeManually();
 
-    await DoOnVideoChange();
-
-    // For situations where the webpage does not reload, such as clicking a link on YouTube.
-    player.onloadedmetadata = DoOnVideoChange;
+    // Wait one second before registering the event listener
+    // This is a workaround for the issue that conflicts with the other plugin: "Enhancer for YouTube™"
+    // It seems to set player.currentTime to 0.0 after the video is loaded. And this will cause CheckTimeUp.CleanUp() to be triggered.
+    // https://chrome.google.com/webstore/detail/enhancer-for-youtube/ponfpcnoihfmfllpaingbgckeeldkhle?hl=zh-TW
+    setTimeout(async () => {
+        await DoOnVideoChange();
+        
+        // For situations where the webpage does not reload, such as clicking a link on YouTube.
+        player.onloadedmetadata = DoOnVideoChange;
+    }, 1000);
 
     async function LoadPlaylists(): Promise<void> {
         await chrome.runtime.sendMessage(new Message('LoadPlaylists', url));
@@ -174,6 +180,7 @@ import { player } from './Helper/DOMHelper';
 
                 if (currentIndex < 0) { return; }
 
+                console.log('The song is over, now play the next song.');
                 if (shuffle) {
                     StepShuffle();
                 } else {
@@ -184,6 +191,7 @@ import { player } from './Helper/DOMHelper';
             //Clear ontimeupdate when it is detected that the current time is less than the start time.
             if (player.currentTime < ~~(urlParams.get('t') ?? 0)) {
                 CleanUp();
+                console.log('Pause player at ' + player.currentTime);
                 console.log('It is detected that the current time is less than the start time.');
             }
         }
