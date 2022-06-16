@@ -10,6 +10,8 @@ export async function prepareUrlParams(urlString: string): Promise<URLSearchPara
         ? urlSearch
         : await GetFromStorage(urlSearch);
     urlParams = new URLSearchParams(search);
+    CleanUpParameters();
+
     console.debug('Get URL: %o', url);
     console.debug('Get Search: %s', search);
     console.log('Get URLSearchParams: %s', urlParams.toString());
@@ -52,6 +54,6 @@ export function CleanUpParameters(_urlParams?: URLSearchParams): URLSearchParams
         }
     });
 
-    console.debug('Clean up URLSearchParams: %s', urlParams.toString());
+    // console.debug('Clean up URLSearchParams: %s', urlParams.toString());
     return _urlParams;
 }

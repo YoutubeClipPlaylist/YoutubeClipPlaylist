@@ -83,7 +83,12 @@ function addListeners() {
         });
     _addListener<string>(
         'CheckList',
-        (message, sender, sendResponse) => {
+        async (message, sender, sendResponse) => {
+            if (typeof message.Data !== 'undefined'
+                && message.Data.length > 0) {
+                await UrlHelper.prepareUrlParams(message.Data);
+            }
+
             sendResponse(CheckList());
         });
     _addListener<boolean>(
@@ -251,8 +256,6 @@ async function LoadPlayLists() {
 }
 
 function CheckList(): number {
-    UrlHelper.CleanUpParameters();
-
     /**
      * VideoID: 必須用引號包住，為字串型態。
      * StartTime: 只能是非負數。如果要從頭播放，輸入0
@@ -265,7 +268,6 @@ function CheckList(): number {
     const nowParameters = {
         v: urlParams.get('v'),
         t: urlParams.get('t'),
-        end: urlParams.get('end'),
         start: urlParams.get('start')
     };
 
@@ -275,9 +277,7 @@ function CheckList(): number {
             // VideoId
             if (myPlaylist[i][0] == nowParameters.v
                 // StartTime
-                && myPlaylist[i][1] == nowParameters.t
-                // EndTime
-                && myPlaylist[i][2] == nowParameters.end) {
+                && myPlaylist[i][1] == nowParameters.t){
                 flag = true;
                 break;
             }
@@ -291,9 +291,7 @@ function CheckList(): number {
                 || myPlaylist[i][0] == url.origin + url.pathname + url.hash)
                 // StartTime
                 && (myPlaylist[i][1] == nowParameters.t
-                    || myPlaylist[i][1] == nowParameters.start)
-                // EndTime
-                && myPlaylist[i][2] == nowParameters.end) {
+                    || myPlaylist[i][1] == nowParameters.start)){
                 flag = true;
                 break;
             }

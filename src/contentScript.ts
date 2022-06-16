@@ -66,8 +66,8 @@ import { player } from './Helper/DOMHelper';
         await chrome.runtime.sendMessage(new Message('LoadPlaylists', url));
     }
 
-    async function CheckList(): Promise<number> {
-        return chrome.runtime.sendMessage(new Message('CheckList'));
+    async function CheckList(renewUrl?: string): Promise<number> {
+        return chrome.runtime.sendMessage(new Message('CheckList', renewUrl));
     }
 
     function NextSong(index: number, UIClick = false): void {
@@ -123,22 +123,24 @@ import { player } from './Helper/DOMHelper';
     }
 
     async function DoOnVideoChange(loadedmetadata: unknown = undefined) {
-        const currentIndex = await CheckList();
-        const shuffle = urlParams.has('shuffle') && urlParams.get('shuffle') !== '0';
-        console.log('Playing on Playlist No.%d', currentIndex);
+        player.ontimeupdate = null;
+        const firstRun = 'undefined' === typeof loadedmetadata;
+        const currentIndex = firstRun
+            ? await CheckList()
+            : await CheckList(window.location.href);
 
-        player.ontimeupdate = CheckTimeUp;
+        const shuffle = urlParams.has('shuffle') && urlParams.get('shuffle') !== '0';
 
         if (currentIndex >= 0) {
+            console.log('Playing on Playlist No.%d', currentIndex);
+
+            player.ontimeupdate = CheckTimeUp;
+
             // DOMHelper.DisableAutoVideoPause();
             DOMHelper.MakePlaylistUI(currentIndex);
             DOMHelper.MakeSubtitle();
         } else {
-            const firstRun = 'undefined' === typeof loadedmetadata;
-            if (!firstRun) {
-                // Not playing in the playlist
-                CleanUp();
-            }
+            CleanUp();
         }
 
         //Stop the player when the end time is up.
