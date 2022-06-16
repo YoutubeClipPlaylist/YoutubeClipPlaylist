@@ -57,15 +57,10 @@ import { player } from './Helper/DOMHelper';
     await DOMHelper.SetTheStartTimeManually();
 
     // Wait one second before registering the event listener
-    // This is a workaround for the issue that conflicts with the other plugin: "Enhancer for YouTube™"
-    // It seems to set player.currentTime to 0.0 after the video is loaded. And this will cause CheckTimeUp.CleanUp() to be triggered.
-    // https://chrome.google.com/webstore/detail/enhancer-for-youtube/ponfpcnoihfmfllpaingbgckeeldkhle?hl=zh-TW
-    setTimeout(async () => {
-        await DoOnVideoChange();
-        
-        // For situations where the webpage does not reload, such as clicking a link on YouTube.
-        player.onloadedmetadata = DoOnVideoChange;
-    }, 1000);
+    await DoOnVideoChange();
+
+    // For situations where the webpage does not reload, such as clicking a link on YouTube.
+    player.onloadedmetadata = DoOnVideoChange;
 
     async function LoadPlaylists(): Promise<void> {
         await chrome.runtime.sendMessage(new Message('LoadPlaylists', url));
@@ -188,8 +183,12 @@ import { player } from './Helper/DOMHelper';
                 }
             }
 
-            //Clear ontimeupdate when it is detected that the current time is less than the start time.
-            if (player.currentTime < ~~(urlParams.get('t') ?? 0)) {
+            // "player.currentTime !== 0" is a workaround for the issue that conflicts with the other plugin: "Enhancer for YouTube™"
+            // It seems to set player.currentTime to 0 after the video has finished loading. This will cause CheckTimeUp.CleanUp() to be fired.
+            // I'm guessing it's due to ad blocking or something?
+            if (player.currentTime !== 0
+                //Clear ontimeupdate when it is detected that the current time is less than the start time.
+                && player.currentTime < ~~(urlParams.get('t') ?? 0)) {
                 CleanUp();
                 console.log('Pause player at ' + player.currentTime);
                 console.log('It is detected that the current time is less than the start time.');
