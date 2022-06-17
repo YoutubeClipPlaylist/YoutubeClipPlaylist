@@ -264,7 +264,7 @@ function CheckList(): number {
     let flag = false;
     const nowParameters = {
         v: urlParams.get('v'),
-        t: urlParams.get('t'),
+        t: urlParams.get('t') ?? 0,
         start: urlParams.get('start'),
     };
 
