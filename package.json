@@ -1,6 +1,6 @@
 {
   "name": "youtube-clip-playlist",
-  "version": "1.0.0",
+  "version": "0",
   "description": "Youtube影片截選播放清單。此腳本專門設計來聽Vtuber的歌枠",
   "main": "background.js",
   "scripts": {
