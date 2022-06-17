@@ -1,8 +1,9 @@
 {
-    "name": "Youtube影片截選播放清單 (Youtube Clip Playlist)",
-    "description": "這是截選播放清單功能，在Youtube上直接播放「起始~結束時間」影片片段。此工具專門設計來聽Vtuber的歌枠。",
+    "name": "__MSG_extName__",
+    "description": "__MSG_extDescription__",
     "version": "0",
     "manifest_version": 3,
+    "default_locale": "zh_TW",
     "permissions": [
         "storage",
         "tabs",

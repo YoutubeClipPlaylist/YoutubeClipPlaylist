@@ -2,18 +2,16 @@
     <button
         type="button"
         id="shuffle"
-        title="Start the playlist shuffle."
         class="btn btn-outline-secondary"
         data-bs-toggle="button"
     >
         <i class="bi bi-shuffle"></i>
     </button>
-    <button type="button" id="play" title="Play All!" class="btn btn-danger mx-auto w-100">
+    <button type="button" id="play" class="btn btn-danger mx-auto w-100">
         <i class="bi bi-play-fill"></i>
     </button>
     <div
         id="baseUrlContainer"
-        title="The source of the playlists."
         class="input-group input-group-sm mx-auto d-none"
     >
         <span class="input-group-text">Base Url</span>
@@ -24,10 +22,10 @@
             placeholder="https://raw.githubusercontent.com/{author}/{repository}/{branch}"
         />
     </div>
-    <button type="button" id="edit" title="Edit" class="btn btn-outline-secondary">
+    <button type="button" id="edit" class="btn btn-outline-secondary">
         <i class="bi bi-pencil-square"></i>
     </button>
-    <button type="button" title="Save" id="editDone" class="btn btn-outline-success d-none">
+    <button type="button" id="editDone" class="btn btn-outline-success d-none">
         <i class="bi bi-check2-square"></i>
     </button>
 </div>
@@ -36,8 +34,8 @@
 
 <template id="listTemplate">
     <label
+        name="listItem"
         role="button"
-        title="Click to start the Playlist!"
         class="list-group-item list-group-item-action align-items-center hstack gap-3"
     >
         <span name="labelText" class="me-auto"></span>

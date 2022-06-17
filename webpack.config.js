@@ -83,6 +83,10 @@ module.exports = {
                     context: 'pic',
                     filter: (file) => file.endsWith('.png'),
                 },
+                {
+                    from: '_locales',
+                    to: '_locales',
+                },
                 { from: 'NOTICE', to: '.' },
                 { from: 'LICENSE', to: '.' },
                 { from: 'README.md', to: '.' },

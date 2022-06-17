@@ -1,0 +1,38 @@
+{
+    "extName": {
+        "message": "Youtube影片截選播放清單",
+        "description": "Name of the extension"
+    },
+    "extDescription": {
+        "message": "這是截選播放清單功能，在Youtube上直接播放「起始~結束時間」影片片段。此工具專門設計來聽Vtuber的歌枠。",
+        "description": "Description of the extension"
+    },
+    "shuffle": {
+        "message": "切換隨機播放",
+        "description": "Toggle Shuffle"
+    },
+    "play": {
+        "message": "播放所有歌曲",
+        "description": "Play all the songs."
+    },
+    "baseUrlContainer": {
+        "message": "清單來源",
+        "description": "The source of the playlists."
+    },
+    "edit": {
+        "message": "編輯",
+        "description": "Edit Button"
+    },
+    "editDone": {
+        "message": "儲存",
+        "description": "Save Button"
+    },
+    "listItem": {
+        "message": "播放此播放清單!",
+        "description": "Click on the list item to start the Playlist."
+    },
+    "plTitle":{
+        "message": "截選播放清單",
+        "description": "Title of the playlist container sidebar."
+    }
+}

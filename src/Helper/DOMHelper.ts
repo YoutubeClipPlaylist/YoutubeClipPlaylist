@@ -159,7 +159,7 @@ export async function MakePlaylistUI(currentIndex: number) {
     plBox.style.display = 'block';
     plBox.innerHTML = '';
     const plTitle = document.createElement('h2');
-    plTitle.innerHTML = '截選播放清單';
+    plTitle.innerHTML = chrome.i18n.getMessage('plTitle');
     plBox.appendChild(plTitle);
     const plContent = document.createElement('ul');
     plBox.appendChild(plContent);

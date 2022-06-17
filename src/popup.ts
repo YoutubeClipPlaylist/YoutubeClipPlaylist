@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // import { Button } from "bootstrap";
 import { IPlaylist } from './Models/IPlaylist';
@@ -13,6 +14,20 @@ import * as UrlHelper from './Helper/URLHelper';
     await GetBaseUrl();
     MakeList();
     AddEventListener();
+
+    function SetupI18nStrings() {
+        document.getElementById('shuffle')!.title = chrome.i18n.getMessage('shuffle');
+        document.getElementById('play')!.title = chrome.i18n.getMessage('play');
+        document.getElementById('baseUrlContainer')!.title =
+            chrome.i18n.getMessage('baseUrlContainer');
+        document.getElementById('baseUrlContainer')!.querySelector('span')!.innerHTML =
+            chrome.i18n.getMessage('baseUrlContainer');
+        document.getElementById('edit')!.title = chrome.i18n.getMessage('edit');
+        document.getElementById('editDone')!.title = chrome.i18n.getMessage('editDone');
+        document.getElementsByName('listItem').forEach((element) => {
+            element.title = chrome.i18n.getMessage('listItem');
+        });
+    }
 
     async function GetBaseUrl() {
         (document.getElementById('baseUrl') as HTMLInputElement).value =
@@ -48,6 +63,8 @@ import * as UrlHelper from './Helper/URLHelper';
 
             container.appendChild(clone);
         });
+
+        SetupI18nStrings();
     }
 
     function AddEventListener() {
