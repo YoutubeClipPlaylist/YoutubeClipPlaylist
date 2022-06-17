@@ -7,6 +7,7 @@ module.exports = {
    mode: "production",
    // devtool: "source-map",  // source-map cannot work with content-script
    devtool: "inline-source-map",
+   // experiments: { topLevelAwait: true },
    entry: {
       background: path.resolve(__dirname, "..", "src", "background.ts"),
       contentScript: path.resolve(__dirname, "..", "src", "contentScript.ts"),
@@ -44,6 +45,9 @@ module.exports = {
             { from: "node_modules/bootstrap/dist/css/bootstrap.min.css", to: "assets/bootstrap/" },
             { from: "node_modules/bootstrap/dist/css/bootstrap.min.css.map", to: "assets/bootstrap/" },
             { from: "node_modules/bootstrap/LICENSE", to: "assets/bootstrap/" },
+            { from: "node_modules/bootstrap-icons/font/bootstrap-icons.css", to: "assets/bootstrap/" },
+            { from: "node_modules/bootstrap-icons/font/fonts", to: "assets/bootstrap/fonts" },
+            { from: "node_modules/bootstrap-icons/LICENSE.md", to: "assets/bootstrap/" },
 
             { from: "manifest.json", to: "." },
             { from: "icon", to: "assets/icon", context: "pic", filter: (file) => file.endsWith(".png") },

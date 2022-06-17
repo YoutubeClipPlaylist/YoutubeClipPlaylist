@@ -1,5 +1,6 @@
 export let url: URL = new URL('https://www.youtube.com/');
 export let urlParams: URLSearchParams = url.searchParams;
+export let baseURL = 'https://raw.githubusercontent.com/jim60105/Playlists/minify/';
 
 export async function prepareUrlParams(urlString: string): Promise<URLSearchParams> {
     url = new URL(urlString);
@@ -24,12 +25,12 @@ export function HasMonitoredParameters(_urlParams?: URLSearchParams): boolean {
         || _urlParams.has('startplaylist');
 }
 
-export async function RemoveFromStorage(): Promise<void>{
+export async function RemoveFromStorage(): Promise<void> {
     await chrome.storage.local.remove('params');
     console.debug('Remove params from storage');
 }
 
-export async function SaveToStorage(_urlSearch?:string): Promise<void> {
+export async function SaveToStorage(_urlSearch?: string): Promise<void> {
     if (typeof _urlSearch === 'undefined') {
         _urlSearch = urlParams.toString();
     }
@@ -56,4 +57,14 @@ export function CleanUpParameters(_urlParams?: URLSearchParams): URLSearchParams
 
     // console.debug('Clean up URLSearchParams: %s', urlParams.toString());
     return _urlParams;
+}
+
+export async function SetBaseUrl(url: string): Promise<void> {
+    await chrome.storage.local.set({ baseUrl: url });
+    baseURL = url;
+}
+
+export async function GetBaseUrl(): Promise<string> {
+    baseURL = (await chrome.storage.local.get({ baseUrl: 'https://raw.githubusercontent.com/jim60105/Playlists/minify/' })).baseUrl;
+    return baseURL;
 }

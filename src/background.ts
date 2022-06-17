@@ -21,7 +21,7 @@ fetchPlaylists();
 
 
 async function fetchPlaylists(): Promise<void> {
-    const response = await fetch('https://github.com/jim60105/Playlists/raw/minify/Playlists.jsonc');
+    const response = await fetch((await UrlHelper.GetBaseUrl()) + 'Playlists.jsonc');
     const json = await response.json();
     Playlists = json;
     return chrome.storage.local.set({ 'Playlists': Playlists });
@@ -95,6 +95,12 @@ function addListeners() {
         'GetNowPlaying',
         (message, sender, sendResponse) => {
             sendResponse(myPlaylist[CheckList()]);
+        });
+    _addListener<boolean>(
+        'FetchPlaylists',
+        async (message, sender, sendResponse) => {
+            await fetchPlaylists();
+            sendResponse();
         });
 }
 
@@ -175,21 +181,12 @@ async function LoadPlayLists() {
         }
     }
 
-    function LoadOnePlaylist(route: string, listName: string): Promise<void> {
-        const baseURL = 'https://raw.githubusercontent.com/jim60105/Playlists/minify/';
-        return fetch(baseURL + route)
-            .then(response => {
-                if (!response.ok) {
-                    console.error('Load playlist %s failed: %s', listName, response.url);
-                } else {
-                    return response.json();
-                }
-            })
-            .then(_playlist => {
-                LoadedPlaylists.set(listName, _playlist);
-                console.log('Load %s', listName);
-                console.table(_playlist);
-            });
+    async function LoadOnePlaylist(route: string, listName: string): Promise<void> {
+        const response = await fetch(UrlHelper.baseURL + route);
+        const json = await response.json();
+        LoadedPlaylists.set(listName, json);
+        console.log('Load %s', listName);
+        console.table(json);
     }
 
     async function LoadAllPlaylists(): Promise<void[]> {
@@ -277,7 +274,7 @@ function CheckList(): number {
             // VideoId
             if (myPlaylist[i][0] == nowParameters.v
                 // StartTime
-                && myPlaylist[i][1] == nowParameters.t){
+                && myPlaylist[i][1] == nowParameters.t) {
                 flag = true;
                 break;
             }
@@ -291,7 +288,7 @@ function CheckList(): number {
                 || myPlaylist[i][0] == url.origin + url.pathname + url.hash)
                 // StartTime
                 && (myPlaylist[i][1] == nowParameters.t
-                    || myPlaylist[i][1] == nowParameters.start)){
+                    || myPlaylist[i][1] == nowParameters.start)) {
                 flag = true;
                 break;
             }
