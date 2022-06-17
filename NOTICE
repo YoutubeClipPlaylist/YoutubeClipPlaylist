@@ -1,10 +1,10 @@
 # NOTICE
 
-這是一個 Chrome擴充工具 ，在審核上架至 Chrome Web Store 前暫時在此發佈
+這是一個 Chrome擴充工具，在Chrome Web Store上架的同時在此發佈打包
 
-> 此擴充工具尚在開發階段。建議以舊的方式([UserScript](https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html#%E5%AE%89%E8%A3%9D%E6%AD%A5%E9%A9%9F))安裝使用。
+建議由[Chrome Web Store](https://chrome.google.com/webstore/detail/kdlhjpdoaabhpolkaghkjklfcdfjapkh)安裝使用
 
-如果想要嘗試，請依照以下步驟安裝
+如果想要手動安裝，請參考以下步驟
 
 1. 下載下方的附件 YoutubeClipPlaylist.zip
 1. 解壓縮zip檔至任何位置，一個固定存放此程式的資料夾
