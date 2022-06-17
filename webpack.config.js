@@ -2,6 +2,8 @@ const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 const HtmlMinimizerPlugin = require('html-minimizer-webpack-plugin');
 const JsonMinimizerPlugin = require('json-minimizer-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 module.exports = {
     mode: 'production',
@@ -34,6 +36,14 @@ module.exports = {
             {
                 test: /\.json$/i,
                 type: 'asset/resource',
+            },
+            {
+                test: /.s?css$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    { loader: 'css-loader', options: { sourceMap: true } },
+                    { loader: 'sass-loader', options: { sourceMap: true } },
+                ],
             },
         ],
     },
@@ -77,8 +87,10 @@ module.exports = {
                 { from: 'LICENSE', to: '.' },
                 { from: 'README.md', to: '.' },
                 { from: 'src/*.html', to: '[name][ext]' },
+                { from: 'src/*.css', to: '[name][ext]' },
             ],
         }),
+        new MiniCssExtractPlugin(),
     ],
     optimization: {
         minimize: true,
@@ -87,6 +99,7 @@ module.exports = {
             `...`,
             new HtmlMinimizerPlugin(),
             new JsonMinimizerPlugin(),
+            new CssMinimizerPlugin(),
         ],
     },
 };

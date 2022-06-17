@@ -1,13 +1,8 @@
-<script src="popup.js"></script>
-<script src="assets/bootstrap/bootstrap.min.js"></script>
-<link href="assets/bootstrap/bootstrap.min.css" rel="stylesheet" />
-<link href="assets/bootstrap/bootstrap-icons.css" rel="stylesheet" />
-
 <div class="hstack gap-3 m-1">
     <button
         type="button"
         id="shuffle"
-        title="Shuffle playlist"
+        title="Start the playlist shuffle."
         class="btn btn-outline-secondary"
         data-bs-toggle="button"
     >
@@ -34,18 +29,22 @@
     </button>
 </div>
 
-<div id="PlayListContainer" class="list-group"></div>
+<div id="PlayListContainer" class="list-group list-group-flush"></div>
 
 <template id="listTemplate">
     <label
         role="button"
-        class="list-group-item list-group-item-action list-group-flush align-items-center hstack gap-3"
+        title="Click to start the Playlist!"
+        class="list-group-item list-group-item-action align-items-center hstack gap-3"
     >
         <span name="labelText" class="me-auto"></span>
-        <i
-            name="disabled"
-            title="This playlist is disabled."
-            class="bi bi-dash-circle-fill text-danger"
-        ></i>
+        <i name="disabled" class="bi bi-dash-circle-fill text-danger"></i>
     </label>
 </template>
+
+<link href="assets/bootstrap/bootstrap.min.css" rel="stylesheet" />
+<link href="assets/bootstrap/bootstrap-icons.css" rel="stylesheet" />
+<link href="popup.css" rel="stylesheet" />
+
+<script src="assets/bootstrap/bootstrap.min.js"></script>
+<script src="popup.js"></script>

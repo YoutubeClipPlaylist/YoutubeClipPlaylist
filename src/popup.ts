@@ -35,7 +35,7 @@ import * as UrlHelper from './Helper/URLHelper';
             labelText.textContent = playlist.name;
 
             if (!DisabledPlaylists.includes(playlist.name)) {
-                // Not disabled
+                // Enabled
                 label.classList.remove('disabled');
                 disabledIcon.classList.add('invisible');
                 label.addEventListener('click', StartPlaylistClickEvent);
