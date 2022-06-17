@@ -43,6 +43,14 @@ module.exports = {
                 { from: 'node_modules/assjs/dist/ass.js', to: 'assets/assjs/ass.min.js' },
                 { from: 'node_modules/assjs/LICENSE', to: 'assets/assjs/' },
                 {
+                    from: 'node_modules/bootstrap/dist/js/bootstrap.min.js',
+                    to: 'assets/bootstrap/',
+                },
+                {
+                    from: 'node_modules/bootstrap/dist/js/bootstrap.min.js.map',
+                    to: 'assets/bootstrap/',
+                },
+                {
                     from: 'node_modules/bootstrap/dist/css/bootstrap.min.css',
                     to: 'assets/bootstrap/',
                 },

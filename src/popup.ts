@@ -92,10 +92,17 @@ import * as UrlHelper from './Helper/URLHelper';
         const url = new URL(
             `https://www.youtube.com/?startplaylist&playlist=${labelText.innerHTML}`
         );
-        await chrome.runtime.sendMessage(new Message('LoadPlaylists', url.href));
-        await chrome.runtime.sendMessage(
-            new Message('NextSongToBackground', { index: 0, UIClick: false })
-        );
+        const shuffle = document.getElementById('shuffle')?.classList.contains('active');
+        if (shuffle) {
+            url.searchParams.set('shuffle', '1');
+            await chrome.runtime.sendMessage(new Message('LoadPlaylists', url.href));
+            await chrome.runtime.sendMessage(new Message('StepShuffle'));
+        } else {
+            await chrome.runtime.sendMessage(new Message('LoadPlaylists', url.href));
+            await chrome.runtime.sendMessage(
+                new Message('NextSongToBackground', { index: 0, UIClick: false })
+            );
+        }
         window.close();
     }
 
