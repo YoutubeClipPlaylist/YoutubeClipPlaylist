@@ -30,7 +30,8 @@
         "48": "assets/icon/icon48.png",
         "128": "assets/icon/icon128.png"
     },
-    "content_scripts": [{
+    "content_scripts": [
+        {
             "matches": [
                 "https://www.youtube.com/*",
                 "https://drive.google.com/*",
@@ -41,7 +42,9 @@
             ],
             "run_at": "document_start",
             "all_frames": true,
-            "js": ["contentScript.js"]
+            "js": [
+                "contentScript.js"
+            ]
         },
         {
             "matches": [
@@ -54,7 +57,9 @@
             ],
             "run_at": "document_idle",
             "all_frames": true,
-            "js": ["assets/assjs/ass.min.js"]
+            "js": [
+                "assets/assjs/ass.min.js"
+            ]
         }
     ]
 }

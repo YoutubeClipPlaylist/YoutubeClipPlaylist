@@ -1,1 +1,10 @@
-webpack/webpack.config.js
+webpack.config.js
+dist
+**/assets/**/*
+jest.config.js
+fixtures
+coverage
+__snapshots__
+
+YoutubeClipPlaylist.user.js
+Playlists

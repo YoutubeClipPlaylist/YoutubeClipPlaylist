@@ -3,7 +3,7 @@ export class Message<T> implements IMessage<T> {
     Data: T;
     constructor(name: string, data?: T) {
         this.Name = name;
-        this.Data = data ?? {} as T;
+        this.Data = data ?? ({} as T);
     }
 }
 

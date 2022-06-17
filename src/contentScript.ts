@@ -5,10 +5,7 @@ import * as DOMHelper from './Helper/DOMHelper';
 import { player } from './Helper/DOMHelper';
 
 (async function () {
-    if (window.location.pathname in [
-        '/live_chat',
-        '/live_chat_replay'
-    ]) return;
+    if (window.location.pathname in ['/live_chat', '/live_chat_replay']) return;
 
     // if ('twitcasting.tv' == window.location.hostname) {
     //     // Change twitcasting archive video through hash
@@ -29,7 +26,7 @@ import { player } from './Helper/DOMHelper';
         if (e instanceof Error)
             switch (e.message) {
                 case 'Skip the song if it is on Google Drive and play in the background.':
-                    NextSong(await CheckList() + 1);
+                    NextSong((await CheckList()) + 1);
                     break;
                 case 'Google Drive files in iframe':
                     // ==> And then this contentScript will triggered inside iframe.
@@ -71,7 +68,9 @@ import { player } from './Helper/DOMHelper';
     }
 
     function NextSong(index: number, UIClick = false): void {
-        chrome.runtime.sendMessage(new Message('NextSongToBackground', { 'index': index, 'UIClick': UIClick }));
+        chrome.runtime.sendMessage(
+            new Message('NextSongToBackground', { index: index, UIClick: UIClick })
+        );
     }
 
     function StepShuffle(): void {
@@ -86,12 +85,17 @@ import { player } from './Helper/DOMHelper';
 
         // Google Drive files in iframe
         if (url.pathname.match(/^\/file(\/u\/\d)?\/d\/.*\/view$/i)) {
-            const iframe = await DOMHelper.elementReady('#drive-viewer-video-player-object-0', 'iframe') as HTMLIFrameElement;
+            const iframe = (await DOMHelper.elementReady(
+                '#drive-viewer-video-player-object-0',
+                'iframe'
+            )) as HTMLIFrameElement;
             // Forcibly display the thumbnail video
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            (iframe.parentNode!.parentNode!.childNodes[1]! as HTMLImageElement).style.visibility = 'hidden';
+            (iframe.parentNode!.parentNode!.childNodes[1]! as HTMLImageElement).style.visibility =
+                'hidden';
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            (iframe.parentNode!.parentNode!.childNodes[2]! as HTMLImageElement).style.visibility = 'unset';
+            (iframe.parentNode!.parentNode!.childNodes[2]! as HTMLImageElement).style.visibility =
+                'unset';
             const box = iframe.parentNode?.parentElement;
             if (box) {
                 box.style.width = '100%';
@@ -125,9 +129,7 @@ import { player } from './Helper/DOMHelper';
     async function DoOnVideoChange(loadedmetadata: unknown = undefined) {
         player.ontimeupdate = null;
         const firstRun = 'undefined' === typeof loadedmetadata;
-        const currentIndex = firstRun
-            ? await CheckList()
-            : await CheckList(window.location.href);
+        const currentIndex = firstRun ? await CheckList() : await CheckList(window.location.href);
 
         const shuffle = urlParams.has('shuffle') && urlParams.get('shuffle') !== '0';
 
@@ -165,17 +167,15 @@ import { player } from './Helper/DOMHelper';
 
             //console.debug(player.currentTime);
             let timeUp: boolean = player.currentTime > ~~(urlParams.get('end') ?? 0);
-            if ('0' == urlParams.get('end'))
-                timeUp = false;
-            if (player.ended)
-                timeUp = true;
+            if ('0' == urlParams.get('end')) timeUp = false;
+            if (player.ended) timeUp = true;
 
             if (timeUp) {
                 player.pause();
                 player.ontimeupdate = null;
                 console.log('Pause player at ' + player.currentTime);
 
-                if (currentIndex < 0) { return; }
+                if (currentIndex < 0) return;
 
                 console.log('The song is over, now play the next song.');
                 if (shuffle) {
@@ -188,9 +188,11 @@ import { player } from './Helper/DOMHelper';
             // "player.currentTime !== 0" is a workaround for the issue that conflicts with the other plugin: "Enhancer for YouTube™"
             // It seems to set player.currentTime to 0 after the video has finished loading. This will cause CheckTimeUp.CleanUp() to be fired.
             // I'm guessing it's due to ad blocking or something?
-            if (player.currentTime !== 0
+            if (
+                player.currentTime !== 0 &&
                 //Clear ontimeupdate when it is detected that the current time is less than the start time.
-                && player.currentTime < ~~(urlParams.get('t') ?? 0)) {
+                player.currentTime < ~~(urlParams.get('t') ?? 0)
+            ) {
                 CleanUp();
                 console.log('Pause player at ' + player.currentTime);
                 console.log('It is detected that the current time is less than the start time.');

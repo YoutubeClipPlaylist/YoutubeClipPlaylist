@@ -19,20 +19,21 @@ chrome.storage.local.remove(['shuffleList', 'myPlaylist', 'params']);
 addListeners();
 fetchPlaylists();
 
-
 async function fetchPlaylists(): Promise<void> {
     const response = await fetch((await UrlHelper.GetBaseUrl()) + 'Playlists.jsonc');
     const json = await response.json();
     Playlists = json;
-    return chrome.storage.local.set({ 'Playlists': Playlists });
+    return chrome.storage.local.set({ Playlists: Playlists });
 }
 
 function updateTabId(_tabId: number | undefined) {
     // Don't change the tabId inside Google Drive iframe
-    if ('/embed/' !== url.pathname
+    if (
+        '/embed/' !== url.pathname &&
         // Don't change the tabId when tab is from popup (-1)
-        && _tabId
-        && _tabId !== chrome.tabs.TAB_ID_NONE) {
+        _tabId &&
+        _tabId !== chrome.tabs.TAB_ID_NONE
+    ) {
         console.debug('Update tabId: %d', _tabId);
         tabId = _tabId;
 
@@ -47,7 +48,14 @@ function updateTabId(_tabId: number | undefined) {
 }
 
 function addListeners() {
-    function _addListener<T>(_name: string, callback: (message: IMessage<T>, sender: chrome.runtime.MessageSender, sendResponse: (response?: unknown) => void) => void) {
+    function _addListener<T>(
+        _name: string,
+        callback: (
+            message: IMessage<T>,
+            sender: chrome.runtime.MessageSender,
+            sendResponse: (response?: unknown) => void
+        ) => void
+    ) {
         chrome.runtime.onMessage.addListener(function (message: IMessage<T>, sender, sendResponse) {
             if (!message || message.Name !== _name) return;
             console.debug('Message received from Content Script: %o', message);
@@ -57,51 +65,41 @@ function addListeners() {
         });
     }
 
-    _addListener<string>(
-        'LoadPlaylists',
-        async (message, sender, sendResponse) => {
-            await UrlHelper.prepareUrlParams(message.Data);
-            updateTabId(sender.tab?.id);
-            await LoadPlayLists();
-            sendResponse();
-        });
-    _addListener<{ 'index': number, 'UIClick': boolean; }>(
+    _addListener<string>('LoadPlaylists', async (message, sender, sendResponse) => {
+        await UrlHelper.prepareUrlParams(message.Data);
+        updateTabId(sender.tab?.id);
+        await LoadPlayLists();
+        sendResponse();
+    });
+    _addListener<{ index: number; UIClick: boolean }>(
         'NextSongToBackground',
         (message, sender, sendResponse) => {
             updateTabId(sender.tab?.id);
             NextSong(message.Data.index, message.Data.UIClick);
             sendResponse();
-        });
-    _addListener<boolean>(
-        'StepShuffle',
-        (message, sender, sendResponse) => {
-            shuffleList.push(shuffleList.shift() ?? 0);
-            chrome.storage.local.set({ 'shuffleList': shuffleList });
-            updateTabId(sender.tab?.id);
-            NextSong(shuffleList[0]);
-            sendResponse();
-        });
-    _addListener<string>(
-        'CheckList',
-        async (message, sender, sendResponse) => {
-            if (typeof message.Data !== 'undefined'
-                && message.Data.length > 0) {
-                await UrlHelper.prepareUrlParams(message.Data);
-            }
+        }
+    );
+    _addListener<boolean>('StepShuffle', (message, sender, sendResponse) => {
+        shuffleList.push(shuffleList.shift() ?? 0);
+        chrome.storage.local.set({ shuffleList: shuffleList });
+        updateTabId(sender.tab?.id);
+        NextSong(shuffleList[0]);
+        sendResponse();
+    });
+    _addListener<string>('CheckList', async (message, sender, sendResponse) => {
+        if (typeof message.Data !== 'undefined' && message.Data.length > 0) {
+            await UrlHelper.prepareUrlParams(message.Data);
+        }
 
-            sendResponse(CheckList());
-        });
-    _addListener<boolean>(
-        'GetNowPlaying',
-        (message, sender, sendResponse) => {
-            sendResponse(myPlaylist[CheckList()]);
-        });
-    _addListener<boolean>(
-        'FetchPlaylists',
-        async (message, sender, sendResponse) => {
-            await fetchPlaylists();
-            sendResponse();
-        });
+        sendResponse(CheckList());
+    });
+    _addListener<boolean>('GetNowPlaying', (message, sender, sendResponse) => {
+        sendResponse(myPlaylist[CheckList()]);
+    });
+    _addListener<boolean>('FetchPlaylists', async (message, sender, sendResponse) => {
+        await fetchPlaylists();
+        sendResponse();
+    });
 }
 
 async function LoadPlayLists() {
@@ -129,10 +127,12 @@ async function LoadPlayLists() {
 
     function getStorageLists(): Promise<unknown[]> {
         const promises = [
-            chrome.storage.local.get({ disabledLists: [] })
-                .then(_result => DisabledPlaylists = _result.disabledLists),
-            chrome.storage.local.get({ shuffleList: [] })
-                .then(_result => shuffleList = _result.shuffleList)
+            chrome.storage.local
+                .get({ disabledLists: [] })
+                .then((_result) => (DisabledPlaylists = _result.disabledLists)),
+            chrome.storage.local
+                .get({ shuffleList: [] })
+                .then((_result) => (shuffleList = _result.shuffleList)),
         ];
         return Promise.all(promises);
     }
@@ -190,8 +190,7 @@ async function LoadPlayLists() {
     }
 
     async function LoadAllPlaylists(): Promise<void[]> {
-        if (!Playlists || Playlists.length === 0)
-            await fetchPlaylists();
+        if (!Playlists || Playlists.length === 0) await fetchPlaylists();
 
         const listName = urlParams.get('playlist');
 
@@ -219,7 +218,7 @@ async function LoadPlayLists() {
             }
         });
 
-        await chrome.storage.local.set({ 'myPlaylist': myPlaylist });
+        await chrome.storage.local.set({ myPlaylist: myPlaylist });
     }
 
     function MakeRandomArray(length: number) {
@@ -242,12 +241,13 @@ async function LoadPlayLists() {
     }
 
     async function MakeNewShuffleList() {
-        if (shuffle
-            && (shuffleList.length !== myPlaylist.length
-                || urlParams.has('startplaylist'))) {
+        if (
+            shuffle &&
+            (shuffleList.length !== myPlaylist.length || urlParams.has('startplaylist'))
+        ) {
             console.log('Making new shuffleList...');
             shuffleList = MakeRandomArray(myPlaylist.length);
-            await chrome.storage.local.set({ 'shuffleList': shuffleList });
+            await chrome.storage.local.set({ shuffleList: shuffleList });
         }
     }
 }
@@ -265,16 +265,18 @@ function CheckList(): number {
     const nowParameters = {
         v: urlParams.get('v'),
         t: urlParams.get('t'),
-        start: urlParams.get('start')
+        start: urlParams.get('start'),
     };
 
     if (url.pathname.match(/^\/watch$/i)) {
         // Youtube
         for (i = 0; i < myPlaylist.length; i++) {
             // VideoId
-            if (myPlaylist[i][0] == nowParameters.v
+            if (
+                myPlaylist[i][0] == nowParameters.v &&
                 // StartTime
-                && myPlaylist[i][1] == nowParameters.t) {
+                myPlaylist[i][1] == nowParameters.t
+            ) {
                 flag = true;
                 break;
             }
@@ -283,12 +285,13 @@ function CheckList(): number {
         // Google Drive iframe, OneDrive, Others
         for (i = 0; i < myPlaylist.length; i++) {
             // VideoId
-            if ((myPlaylist[i][0] == nowParameters.v
-                || myPlaylist[i][0] == url.origin + url.pathname
-                || myPlaylist[i][0] == url.origin + url.pathname + url.hash)
+            if (
+                (myPlaylist[i][0] == nowParameters.v ||
+                    myPlaylist[i][0] == url.origin + url.pathname ||
+                    myPlaylist[i][0] == url.origin + url.pathname + url.hash) &&
                 // StartTime
-                && (myPlaylist[i][1] == nowParameters.t
-                    || myPlaylist[i][1] == nowParameters.start)) {
+                (myPlaylist[i][1] == nowParameters.t || myPlaylist[i][1] == nowParameters.start)
+            ) {
                 flag = true;
                 break;
             }
@@ -335,9 +338,11 @@ async function NextSong(index: number, UIClick = false) {
         // Modify Shuffle List on UI Click
         if (shuffle) {
             const indexInShuffleList = shuffleList.findIndex((element) => element === index);
-            shuffleList = shuffleList.slice(indexInShuffleList).concat(shuffleList.slice(0, indexInShuffleList));
+            shuffleList = shuffleList
+                .slice(indexInShuffleList)
+                .concat(shuffleList.slice(0, indexInShuffleList));
 
-            await chrome.storage.local.set({ 'shuffleList': shuffleList });
+            await chrome.storage.local.set({ shuffleList: shuffleList });
         }
         console.log(`Next Song ${index} by UI click`);
     } else {

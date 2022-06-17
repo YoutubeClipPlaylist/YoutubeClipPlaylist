@@ -1,18 +1,22 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // import { Button } from "bootstrap";
 import { IPlaylist } from './Models/IPlaylist';
 import { Message } from './Models/Message';
 import * as UrlHelper from './Helper/URLHelper';
 
 (async () => {
-    const Playlists = (await chrome.storage.local.get('Playlists')).Playlists as IPlaylist[] ?? [];
-    const DisabledPlaylists = (await chrome.storage.local.get('disabledLists')).disabledLists as string[] ?? [];
+    const Playlists =
+        ((await chrome.storage.local.get('Playlists')).Playlists as IPlaylist[]) ?? [];
+    const DisabledPlaylists =
+        ((await chrome.storage.local.get('disabledLists')).disabledLists as string[]) ?? [];
 
     await GetBaseUrl();
     MakeList();
     AddEventListener();
 
     async function GetBaseUrl() {
-        (document.getElementById('baseUrl') as HTMLInputElement).value = await UrlHelper.GetBaseUrl();
+        (document.getElementById('baseUrl') as HTMLInputElement).value =
+            await UrlHelper.GetBaseUrl();
     }
 
     function MakeList() {
@@ -20,12 +24,14 @@ import * as UrlHelper from './Helper/URLHelper';
         const listTemplate = document.getElementById('listTemplate') as HTMLTemplateElement;
         container.innerHTML = '';
 
-        Playlists.forEach(playlist => {
+        Playlists.forEach((playlist) => {
             const clone = document.importNode(listTemplate.content, true);
             const label = clone.querySelector('label');
             const labelText = clone.querySelector('[name="labelText"]');
             const disabledIcon = clone.querySelector('[name="disabled"]');
-            if (!labelText || !disabledIcon || !label) { return; }
+            if (!labelText || !disabledIcon || !label) {
+                return;
+            }
             labelText.textContent = playlist.name;
 
             if (!DisabledPlaylists.includes(playlist.name)) {
@@ -58,7 +64,7 @@ import * as UrlHelper from './Helper/URLHelper';
         document.getElementById('editDone')?.classList.remove('d-none');
         document.getElementById('edit')?.classList.add('d-none');
 
-        container.querySelectorAll('label').forEach(label => {
+        container.querySelectorAll('label').forEach((label) => {
             label.classList.remove('disabled');
             label.removeEventListener('click', StartPlaylistClickEvent);
             label.addEventListener('click', DisableClickEvent);
@@ -81,11 +87,15 @@ import * as UrlHelper from './Helper/URLHelper';
     async function StartPlaylistClickEvent(event: MouseEvent): Promise<void> {
         const label = event.currentTarget as HTMLLabelElement;
         const labelText = label.getElementsByTagName('span')[0];
-        if (!labelText) { return; }
+        if (!labelText) return;
 
-        const url = new URL(`https://www.youtube.com/?startplaylist&playlist=${labelText.innerHTML}`);
+        const url = new URL(
+            `https://www.youtube.com/?startplaylist&playlist=${labelText.innerHTML}`
+        );
         await chrome.runtime.sendMessage(new Message('LoadPlaylists', url.href));
-        await chrome.runtime.sendMessage(new Message('NextSongToBackground', { 'index': 0, 'UIClick': false }));
+        await chrome.runtime.sendMessage(
+            new Message('NextSongToBackground', { index: 0, UIClick: false })
+        );
         window.close();
     }
 
@@ -94,9 +104,9 @@ import * as UrlHelper from './Helper/URLHelper';
         const labelText = label.getElementsByTagName('span')[0];
         const disabledIcon = label.getElementsByTagName('i')[0];
         const container = document.getElementById('PlayListContainer') as HTMLDivElement;
-        if (!labelText || !container || !disabledIcon) { return; }
+        if (!labelText || !container || !disabledIcon) return;
 
-        if (!await EditDisabledPlaylists(labelText.innerHTML)) {
+        if (!(await EditDisabledPlaylists(labelText.innerHTML))) {
             // Not disabled
             label.classList.remove('disabled');
             disabledIcon.classList.add('invisible');

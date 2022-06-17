@@ -1,30 +1,28 @@
 <script src="popup.js"></script>
-<link href="assets/bootstrap/bootstrap.min.css" rel="stylesheet">
-<link href="assets/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="assets/bootstrap/bootstrap.min.css" rel="stylesheet" />
+<link href="assets/bootstrap/bootstrap-icons.css" rel="stylesheet" />
 
 <div class="hstack gap-3 m-1">
-    <button type="button"
-            id="shuffle" title="Shuffle"
-            class="btn btn-light">
+    <button type="button" id="shuffle" title="Shuffle" class="btn btn-light">
         <i class="bi bi-shuffle"></i>
     </button>
-    <div id="baseUrlContainer"
-         title="The source of the playlists."
-         class="input-group input-group-sm mx-auto invisible">
+    <div
+        id="baseUrlContainer"
+        title="The source of the playlists."
+        class="input-group input-group-sm mx-auto invisible"
+    >
         <span class="input-group-text">Base Url:</span>
-        <input type="text"
-               id="baseUrl"
-               class="form-control"
-               placeholder="https://raw.githubusercontent.com/{author}/{repository}/{branch}">
+        <input
+            type="text"
+            id="baseUrl"
+            class="form-control"
+            placeholder="https://raw.githubusercontent.com/{author}/{repository}/{branch}"
+        />
     </div>
-    <button type="button"
-            id="edit" title="Edit"
-            class="btn btn-outline-secondary">
+    <button type="button" id="edit" title="Edit" class="btn btn-outline-secondary">
         <i class="bi bi-pencil-square"></i>
     </button>
-    <button type="button" title="Save"
-            id="editDone"
-            class="btn btn-outline-success d-none">
+    <button type="button" title="Save" id="editDone" class="btn btn-outline-success d-none">
         <i class="bi bi-check2-square"></i>
     </button>
 </div>
@@ -32,15 +30,15 @@
 <div id="PlayListContainer" class="list-group"></div>
 
 <template id="listTemplate">
-    <label role="button"
-           class="list-group-item
-                  list-group-item-action
-                  list-group-flush
-                  align-items-center
-                  hstack gap-3">
+    <label
+        role="button"
+        class="list-group-item list-group-item-action list-group-flush align-items-center hstack gap-3"
+    >
         <span name="labelText" class="me-auto"></span>
-        <i name="disabled"
-           title="This playlist is disabled."
-           class="bi bi-dash-circle-fill text-danger"></i>
+        <i
+            name="disabled"
+            title="This playlist is disabled."
+            class="bi bi-dash-circle-fill text-danger"
+        ></i>
     </label>
 </template>

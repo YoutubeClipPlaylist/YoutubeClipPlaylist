@@ -4,7 +4,7 @@
   "description": "Youtube影片截選播放清單。此腳本專門設計來聽Vtuber的歌枠",
   "main": "background.js",
   "scripts": {
-    "build": "webpack --config webpack/webpack.config.js"
+    "build": "webpack --config webpack.config.js"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,7 @@
     "@typescript-eslint/parser": "^5.27.1",
     "copy-webpack-plugin": "^11.0.0",
     "eslint": "^8.17.0",
+    "eslint-config-prettier": "^8.5.0",
     "html-minimizer-webpack-plugin": "^4.0.0",
     "json-minimizer-webpack-plugin": "^4.0.0",
     "ts-loader": "^9.3.0",

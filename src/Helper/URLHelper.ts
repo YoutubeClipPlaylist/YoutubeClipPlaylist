@@ -7,9 +7,8 @@ export async function prepareUrlParams(urlString: string): Promise<URLSearchPara
     // Save the url first, as parameters may be removed during WaitForDomLoaded (at Youtube)
     const urlSearch: string = url.search;
 
-    const search: string = (urlSearch.indexOf('startplaylist') >= 0)
-        ? urlSearch
-        : await GetFromStorage(urlSearch);
+    const search: string =
+        urlSearch.indexOf('startplaylist') >= 0 ? urlSearch : await GetFromStorage(urlSearch);
     urlParams = new URLSearchParams(search);
     CleanUpParameters();
 
@@ -21,8 +20,7 @@ export async function prepareUrlParams(urlString: string): Promise<URLSearchPara
 
 export function HasMonitoredParameters(_urlParams?: URLSearchParams): boolean {
     _urlParams = _urlParams || urlParams;
-    return _urlParams.has('end')
-        || _urlParams.has('startplaylist');
+    return _urlParams.has('end') || _urlParams.has('startplaylist');
 }
 
 export async function RemoveFromStorage(): Promise<void> {
@@ -65,6 +63,10 @@ export async function SetBaseUrl(url: string): Promise<void> {
 }
 
 export async function GetBaseUrl(): Promise<string> {
-    baseURL = (await chrome.storage.local.get({ baseUrl: 'https://raw.githubusercontent.com/jim60105/Playlists/minify/' })).baseUrl;
+    baseURL = (
+        await chrome.storage.local.get({
+            baseUrl: 'https://raw.githubusercontent.com/jim60105/Playlists/minify/',
+        })
+    ).baseUrl;
     return baseURL;
 }

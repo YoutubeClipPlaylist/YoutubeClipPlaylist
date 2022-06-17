@@ -27,29 +27,29 @@ export function elementReady(selector: string, tagName?: string): Promise<Elemen
                     observer.disconnect();
                 }
             });
-        })
-            .observe(document.documentElement, {
-                childList: true,
-                subtree: true
-            });
+        }).observe(document.documentElement, {
+            childList: true,
+            subtree: true,
+        });
     });
 
     function tagNameMatch(_element: Element, _tagName?: string): boolean {
-        return typeof _tagName === 'undefined'
-            || _element.tagName.toLowerCase() === _tagName.toLowerCase();
+        return (
+            typeof _tagName === 'undefined' ||
+            _element.tagName.toLowerCase() === _tagName.toLowerCase()
+        );
     }
 }
 
 export async function WaitUntilThePlayerIsReady(): Promise<HTMLVideoElement> {
     // Wait until the player is ready.
-    player = await elementReady('video', 'video') as HTMLVideoElement;
+    player = (await elementReady('video', 'video')) as HTMLVideoElement;
     return new Promise((resolve, reject) => {
         const waitPlayerInterval = setInterval(() => {
             if (!player.paused) {
                 player.pause();
             }
-            if (player.readyState === 1
-                || player.readyState === 4) {
+            if (player.readyState === 1 || player.readyState === 4) {
                 clearInterval(waitPlayerInterval);
                 resolve(player);
             }
@@ -68,8 +68,7 @@ export function DestroySubtitle() {
     if ('undefined' !== typeof ass) {
         ass.destroy();
         observer.disconnect();
-        if (assContainer)
-            assContainer.remove();
+        if (assContainer) assContainer.remove();
     }
     // Clean webvtt sub
     let first = player.firstElementChild;
@@ -107,7 +106,7 @@ export async function MakeSubtitle() {
                     assContainer = document.createElement('div');
                     player.parentNode?.appendChild(assContainer);
                     ass = new ASS(text, player, {
-                        container: assContainer
+                        container: assContainer,
                     });
 
                     // For player resize
@@ -125,7 +124,7 @@ export async function MakeSubtitle() {
                     observer.observe(player, {
                         attributes: true,
                         attributeFilter: ['style'],
-                        subtree: false
+                        subtree: false,
                     });
                 }
             });
@@ -147,8 +146,7 @@ export async function MakePlaylistUI(currentIndex: number) {
         pl = (await chrome.storage.local.get('shuffleList')).shuffleList;
     } else {
         const list = [];
-        for (let i = 0; i < myPlaylist.length; i++)
-            list[i] = i;
+        for (let i = 0; i < myPlaylist.length; i++) list[i] = i;
 
         if (0 == currentIndex) {
             pl = list;
@@ -195,7 +193,7 @@ export async function MakePlaylistUI(currentIndex: number) {
             function () {
                 player.ontimeupdate = null;
                 if (shuffle) {
-                    chrome.storage.local.set({ 'shuffleList': pl });
+                    chrome.storage.local.set({ shuffleList: pl });
                 }
                 NextSong(plElement, true);
             },
@@ -263,7 +261,7 @@ export async function MakePlaylistUI(currentIndex: number) {
             plTitle.style.right = '0px';
         }
         isOpen = open;
-        chrome.storage.local.set({ 'isOpen': isOpen });
+        chrome.storage.local.set({ isOpen: isOpen });
     }
     toggleDisplay(isOpen);
 
@@ -331,10 +329,12 @@ export async function SetTheStartTimeManually(): Promise<void> {
     // - Onedrive always go to 0.
     if (urlParams.has('t')) {
         // Onedrive sometimes(?) use videojs, and it cannot set currentTime directly on the element.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if (typeof (window as any).videojs === 'function'
-            && (url.hostname.indexOf('sharepoint.com') > 0
-                || url.hostname.indexOf('onedrive.live.com') > 0)) {
+        if (
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            typeof (window as any).videojs === 'function' &&
+            (url.hostname.indexOf('sharepoint.com') > 0 ||
+                url.hostname.indexOf('onedrive.live.com') > 0)
+        ) {
             console.debug('videojs detected!');
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const vjsPlayers = (window as any).videojs.getPlayers();
@@ -360,5 +360,7 @@ export async function SetTheStartTimeManually(): Promise<void> {
 }
 
 function NextSong(index: number, UIClick = false): void {
-    chrome.runtime.sendMessage(new Message('NextSongToBackground', { 'index': index, 'UIClick': UIClick }));
+    chrome.runtime.sendMessage(
+        new Message('NextSongToBackground', { index: index, UIClick: UIClick })
+    );
 }
