@@ -65,9 +65,11 @@ jobs:
             YoutubeClipPlaylist.zip
 
       - name: Upload to Chrome Web Store
-        uses: mnao305/chrome-extension-upload@2.2.0
+        uses: mobilefirstllc/cws-publish@latest
         with:
-          file-path: YoutubeClipPlaylist.zip
-          extension-id: ${{ secrets.EXTENSION_ID }}
-          client-id: ${{ secrets.CLIENT_ID }}
-          refresh-token: ${{ secrets.REFRESH_TOKEN }}
+          action: 'upload'  # one of: upload, publish, testers
+          client_id: ${{ secrets.CLIENT_ID }}
+          client_secret: ${{ secrets.CLIENT_SECRET }}
+          refresh_token: ${{ secrets.REFRESH_TOKEN }}
+          extension_id: ${{ secrets.EXTENSION_ID }}
+          zip_file: YoutubeClipPlaylist.zip
