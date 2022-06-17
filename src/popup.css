@@ -2,3 +2,6 @@
 .list-group-item:disabled {
     background-color: lightgray;
 }
+div#baseUrlContainer {
+    max-height: calc(1.75rem + 2px)
+}

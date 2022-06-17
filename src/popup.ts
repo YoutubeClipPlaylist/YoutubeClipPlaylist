@@ -53,6 +53,7 @@ import * as UrlHelper from './Helper/URLHelper';
     function AddEventListener() {
         document.getElementById('edit')?.addEventListener('click', EditClickEvent);
         document.getElementById('editDone')?.addEventListener('click', EditDoneClickEvent);
+        document.getElementById('play')?.addEventListener('click', StartPlaylistClickEvent);
     }
 
     // Start editing button
@@ -60,7 +61,8 @@ import * as UrlHelper from './Helper/URLHelper';
         const container = document.getElementById('PlayListContainer') as HTMLDivElement;
         MakeList();
 
-        document.getElementById('baseUrlContainer')?.classList.remove('invisible');
+        document.getElementById('play')?.classList.add('d-none');
+        document.getElementById('baseUrlContainer')?.classList.remove('d-none');
         document.getElementById('editDone')?.classList.remove('d-none');
         document.getElementById('edit')?.classList.add('d-none');
 
@@ -77,7 +79,8 @@ import * as UrlHelper from './Helper/URLHelper';
         await UrlHelper.SetBaseUrl((document.getElementById('baseUrl') as HTMLInputElement).value);
         await chrome.runtime.sendMessage(new Message('FetchPlaylists'));
 
-        document.getElementById('baseUrlContainer')?.classList.add('invisible');
+        document.getElementById('play')?.classList.remove('d-none');
+        document.getElementById('baseUrlContainer')?.classList.add('d-none');
         document.getElementById('editDone')?.classList.add('d-none');
         document.getElementById('edit')?.classList.remove('d-none');
 
@@ -85,13 +88,14 @@ import * as UrlHelper from './Helper/URLHelper';
     }
 
     async function StartPlaylistClickEvent(event: MouseEvent): Promise<void> {
-        const label = event.currentTarget as HTMLLabelElement;
-        const labelText = label.getElementsByTagName('span')[0];
-        if (!labelText) return;
+        const url = new URL(`https://www.youtube.com/?startplaylist`);
 
-        const url = new URL(
-            `https://www.youtube.com/?startplaylist&playlist=${labelText.innerHTML}`
-        );
+        const label = event.currentTarget as HTMLLabelElement | null;
+        const labelText = label?.getElementsByTagName('span')[0];
+        if (labelText) {
+            url.searchParams.set('playlist', labelText.innerHTML);
+        }
+
         const shuffle = document.getElementById('shuffle')?.classList.contains('active');
         if (shuffle) {
             url.searchParams.set('shuffle', '1');
