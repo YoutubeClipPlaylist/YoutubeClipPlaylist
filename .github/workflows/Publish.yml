@@ -13,31 +13,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - uses: actions/setup-node@v3.3.0
-      with:
-        node-version: 16.3.0
+      - uses: actions/setup-node@v3.3.0
+        with:
+          node-version: 16.3.0
 
-    - name: Build
-      run: npm install && npm run-script build
+      - name: Write tag version into manifest.json
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          npx json -I -f manifest.json -e "this.version='$(echo ${GITHUB_REF/refs\/tags\//} | sed 's/v//')'"
+          npx json -I -f package.json -e "this.version='$(echo ${GITHUB_REF/refs\/tags\//} | sed 's/v//')'"
 
-    - name: Easy Zip Files
-      uses: vimtor/action-zip@v1
-      with:
-        files: dist/
-        dest: YoutubeClipPlaylist.zip
-        # https://github.com/vimtor/action-zip/issues/8#issuecomment-917654348
-        recursive: true
+      - name: Build
+        run: npm install && npm run-script build
 
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: artifact
-        path: |
-          YoutubeClipPlaylist.zip
-          NOTICE
-        retention-days: 10
+      - name: Easy Zip Files
+        uses: vimtor/action-zip@v1
+        with:
+          files: dist/
+          dest: YoutubeClipPlaylist.zip
+          # https://github.com/vimtor/action-zip/issues/8#issuecomment-917654348
+          recursive: true
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: artifact
+          path: |
+            YoutubeClipPlaylist.zip
+            NOTICE
+          retention-days: 10
 
   release:
     runs-on: ubuntu-latest
@@ -54,16 +60,15 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           body_path: NOTICE
-          prerelease: true
           files: |
             YoutubeClipPlaylist.zip
 
       - name: Upload to Chrome Web Store
-        uses: mnao305/chrome-extension-upload@2.2.0
+        uses: mobilefirstllc/cws-publish@latest
         with:
-          file-path: YoutubeClipPlaylist.zip
-          extension-id: ${{ secrets.EXTENSION_ID }}
-          client-id: ${{ secrets.CLIENT_ID }}
-          refresh-token: ${{ secrets.REFRESH_TOKEN }}
-          # This extension is currently under Testing
-          publish: false
+          action: 'publish'  # one of: upload, publish, testers
+          client_id: ${{ secrets.CLIENT_ID }}
+          client_secret: ${{ secrets.CLIENT_SECRET }}
+          refresh_token: ${{ secrets.REFRESH_TOKEN }}
+          extension_id: ${{ secrets.EXTENSION_ID }}
+          zip_file: YoutubeClipPlaylist.zip

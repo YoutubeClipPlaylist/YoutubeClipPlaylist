@@ -1,0 +1,38 @@
+{
+    "extName": {
+        "message": "Youtube Clip Playlist",
+        "description": "Name of the extension"
+    },
+    "extDescription": {
+        "message": "This is a playlist tool to play video clips with \"start~end time\" directly on Youtube/Onedrive/GoogleDrive. This tool is designed to listen to Vtuber's singing stream.",
+        "description": "Description of the extension"
+    },
+    "shuffle": {
+        "message": "Toggle Shuffle",
+        "description": "Toggle Shuffle"
+    },
+    "play": {
+        "message": "Play All!",
+        "description": "Play all the songs."
+    },
+    "baseUrlContainer": {
+        "message": "The source of the playlists.",
+        "description": "The source of the playlists."
+    },
+    "edit": {
+        "message": "Edit",
+        "description": "Edit Button"
+    },
+    "editDone": {
+        "message": "Save",
+        "description": "Save Button"
+    },
+    "listItem": {
+        "message": "Click to start the Playlist!",
+        "description": "Click on the list item to start the Playlist."
+    },
+    "plTitle":{
+        "message": "Clip Playlist",
+        "description": "Title of the playlist container sidebar."
+    }
+}

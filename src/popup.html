@@ -1,0 +1,51 @@
+<div class="hstack gap-3 m-1">
+    <button
+        type="button"
+        id="shuffle"
+        class="btn btn-outline-secondary"
+        data-bs-toggle="button"
+    >
+        <i class="bi bi-shuffle"></i>
+    </button>
+    <button type="button" id="play" class="btn btn-danger mx-auto w-100">
+        <i class="bi bi-play-fill"></i>
+    </button>
+    <div
+        id="baseUrlContainer"
+        class="input-group input-group-sm mx-auto d-none"
+    >
+        <span class="input-group-text">Base Url</span>
+        <input
+            type="text"
+            id="baseUrl"
+            class="form-control"
+            placeholder="https://raw.githubusercontent.com/{author}/{repository}/{branch}"
+        />
+    </div>
+    <button type="button" id="edit" class="btn btn-outline-secondary">
+        <i class="bi bi-pencil-square"></i>
+    </button>
+    <button type="button" id="editDone" class="btn btn-outline-success d-none">
+        <i class="bi bi-check2-square"></i>
+    </button>
+</div>
+
+<div id="PlayListContainer" class="list-group list-group-flush"></div>
+
+<template id="listTemplate">
+    <label
+        name="listItem"
+        role="button"
+        class="list-group-item list-group-item-action align-items-center hstack gap-3"
+    >
+        <span name="labelText" class="me-auto"></span>
+        <i name="disabled" class="bi bi-dash-circle-fill text-danger"></i>
+    </label>
+</template>
+
+<link href="assets/bootstrap/bootstrap.min.css" rel="stylesheet" />
+<link href="assets/bootstrap/bootstrap-icons.css" rel="stylesheet" />
+<link href="popup.css" rel="stylesheet" />
+
+<script src="assets/bootstrap/bootstrap.min.js"></script>
+<script src="popup.js"></script>
