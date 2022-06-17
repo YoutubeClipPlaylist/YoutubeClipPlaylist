@@ -7,6 +7,20 @@
 ![Bootstrap](https://img.shields.io/static/v1?style=for-the-badge&message=Bootstrap&color=7952B3&logo=Bootstrap&logoColor=FFFFFF&label=) ![TypeScript](https://img.shields.io/static/v1?style=for-the-badge&message=TypeScript&color=3178C6&logo=TypeScript&logoColor=FFFFFF&label=) ![Webpack](https://img.shields.io/static/v1?style=for-the-badge&message=Webpack&color=222222&logo=Webpack&logoColor=8DD6F9&label=) \
 ![Google Chrome](https://img.shields.io/static/v1?style=for-the-badge&message=Google+Chrome&color=4285F4&logo=Google+Chrome&logoColor=FFFFFF&label=) ![YouTube](https://img.shields.io/static/v1?style=for-the-badge&message=YouTube&color=FF0000&logo=YouTube&logoColor=FFFFFF&label=) ![Microsoft OneDrive](https://img.shields.io/static/v1?style=for-the-badge&message=Microsoft+OneDrive&color=0078D4&logo=Microsoft+OneDrive&logoColor=FFFFFF&label=) ![Google Drive](https://img.shields.io/static/v1?style=for-the-badge&message=Google+Drive&color=4285F4&logo=Google+Drive&logoColor=FFFFFF&label=)
 
+## 這是?
+
+這是截選播放清單擴充功能，在Youtube上直接播放「起始~結束時間」影片片段。\
+此工具專門設計來聽Vtuber的歌枠，這是我對於歌回烤肉的程式解
+
+和烤肉或剪片相比的優點為
+
+- 觀看數都會算在原始影片上
+- 只要清單化起始/結束時間就完事，比剪片快得多
+- 因為沒有轉載、修改原影片，不會有版權爭議
+
+> 此專案曾是個油猴腳本(UserScript)，現已重寫為擴充功能\
+> 它成長得太大了
+
 ## 安裝步驟
 
 1. 參照[這篇文章](https://blog.maki0419.com/2022/01/media-autoplay-on-browser.html)，設定下方網域的允許自動播放
@@ -16,7 +30,7 @@
     - `https://gothuedutw-my.sharepoint.com:443`
     - `https://twitcasting.tv:443`
 
-1. 安裝瀏覧器擴充: [Chrome Web Store](https://chrome.google.com/webstore/detail/kdlhjpdoaabhpolkaghkjklfcdfjapkh)
+1. 安裝瀏覧器擴充功能: [Chrome Web Store](https://chrome.google.com/webstore/detail/kdlhjpdoaabhpolkaghkjklfcdfjapkh)
 1. 播放 Playlist
     - [由彈窗UI啟動](#UI)
     - [由網址啟動](#啟動連結)
