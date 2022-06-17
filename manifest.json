@@ -1,6 +1,6 @@
 {
     "name": "Youtube影片截選播放清單 (Youtube Clip Playlist)",
-    "description": "這是截選播放清單功能，專門設計來聽Vtuber的歌枠",
+    "description": "這是截選播放清單功能，在Youtube上直接播放「起始~結束時間」影片片段。此工具專門設計來聽Vtuber的歌枠。",
     "version": "0",
     "manifest_version": 3,
     "permissions": [
@@ -19,8 +19,9 @@
     "action": {
         "default_icon": {
             "16": "assets/icon/icon16.png",
-            "24": "assets/icon/icon24.png",
-            "32": "assets/icon/icon32.png"
+            "32": "assets/icon/icon32.png",
+            "48": "assets/icon/icon48.png",
+            "128": "assets/icon/icon128.png"
         },
         "default_popup": "popup.html"
     },
