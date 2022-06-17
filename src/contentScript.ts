@@ -5,7 +5,7 @@ import * as DOMHelper from './Helper/DOMHelper';
 import { player } from './Helper/DOMHelper';
 
 (async function () {
-    if (window.location.pathname in ['/live_chat', '/live_chat_replay']) return;
+    if (['/live_chat', '/live_chat_replay'].includes(window.location.pathname)) return;
 
     // if ('twitcasting.tv' == window.location.hostname) {
     //     // Change twitcasting archive video through hash
