@@ -1,0 +1,38 @@
+{
+    "extName": {
+        "message": "Youtubeクリッププレイリスト",
+        "description": "Name of the extension"
+    },
+    "extDescription": {
+        "message": "プレイリストの切り出し機能です。Youtubeを「開始時間～終了時間」再生する。Vtuberの歌枠を聴くためのツールです。",
+        "description": "Description of the extension"
+    },
+    "shuffle": {
+        "message": "シャッフル再生",
+        "description": "Toggle Shuffle"
+    },
+    "play": {
+        "message": "全ての曲を再生する",
+        "description": "Play all the songs."
+    },
+    "baseUrlContainer": {
+        "message": "ソース",
+        "description": "The source of the playlists."
+    },
+    "edit": {
+        "message": "エディット",
+        "description": "Edit Button"
+    },
+    "editDone": {
+        "message": "セーブ",
+        "description": "Save Button"
+    },
+    "listItem": {
+        "message": "このプレイリストを再生する!",
+        "description": "Click on the list item to start the Playlist."
+    },
+    "plTitle": {
+        "message": "クリッププレイリスト",
+        "description": "Title of the playlist container sidebar."
+    }
+}
