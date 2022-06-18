@@ -3,7 +3,7 @@
     "description": "__MSG_extDescription__",
     "version": "0",
     "manifest_version": 3,
-    "default_locale": "zh_TW",
+    "default_locale": "en",
     "permissions": [
         "storage",
         "tabs",
