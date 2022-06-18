@@ -1,7 +1,7 @@
 {
   "name": "youtube-clip-playlist",
   "version": "0",
-  "description": "Youtube影片截選播放清單。此腳本專門設計來聽Vtuber的歌枠",
+  "description": "This is a playlist tool to play video clips with \"start~end time\" directly on Youtube/Onedrive/GoogleDrive.",
   "main": "background.js",
   "scripts": {
     "build": "webpack --config webpack.config.js"
