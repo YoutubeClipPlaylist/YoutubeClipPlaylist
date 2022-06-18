@@ -37,13 +37,16 @@ function updateTabId(_tabId: number | undefined) {
         console.debug('Update tabId: %d', _tabId);
         tabId = _tabId;
 
-        chrome.tabs.onRemoved.addListener(resetTabId);
+        if (!chrome.tabs.onRemoved.hasListener(resetTabId)) {
+            chrome.tabs.onRemoved.addListener(resetTabId);
+        }
     }
 
-    function resetTabId() {
-        console.log('Tab %d CLOSED.', tabId);
-        tabId = chrome.tabs.TAB_ID_NONE;
-        chrome.tabs.onRemoved.removeListener(resetTabId);
+    function resetTabId(_tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) {
+        if (_tabId === tabId) {
+            console.log('Tab %d CLOSED.', tabId);
+            tabId = chrome.tabs.TAB_ID_NONE;
+        }
     }
 }
 
@@ -380,8 +383,5 @@ async function NextSong(index: number, UIClick = false) {
     await UrlHelper.SaveToStorage();
 
     console.log('Redirect: %s', newURL);
-    if (typeof (await chrome.tabs.get(tabId)) === 'undefined') {
-        tabId = chrome.tabs.TAB_ID_NONE;
-    }
     chrome.tabs.update(tabId, { url: newURL });
 }
