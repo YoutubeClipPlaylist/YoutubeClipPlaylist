@@ -235,7 +235,7 @@ export async function MakePlaylistUI(currentIndex: number) {
     plBox.style.fontFamily = 'Meiryo';
 
     plTitle.style.position = 'fixed';
-    plTitle.style.right = '16px';
+    plTitle.style.right = '0px';
     plTitle.style.bottom = '0px';
     plTitle.style.background = '#222222DD';
     plTitle.style.padding = '8px';
@@ -246,24 +246,29 @@ export async function MakePlaylistUI(currentIndex: number) {
     plTitle.style.fontSize = '18px';
     plTitle.style.borderRadius = '10px 0 0 0';
     plTitle.style.margin = '0px';
+    plTitle.style.borderTop = '1px solid gray';
+    plTitle.style.borderLeft = '1px solid gray';
 
-    //開閉清單
-    let isOpen = (await chrome.storage.local.get('isOpen')).isOpen ?? false;
+    // 開閉清單
+    // 預設以關閉清單的狀態初始化Style，然後一秒後觸發打開動作
+    let isOpen = (await chrome.storage.local.get({ isOpen: true })).isOpen as boolean;
+    setTimeout(() => {
+        toggleDisplay(isOpen);
+    }, 1000);
 
     function toggleDisplay(open: boolean) {
         if (open) {
-            //開啟清單
+            // 開啟清單
             plBox.style.right = '0px';
             plTitle.style.right = `${width}px`;
         } else {
-            //關閉清單
+            // 關閉清單
             plBox.style.right = `-${width}px`;
             plTitle.style.right = '0px';
         }
         isOpen = open;
         chrome.storage.local.set({ isOpen: isOpen });
     }
-    toggleDisplay(isOpen);
 
     // 滑鼠點擊開閉UI
     plTitle.addEventListener(
