@@ -4,7 +4,7 @@
         "description": "Name of the extension"
     },
     "extDescription": {
-        "message": "這是截選播放清單功能，在Youtube/Onedrive/GoogleDrive上直接播放「起始~結束時間」影片片段。此工具專門設計來聽Vtuber的歌枠。",
+        "message": "這是截選播放清單功能，在Youtube/Onedrive/GoogleDrive/TwitCasting上直接播放「起始~結束時間」影片片段。此工具專門設計來聽Vtuber的歌枠。",
         "description": "Description of the extension"
     },
     "shuffle": {

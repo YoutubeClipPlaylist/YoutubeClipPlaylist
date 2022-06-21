@@ -4,7 +4,7 @@
         "description": "Name of the extension"
     },
     "extDescription": {
-        "message": "This is a playlist tool to play video clips with \"start~end time\" directly on Youtube/Onedrive/GoogleDrive.",
+        "message": "This is a playlist tool to play video clips with \"start~end time\" directly on Youtube/Onedrive/GoogleDrive/TwitCasting.",
         "description": "Description of the extension"
     },
     "shuffle": {
