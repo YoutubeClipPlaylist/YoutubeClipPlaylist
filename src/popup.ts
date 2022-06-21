@@ -98,7 +98,7 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
         document.getElementById('editDone')?.classList.add('d-none');
         document.getElementById('edit')?.classList.remove('d-none');
 
-        MakeList();
+        window.location.reload();
     }
 
     async function StartPlaylistClickEvent(event: MouseEvent): Promise<void> {

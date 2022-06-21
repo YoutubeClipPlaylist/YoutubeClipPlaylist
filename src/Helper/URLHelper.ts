@@ -1,6 +1,7 @@
 export let url: URL = new URL('https://www.youtube.com/');
 export let urlParams: URLSearchParams = url.searchParams;
-export let baseURL = 'https://raw.githubusercontent.com/jim60105/Playlists/minify/';
+const defaultBaseUrl = 'https://raw.githubusercontent.com/jim60105/Playlists/minify/';
+export let baseURL = defaultBaseUrl;
 
 export async function prepareUrlParams(urlString: string): Promise<URLSearchParams> {
     url = new URL(urlString);
@@ -58,6 +59,8 @@ export function CleanUpParameters(_urlParams?: URLSearchParams): URLSearchParams
 }
 
 export async function SetBaseUrl(url: string): Promise<void> {
+    if (!url) url = defaultBaseUrl;
+
     await chrome.storage.local.set({ baseUrl: url });
     baseURL = url;
 }
@@ -65,7 +68,7 @@ export async function SetBaseUrl(url: string): Promise<void> {
 export async function GetBaseUrl(): Promise<string> {
     baseURL = (
         await chrome.storage.local.get({
-            baseUrl: 'https://raw.githubusercontent.com/jim60105/Playlists/minify/',
+            baseUrl: defaultBaseUrl,
         })
     ).baseUrl;
     return baseURL;
