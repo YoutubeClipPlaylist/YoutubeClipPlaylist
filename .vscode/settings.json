@@ -1,15 +1,25 @@
 {
     "cSpell.words": [
+        "Aruma",
         "assjs",
         "btns",
+        "IROA",
+        "Kakeru",
+        "Matori",
         "Meiryo",
+        "Minai",
         "nexttrack",
+        "notsongs",
         "Onedrive",
         "playlistexclude",
         "playlistinclude",
+        "Quon",
         "startplaylist",
+        "Suda",
+        "Tama",
         "videojs",
-        "webvtt"
+        "webvtt",
+        "Yoruka"
     ],
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"

@@ -1,15 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // import { Button } from "bootstrap";
-import { IPlaylist } from './Models/IPlaylist';
 import { Message } from './Models/Message';
 import * as UrlHelper from './Helper/URLHelper';
+import * as PlaylistHelper from './Helper/PlaylistHelper';
 
 (async () => {
-    const Playlists =
-        ((await chrome.storage.local.get('Playlists')).Playlists as IPlaylist[]) ?? [];
-    const DisabledPlaylists =
-        ((await chrome.storage.local.get('disabledLists')).disabledLists as string[]) ?? [];
+    await PlaylistHelper.ReadPlaylistsFromStorage();
 
     await GetBaseUrl();
     MakeList();
@@ -39,7 +36,7 @@ import * as UrlHelper from './Helper/URLHelper';
         const listTemplate = document.getElementById('listTemplate') as HTMLTemplateElement;
         container.innerHTML = '';
 
-        Playlists.forEach((playlist) => {
+        PlaylistHelper.Playlists.forEach((playlist) => {
             const clone = document.importNode(listTemplate.content, true);
             const label = clone.querySelector('label');
             const labelText = clone.querySelector('[name="labelText"]');
@@ -49,7 +46,7 @@ import * as UrlHelper from './Helper/URLHelper';
             }
             labelText.textContent = playlist.name;
 
-            if (!DisabledPlaylists.includes(playlist.name)) {
+            if (!PlaylistHelper.DisabledPlaylists.includes(playlist.name)) {
                 // Enabled
                 label.classList.remove('disabled');
                 disabledIcon.classList.add('invisible');
@@ -92,7 +89,7 @@ import * as UrlHelper from './Helper/URLHelper';
 
     // Finish editing button
     async function EditDoneClickEvent(event: MouseEvent) {
-        await chrome.storage.local.set({ disabledLists: DisabledPlaylists });
+        await chrome.storage.sync.set({ disabledLists: PlaylistHelper.DisabledPlaylists });
         await UrlHelper.SetBaseUrl((document.getElementById('baseUrl') as HTMLInputElement).value);
         await chrome.runtime.sendMessage(new Message('FetchPlaylists'));
 
@@ -144,13 +141,16 @@ import * as UrlHelper from './Helper/URLHelper';
         }
 
         async function EditDisabledPlaylists(playlistName: string): Promise<boolean> {
-            const include = DisabledPlaylists.includes(playlistName);
+            const include = PlaylistHelper.DisabledPlaylists.includes(playlistName);
             if (include) {
-                DisabledPlaylists.splice(DisabledPlaylists.indexOf(playlistName), 1);
+                PlaylistHelper.DisabledPlaylists.splice(
+                    PlaylistHelper.DisabledPlaylists.indexOf(playlistName),
+                    1
+                );
             } else {
-                DisabledPlaylists.push(playlistName);
+                PlaylistHelper.DisabledPlaylists.push(playlistName);
             }
-            await chrome.storage.local.set({ disabledLists: DisabledPlaylists });
+            await chrome.storage.sync.set({ disabledLists: PlaylistHelper.DisabledPlaylists });
             return !include;
         }
     }
