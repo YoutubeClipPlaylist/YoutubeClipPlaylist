@@ -4,7 +4,11 @@ import * as DOMHelper from './Helper/DOMHelper';
 import { player } from './Helper/DOMHelper';
 
 (async function () {
-    if (['/live_chat', '/live_chat_replay'].includes(window.location.pathname)) return;
+    if (
+        ['/live_chat', '/live_chat_replay', '/mwebanimation.php'].includes(window.location.pathname)
+    ) {
+        return;
+    }
 
     const url = new URL(window.location.href);
     const urlParams = await UrlHelper.PrepareUrlParams(url.toString());
