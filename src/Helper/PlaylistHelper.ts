@@ -11,7 +11,9 @@ export async function fetchPlaylists(): Promise<IPlaylist[]> {
     return Playlists;
 }
 
-export async function LoadPlayLists(urlParams: URLSearchParams): Promise<boolean> {
+export async function LoadPlayLists(
+    urlParams: URLSearchParams
+): Promise<[string, number, number, string | undefined, string | undefined][]> {
     const LoadedPlaylists = new Map();
     // eslint-disable-next-line prefer-const
     let [DisabledPlaylists, shuffleList, Playlists] = await getStorageLists();
@@ -34,7 +36,7 @@ export async function LoadPlayLists(urlParams: URLSearchParams): Promise<boolean
     console.log('Shuffle: %o', shuffle);
     console.log('StartPlayList: ', urlParams.has('startplaylist'));
     await MakeNewShuffleList();
-    return Promise.resolve(true);
+    return myPlaylist;
 
     async function getStorageLists(): Promise<[string[], number[], IPlaylist[]]> {
         let DisabledPlaylists: string[] = [],
@@ -127,8 +129,10 @@ export async function LoadPlayLists(urlParams: URLSearchParams): Promise<boolean
         return Promise.all(promises);
     }
 
-    async function ConcatPlaylistsIntoMyPlaylists(): Promise<(string | number)[][]> {
-        let myPlaylist: (string | number)[][] = [];
+    async function ConcatPlaylistsIntoMyPlaylists(): Promise<
+        [string, number, number, string | undefined, string | undefined][]
+    > {
+        let myPlaylist: [string, number, number, string | undefined, string | undefined][] = [];
         // It is important to load here in the order of 'Playlists'.
         Playlists.forEach((playlist) => {
             if (LoadedPlaylists.has(playlist.name)) {

@@ -99,18 +99,30 @@ async function NextSong(tabId: number, _index: number, UIClick = false) {
         if (tabId < 0) return;
     }
 
-    const myPlaylist = (await chrome.storage.local.get('myPlaylist')).myPlaylist;
+    let myPlaylist = (await chrome.storage.local.get({ myPlaylist: [] })).myPlaylist as [
+        string,
+        number,
+        number,
+        string | undefined,
+        string | undefined
+    ][];
     const shuffleList = (await chrome.storage.local.get('shuffleList')).shuffleList;
-    // if (PlaylistHelper.myPlaylist.length == 0) {
-    //     console.warn('Playlist not loaded! Reloading playlists...');
-    //     await PlaylistHelper.LoadPlayLists();
-    // }
 
-    // if (index >= PlaylistHelper.myPlaylist.length) {
-    //     console.warn('Index out of bound! Reloading playlists...');
-    //     await PlaylistHelper.LoadPlayLists();
-    //     index = 0;
-    // }
+    if (myPlaylist.length == 0) {
+        console.warn('Playlist not loaded! Reloading playlists...');
+        myPlaylist = await PlaylistHelper.LoadPlayLists(urlParams);
+    }
+
+    if (index >= myPlaylist.length) {
+        console.warn('Index out of bound! Reloading playlists...');
+        myPlaylist = await PlaylistHelper.LoadPlayLists(urlParams);
+        index = 0;
+    }
+
+    if (myPlaylist.length == 0) {
+        console.error('Playlist is empty!');
+        return;
+    }
 
     if (UIClick) {
         // Modify Shuffle List on UI Click
@@ -125,18 +137,13 @@ async function NextSong(tabId: number, _index: number, UIClick = false) {
         console.log(`Next Song ${index}`);
     }
 
-    if (index >= myPlaylist.length) {
-        index = 0;
-        console.log('Playlist ended! Playing first song...');
-    }
-
     urlParams.delete('startplaylist');
 
     const nextSong = myPlaylist[index];
 
     urlParams.set('v', nextSong[0]);
-    urlParams.set('t', nextSong[1]);
-    urlParams.set('end', nextSong[2]);
+    urlParams.set('t', nextSong[1].toString());
+    urlParams.set('end', nextSong[2].toString());
 
     let newURL: string;
     if (nextSong[0].indexOf('http') >= 0) {
