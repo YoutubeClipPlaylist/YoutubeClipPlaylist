@@ -136,6 +136,8 @@ export async function MakeSubtitle(urlString: string) {
 export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
     if ('undefined' === typeof plBox) {
         plBox = document.body.appendChild(document.createElement('div'));
+    } else {
+        plBox.outerHTML = '<div></div>'
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -227,20 +229,19 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
     plBox.style.right = `-${width}px`;
     plBox.style.zIndex = '2000';
     plBox.style.background = '#222222DD';
-    plBox.style.transition = 'all 1s';
     plBox.style.cursor = 'pointer';
     plBox.style.width = `${width}px`;
     plBox.style.bottom = '0';
     plBox.style.overflowY = 'scroll';
     plBox.style.height = 'calc(100vh - 56px)';
     plBox.style.fontFamily = 'Meiryo';
+    plBox.style.transition = 'all 1s';
 
     plTitle.style.position = 'fixed';
     plTitle.style.right = '0px';
     plTitle.style.bottom = '0px';
     plTitle.style.background = '#222222DD';
     plTitle.style.padding = '8px';
-    plTitle.style.transition = 'all 1s';
     plTitle.style.writingMode = 'vertical-lr';
     plTitle.style.color = 'lightgrey';
     plTitle.style.fontWeight = 'unset';
@@ -249,6 +250,7 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
     plTitle.style.margin = '0px';
     plTitle.style.borderTop = '1px solid gray';
     plTitle.style.borderLeft = '1px solid gray';
+    plTitle.style.transition = 'all 1s';
 
     // 開閉清單
     // 預設以關閉清單的狀態初始化Style，然後一秒後觸發打開動作
