@@ -4,6 +4,7 @@ export interface IPlaylist {
     route: string;
     maintainer: IMaintainer;
 }
+
 export interface IMaintainer {
     name: string;
     url: string;

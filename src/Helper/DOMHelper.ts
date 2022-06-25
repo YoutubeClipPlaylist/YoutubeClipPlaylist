@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Message } from '../Models/Message';
-import { urlParams, url } from './URLHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const ASS: any;
@@ -46,9 +45,10 @@ export async function WaitUntilThePlayerIsReady(): Promise<HTMLVideoElement> {
     player = (await elementReady('video', 'video')) as HTMLVideoElement;
     return new Promise((resolve, reject) => {
         const waitPlayerInterval = setInterval(() => {
-            if (!player.paused) {
-                player.pause();
-            }
+            // if (!player.paused) {
+            //     player.pause();
+            // }
+            console.debug('Waiting for the player to be ready... State: ' + player.readyState);
             if (player.readyState === 1 || player.readyState === 4) {
                 clearInterval(waitPlayerInterval);
                 resolve(player);
@@ -79,11 +79,13 @@ export function DestroySubtitle() {
 }
 
 // Add custom subtitle
-export async function MakeSubtitle() {
+export async function MakeSubtitle(urlString: string) {
     DestroySubtitle();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const nowPlaying: any[] = await chrome.runtime.sendMessage(new Message('GetNowPlaying'));
+    const nowPlaying: any[] = await chrome.runtime.sendMessage(
+        new Message('GetNowPlaying', urlString)
+    );
     if (nowPlaying.length >= 4 && nowPlaying[4]) {
         fetch(nowPlaying[4])
             .then((response) => response.text())
@@ -131,8 +133,7 @@ export async function MakeSubtitle() {
     }
 }
 
-export async function MakePlaylistUI(currentIndex: number) {
-    const shuffle = urlParams.has('shuffle') && urlParams.get('shuffle') !== '0';
+export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
     if ('undefined' === typeof plBox) {
         plBox = document.body.appendChild(document.createElement('div'));
     }
@@ -300,7 +301,7 @@ export async function MakePlaylistUI(currentIndex: number) {
 //     }, 500);
 // }
 
-export function ChangeTwitcastingCSSToPlayingStyle() {
+export function ChangeTwitcastingCSSToPlayingStyle(url: URL) {
     if ('twitcasting.tv' == url.hostname) {
         const vjsPlayer = document.getElementById('player');
         if (vjsPlayer) {
@@ -329,7 +330,7 @@ export function ChangeTwitcastingCSSToPlayingStyle() {
 //     }
 // }
 
-export async function SetTheStartTimeManually(): Promise<void> {
+export async function SetTheStartTimeManually(url: URL, urlParams: URLSearchParams): Promise<void> {
     // - Youtube skipped it when t == 0, and start from last history.
     // - Onedrive always go to 0.
     if (urlParams.has('t')) {

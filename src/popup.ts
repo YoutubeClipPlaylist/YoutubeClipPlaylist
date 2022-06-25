@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// import { Button } from "bootstrap";
+import { IPlaylist } from './Models/Playlist';
 import { Message } from './Models/Message';
 import * as UrlHelper from './Helper/URLHelper';
 import * as PlaylistHelper from './Helper/PlaylistHelper';
 
 (async () => {
-    await PlaylistHelper.ReadPlaylistsFromStorage();
+    const [Playlists, DisabledPlaylists] = (await PlaylistHelper.ReadPlaylistsFromStorage()) as [
+        IPlaylist[],
+        string[]
+    ];
 
     await GetBaseUrl();
     MakeList();
@@ -36,7 +39,7 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
         const listTemplate = document.getElementById('listTemplate') as HTMLTemplateElement;
         container.innerHTML = '';
 
-        PlaylistHelper.Playlists.forEach((playlist) => {
+        Playlists.forEach((playlist) => {
             const clone = document.importNode(listTemplate.content, true);
             const label = clone.querySelector('label');
             const labelText = clone.querySelector('[name="labelText"]');
@@ -46,7 +49,7 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
             }
             labelText.textContent = playlist.name;
 
-            if (!PlaylistHelper.DisabledPlaylists.includes(playlist.name)) {
+            if (!DisabledPlaylists.includes(playlist.name)) {
                 // Enabled
                 label.classList.remove('disabled');
                 disabledIcon.classList.add('invisible');
@@ -89,7 +92,7 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
 
     // Finish editing button
     async function EditDoneClickEvent(event: MouseEvent) {
-        await chrome.storage.sync.set({ disabledLists: PlaylistHelper.DisabledPlaylists });
+        await chrome.storage.sync.set({ disabledLists: DisabledPlaylists });
         await UrlHelper.SetBaseUrl((document.getElementById('baseUrl') as HTMLInputElement).value);
         await chrome.runtime.sendMessage(new Message('FetchPlaylists'));
 
@@ -141,16 +144,13 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
         }
 
         async function EditDisabledPlaylists(playlistName: string): Promise<boolean> {
-            const include = PlaylistHelper.DisabledPlaylists.includes(playlistName);
+            const include = DisabledPlaylists.includes(playlistName);
             if (include) {
-                PlaylistHelper.DisabledPlaylists.splice(
-                    PlaylistHelper.DisabledPlaylists.indexOf(playlistName),
-                    1
-                );
+                DisabledPlaylists.splice(DisabledPlaylists.indexOf(playlistName), 1);
             } else {
-                PlaylistHelper.DisabledPlaylists.push(playlistName);
+                DisabledPlaylists.push(playlistName);
             }
-            await chrome.storage.sync.set({ disabledLists: PlaylistHelper.DisabledPlaylists });
+            await chrome.storage.sync.set({ disabledLists: DisabledPlaylists });
             return !include;
         }
     }

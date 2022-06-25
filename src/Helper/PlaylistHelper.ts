@@ -1,26 +1,21 @@
-import { IPlaylist } from '../Models/IPlaylist';
+import { IPlaylist } from '../Models/Playlist';
 import * as UrlHelper from './URLHelper';
-import { urlParams, url } from './URLHelper';
 
 const defaultDisabledTags = ['notsongs', 'member', 'onedrive'];
 
-export let DisabledPlaylists: string[] = [];
-export let shuffleList: number[] = [];
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export let myPlaylist: any[][] = [];
-export let Playlists: IPlaylist[] = [];
-
-export async function fetchPlaylists(): Promise<void> {
+export async function fetchPlaylists(): Promise<IPlaylist[]> {
     const response = await fetch((await UrlHelper.GetBaseUrl()) + 'Playlists.jsonc');
     const json = await response.json();
-    Playlists = json;
-    return chrome.storage.local.set({ Playlists: Playlists });
+    const Playlists: IPlaylist[] = json;
+    await chrome.storage.local.set({ Playlists: Playlists });
+    return Playlists;
 }
 
-export async function LoadPlayLists() {
+export async function LoadPlayLists(urlParams: URLSearchParams): Promise<boolean> {
     const LoadedPlaylists = new Map();
-    await getStorageLists();
+    // eslint-disable-next-line prefer-const
+    let [DisabledPlaylists, shuffleList, Playlists] = await getStorageLists();
+    const baseURL = await UrlHelper.GetBaseUrl();
 
     console.groupCollapsed('Playlists');
     console.table(Playlists);
@@ -28,7 +23,7 @@ export async function LoadPlayLists() {
 
     console.groupCollapsed('Loaded Playlists');
     await LoadAllPlaylists();
-    await ConcatPlaylistsIntoMyPlaylists();
+    const myPlaylist = await ConcatPlaylistsIntoMyPlaylists();
     console.groupEnd();
 
     console.groupCollapsed('myPlaylists');
@@ -41,7 +36,10 @@ export async function LoadPlayLists() {
     await MakeNewShuffleList();
     return Promise.resolve(true);
 
-    function getStorageLists(): Promise<unknown[]> {
+    async function getStorageLists(): Promise<[string[], number[], IPlaylist[]]> {
+        let DisabledPlaylists: string[] = [],
+            shuffleList: number[] = [],
+            Playlists: IPlaylist[] = [];
         const promises = [
             chrome.storage.sync
                 .get({ disabledLists: GenerateDefaultDisabledPlaylists() })
@@ -49,8 +47,12 @@ export async function LoadPlayLists() {
             chrome.storage.local
                 .get({ shuffleList: [] })
                 .then((_result) => (shuffleList = _result.shuffleList)),
+            chrome.storage.local
+                .get({ Playlists: [] })
+                .then((_result) => (Playlists = _result.Playlists)),
         ];
-        return Promise.all(promises);
+        await Promise.all(promises);
+        return [DisabledPlaylists, shuffleList, Playlists];
     }
 
     async function CheckAndLoadPlaylist(playlist: IPlaylist): Promise<void> {
@@ -98,7 +100,7 @@ export async function LoadPlayLists() {
     }
 
     async function LoadOnePlaylist(route: string, listName: string): Promise<void> {
-        const response = await fetch(UrlHelper.baseURL + route);
+        const response = await fetch(baseURL + route);
         const json = await response.json();
         LoadedPlaylists.set(listName, json);
         console.log('Load %s', listName);
@@ -106,7 +108,7 @@ export async function LoadPlayLists() {
     }
 
     async function LoadAllPlaylists(): Promise<void[]> {
-        if (!Playlists || Playlists.length === 0) await fetchPlaylists();
+        if (!Playlists || Playlists.length === 0) Playlists = await fetchPlaylists();
 
         const listName = urlParams.get('playlist');
 
@@ -125,8 +127,8 @@ export async function LoadPlayLists() {
         return Promise.all(promises);
     }
 
-    async function ConcatPlaylistsIntoMyPlaylists() {
-        myPlaylist = [];
+    async function ConcatPlaylistsIntoMyPlaylists(): Promise<(string | number)[][]> {
+        let myPlaylist: (string | number)[][] = [];
         // It is important to load here in the order of 'Playlists'.
         Playlists.forEach((playlist) => {
             if (LoadedPlaylists.has(playlist.name)) {
@@ -135,6 +137,7 @@ export async function LoadPlayLists() {
         });
 
         await chrome.storage.local.set({ myPlaylist: myPlaylist });
+        return myPlaylist;
     }
 
     function MakeRandomArray(length: number) {
@@ -162,19 +165,25 @@ export async function LoadPlayLists() {
             (shuffleList.length !== myPlaylist.length || urlParams.has('startplaylist'))
         ) {
             console.log('Making new shuffleList...');
-            shuffleList = MakeRandomArray(myPlaylist.length);
+            shuffleList.length = 0;
+            shuffleList.push(...MakeRandomArray(myPlaylist.length));
             await chrome.storage.local.set({ shuffleList: shuffleList });
         }
     }
 }
 
-export function CheckList(): number {
+export async function CheckList(urlString: string): Promise<number> {
+    const url = new URL(urlString);
+    const urlParams = await UrlHelper.PrepareUrlParams(urlString);
     /**
      * VideoID: 必須用引號包住，為字串型態。
      * StartTime: 只能是非負數。如果要從頭播放，輸入0
      * EndTime: 只能是非負數。如果要播放至尾，輸入0
      * Title: 必須用引號包住，為字串型態
      */
+    const myPlaylist: (string | number)[][] = (await chrome.storage.local.get({ myPlaylist: [] }))
+        .myPlaylist;
+
     //Check myPlaylist
     let i = -1;
     let flag = false;
@@ -229,7 +238,8 @@ export function CheckList(): number {
     return i;
 }
 
-export function GenerateDefaultDisabledPlaylists(): string[] {
+export async function GenerateDefaultDisabledPlaylists(): Promise<string[]> {
+    const Playlists: IPlaylist[] = (await chrome.storage.local.get({ Playlists: [] })).Playlists;
     const disabledPlaylists: string[] = [];
     Playlists.forEach((playlist) => {
         const tags = playlist.tag;
@@ -243,14 +253,18 @@ export function GenerateDefaultDisabledPlaylists(): string[] {
     return disabledPlaylists;
 }
 
-export async function ReadPlaylistsFromStorage() {
-    Playlists = ((await chrome.storage.local.get('Playlists')).Playlists as IPlaylist[]) ?? [];
-    DisabledPlaylists = (
+export async function ReadPlaylistsFromStorage(): Promise<(string[] | IPlaylist[])[]> {
+    const Playlists =
+        ((await chrome.storage.local.get('Playlists')).Playlists as IPlaylist[]) ?? [];
+    const DisabledPlaylists = (
         await chrome.storage.sync.get({ disabledLists: GenerateDefaultDisabledPlaylists() })
     ).disabledLists as string[];
+    return [Playlists, DisabledPlaylists];
 }
 
-export async function SliceShuffleList(index: number) {
+export async function SliceShuffleList(index: number): Promise<number[]> {
+    let shuffleList: number[] = (await chrome.storage.local.get({ shuffleList: [] })).shuffleList;
     shuffleList = shuffleList.slice(index).concat(shuffleList.slice(0, index));
     await chrome.storage.local.set({ shuffleList: shuffleList });
+    return shuffleList;
 }

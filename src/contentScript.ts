@@ -1,32 +1,33 @@
 import { Message } from './Models/Message';
 import * as UrlHelper from './Helper/URLHelper';
-import { urlParams, url } from './Helper/URLHelper';
 import * as DOMHelper from './Helper/DOMHelper';
 import { player } from './Helper/DOMHelper';
 
 (async function () {
     if (['/live_chat', '/live_chat_replay'].includes(window.location.pathname)) return;
 
+    const url = new URL(window.location.href);
+    const urlParams = await UrlHelper.PrepareUrlParams(url.toString());
+
     // if ('twitcasting.tv' == window.location.hostname) {
     //     // Change twitcasting archive video through hash
     //     await DOMHelper.ChangeTwitcastingArchiveVideoThroughHash();
     // }
 
-    await UrlHelper.prepareUrlParams(window.location.href);
-
-    if (!UrlHelper.HasMonitoredParameters()) {
+    if (!UrlHelper.HasMonitoredParameters(urlParams)) {
         return;
     }
 
+    await UrlHelper.SaveToStorage(urlParams.toString());
+
     try {
         await LoadPlaylists();
-        UrlHelper.RemoveFromStorage();
         await WaitForDOMLoaded();
     } catch (e) {
         if (e instanceof Error)
             switch (e.message) {
                 case 'Skip the song if it is on Google Drive and play in the background.':
-                    NextSong((await CheckList()) + 1);
+                    NextSong((await CheckList(url.toString())) + 1);
                     break;
                 case 'Google Drive files in iframe':
                     // ==> And then this contentScript will triggered inside iframe.
@@ -49,9 +50,9 @@ import { player } from './Helper/DOMHelper';
     }
 
     // Change twitcasting CSS to playing style
-    DOMHelper.ChangeTwitcastingCSSToPlayingStyle();
+    DOMHelper.ChangeTwitcastingCSSToPlayingStyle(url);
 
-    await DOMHelper.SetTheStartTimeManually();
+    await DOMHelper.SetTheStartTimeManually(url, urlParams);
 
     // Wait one second before registering the event listener
     await DoOnVideoChange();
@@ -59,12 +60,12 @@ import { player } from './Helper/DOMHelper';
     // For situations where the webpage does not reload, such as clicking a link on YouTube.
     player.onloadedmetadata = DoOnVideoChange;
 
-    async function LoadPlaylists(): Promise<void> {
-        await chrome.runtime.sendMessage(new Message('LoadPlaylists', url));
+    function LoadPlaylists(): Promise<void> {
+        return chrome.runtime.sendMessage(new Message('LoadPlaylists', url));
     }
 
-    async function CheckList(renewUrl?: string): Promise<number> {
-        return chrome.runtime.sendMessage(new Message('CheckList', renewUrl));
+    function CheckList(urlString: string): Promise<number> {
+        return chrome.runtime.sendMessage(new Message('CheckList', urlString));
     }
 
     function NextSong(index: number, UIClick = false): void {
@@ -126,10 +127,10 @@ import { player } from './Helper/DOMHelper';
         return;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async function DoOnVideoChange(loadedmetadata: unknown = undefined) {
         player.ontimeupdate = null;
-        const firstRun = 'undefined' === typeof loadedmetadata;
-        const currentIndex = firstRun ? await CheckList() : await CheckList(window.location.href);
+        const currentIndex = await CheckList(window.location.href);
 
         const shuffle = urlParams.has('shuffle') && urlParams.get('shuffle') !== '0';
 
@@ -139,8 +140,8 @@ import { player } from './Helper/DOMHelper';
             player.ontimeupdate = CheckTimeUp;
 
             // DOMHelper.DisableAutoVideoPause();
-            DOMHelper.MakePlaylistUI(currentIndex);
-            DOMHelper.MakeSubtitle();
+            DOMHelper.MakePlaylistUI(currentIndex, shuffle);
+            DOMHelper.MakeSubtitle(url.toString());
         } else {
             CleanUp();
         }
@@ -202,7 +203,8 @@ import { player } from './Helper/DOMHelper';
         function CleanUp() {
             console.log('Clean up!');
             player.ontimeupdate = null;
-            UrlHelper.prepareUrlParams(window.location.href);
+            UrlHelper.PrepareUrlParams(window.location.href);
+            UrlHelper.RemoveFromStorage();
             DOMHelper.DestroySubtitle();
             DOMHelper.HideUI();
         }

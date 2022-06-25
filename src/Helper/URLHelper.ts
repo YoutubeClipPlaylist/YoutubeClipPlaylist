@@ -1,17 +1,14 @@
-export let url: URL = new URL('https://www.youtube.com/');
-export let urlParams: URLSearchParams = url.searchParams;
 const defaultBaseUrl = 'https://raw.githubusercontent.com/jim60105/Playlists/minify/';
-export let baseURL = defaultBaseUrl;
 
-export async function prepareUrlParams(urlString: string): Promise<URLSearchParams> {
-    url = new URL(urlString);
+export async function PrepareUrlParams(urlString: string): Promise<URLSearchParams> {
+    const url = new URL(urlString);
     // Save the url first, as parameters may be removed during WaitForDomLoaded (at Youtube)
     const urlSearch: string = url.search;
 
     const search: string =
         urlSearch.indexOf('startplaylist') >= 0 ? urlSearch : await GetFromStorage(urlSearch);
-    urlParams = new URLSearchParams(search);
-    CleanUpParameters();
+    let urlParams = new URLSearchParams(search);
+    urlParams = CleanUpParameters(urlParams);
 
     console.debug('Get URL: %o', url);
     console.debug('Get Search: %s', search);
@@ -20,7 +17,9 @@ export async function prepareUrlParams(urlString: string): Promise<URLSearchPara
 }
 
 export function HasMonitoredParameters(_urlParams?: URLSearchParams): boolean {
-    _urlParams = _urlParams || urlParams;
+    _urlParams = _urlParams || new URLSearchParams(window.location.search);
+    if (!_urlParams) return false;
+
     return _urlParams.has('end') || _urlParams.has('startplaylist');
 }
 
@@ -29,10 +28,7 @@ export async function RemoveFromStorage(): Promise<void> {
     console.debug('Remove params from storage');
 }
 
-export async function SaveToStorage(_urlSearch?: string): Promise<void> {
-    if (typeof _urlSearch === 'undefined') {
-        _urlSearch = urlParams.toString();
-    }
+export async function SaveToStorage(_urlSearch: string): Promise<void> {
     console.debug('Save params to storage: %s', _urlSearch);
     await chrome.storage.local.set({ params: _urlSearch });
 }
@@ -44,7 +40,7 @@ export async function GetFromStorage(defaultValue: string): Promise<string> {
 }
 
 export function CleanUpParameters(_urlParams?: URLSearchParams): URLSearchParams {
-    _urlParams = _urlParams || urlParams;
+    _urlParams = _urlParams || new URLSearchParams(window.location.search);
     _urlParams.forEach(function (value, key) {
         switch (key) {
             case 't':
@@ -62,14 +58,12 @@ export async function SetBaseUrl(url: string): Promise<void> {
     if (!url) url = defaultBaseUrl;
 
     await chrome.storage.local.set({ baseUrl: url });
-    baseURL = url;
 }
 
 export async function GetBaseUrl(): Promise<string> {
-    baseURL = (
+    return (
         await chrome.storage.local.get({
             baseUrl: defaultBaseUrl,
         })
     ).baseUrl;
-    return baseURL;
 }

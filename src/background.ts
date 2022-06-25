@@ -1,40 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { IMessage } from './Models/Message';
 import * as UrlHelper from './Helper/URLHelper';
-import { urlParams, url } from './Helper/URLHelper';
 import * as PlaylistHelper from './Helper/PlaylistHelper';
-
-let tabId = -1;
 
 // Clear storage
 chrome.storage.local.remove(['shuffleList', 'myPlaylist', 'params']);
 
 addListeners();
 PlaylistHelper.fetchPlaylists();
-
-function updateTabId(_tabId: number | undefined) {
-    // Don't change the tabId inside Google Drive iframe
-    if (
-        '/embed/' !== url.pathname &&
-        // Don't change the tabId when tab is from popup (-1)
-        _tabId &&
-        _tabId !== chrome.tabs.TAB_ID_NONE
-    ) {
-        console.debug('Update tabId: %d', _tabId);
-        tabId = _tabId;
-
-        if (!chrome.tabs.onRemoved.hasListener(resetTabId)) {
-            chrome.tabs.onRemoved.addListener(resetTabId);
-        }
-    }
-
-    function resetTabId(_tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) {
-        if (_tabId === tabId) {
-            console.log('Tab %d CLOSED.', tabId);
-            tabId = chrome.tabs.TAB_ID_NONE;
-        }
-    }
-}
 
 function addListeners() {
     function _addListener<T>(
@@ -55,43 +28,67 @@ function addListeners() {
     }
 
     _addListener<string>('LoadPlaylists', async (message, sender, sendResponse) => {
-        await UrlHelper.prepareUrlParams(message.Data);
-        updateTabId(sender.tab?.id);
-        await PlaylistHelper.LoadPlayLists();
+        const urlParams = await UrlHelper.PrepareUrlParams(message.Data);
+        await PlaylistHelper.LoadPlayLists(urlParams);
+
+        if (!chrome.tabs.onRemoved.hasListener(resetTabId)) {
+            chrome.tabs.onRemoved.addListener(resetTabId);
+        }
+
+        function resetTabId(_tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) {
+            if (sender.tab?.id && _tabId === sender.tab.id) {
+                console.log('Tab %d CLOSED.', _tabId);
+                UrlHelper.RemoveFromStorage();
+                chrome.tabs.onRemoved.removeListener(resetTabId);
+            }
+        }
+
         sendResponse();
     });
     _addListener<{ index: number; UIClick: boolean }>(
         'NextSongToBackground',
         (message, sender, sendResponse) => {
-            updateTabId(sender.tab?.id);
-            NextSong(message.Data.index, message.Data.UIClick);
+            let tabId: number = chrome.tabs.TAB_ID_NONE;
+            if (sender.tab && sender.tab.url) {
+                if (sender.tab.url.indexOf('/embed/') > 0) {
+                    tabId = sender.tab.openerTabId ?? tabId;
+                } else {
+                    tabId = sender.tab.id ?? tabId;
+                }
+            }
+            NextSong(tabId, message.Data.index, message.Data.UIClick);
             sendResponse();
         }
     );
-    _addListener<boolean>('StepShuffle', (message, sender, sendResponse) => {
-        PlaylistHelper.shuffleList.push(PlaylistHelper.shuffleList.shift() ?? 0);
-        chrome.storage.local.set({ shuffleList: PlaylistHelper.shuffleList });
-        updateTabId(sender.tab?.id);
-        NextSong(PlaylistHelper.shuffleList[0]);
+    _addListener<boolean>('StepShuffle', async (message, sender, sendResponse) => {
+        const shuffleList: number[] = (await chrome.storage.local.get('shuffleList')).shuffleList;
+        shuffleList.push(shuffleList.shift() ?? 0);
+        chrome.storage.local.set({ shuffleList: shuffleList });
+        let tabId: number = chrome.tabs.TAB_ID_NONE;
+        if (sender.tab && sender.tab.url) {
+            if (sender.tab.url.indexOf('/embed/') > 0) {
+                tabId = sender.tab.openerTabId ?? tabId;
+            } else {
+                tabId = sender.tab.id ?? tabId;
+            }
+        }
+        NextSong(tabId, shuffleList[0]);
         sendResponse();
     });
     _addListener<string>('CheckList', async (message, sender, sendResponse) => {
-        if (typeof message.Data !== 'undefined' && message.Data.length > 0) {
-            await UrlHelper.prepareUrlParams(message.Data);
-        }
-
-        sendResponse(PlaylistHelper.CheckList());
+        sendResponse(await PlaylistHelper.CheckList(message.Data));
     });
-    _addListener<boolean>('GetNowPlaying', (message, sender, sendResponse) => {
-        sendResponse(PlaylistHelper.myPlaylist[PlaylistHelper.CheckList()]);
+    _addListener<string>('GetNowPlaying', async (message, sender, sendResponse) => {
+        const myPlaylist = (await chrome.storage.local.get('myPlaylist')).myPlaylist;
+        sendResponse(myPlaylist[await PlaylistHelper.CheckList(message.Data)]);
     });
     _addListener<boolean>('FetchPlaylists', async (message, sender, sendResponse) => {
-        await PlaylistHelper.fetchPlaylists();
-        sendResponse();
+        sendResponse(await PlaylistHelper.fetchPlaylists());
     });
 }
 
-async function NextSong(index: number, UIClick = false) {
+async function NextSong(tabId: number, index: number, UIClick = false) {
+    const urlParams = new URLSearchParams(await UrlHelper.GetFromStorage(''));
     const shuffle = urlParams.has('shuffle') && urlParams.get('shuffle') !== '0';
 
     if (tabId < 0) {
@@ -101,22 +98,24 @@ async function NextSong(index: number, UIClick = false) {
         if (tabId < 0) return;
     }
 
-    if (PlaylistHelper.myPlaylist.length == 0) {
-        console.warn('Playlist not loaded! Reloading playlists...');
-        await PlaylistHelper.LoadPlayLists();
-    }
+    const myPlaylist = (await chrome.storage.local.get('myPlaylist')).myPlaylist;
+    const shuffleList = (await chrome.storage.local.get('shuffleList')).shuffleList;
+    // if (PlaylistHelper.myPlaylist.length == 0) {
+    //     console.warn('Playlist not loaded! Reloading playlists...');
+    //     await PlaylistHelper.LoadPlayLists();
+    // }
 
-    if (index >= PlaylistHelper.myPlaylist.length) {
-        console.warn('Index out of bound! Reloading playlists...');
-        await PlaylistHelper.LoadPlayLists();
-        index = 0;
-    }
+    // if (index >= PlaylistHelper.myPlaylist.length) {
+    //     console.warn('Index out of bound! Reloading playlists...');
+    //     await PlaylistHelper.LoadPlayLists();
+    //     index = 0;
+    // }
 
     if (UIClick) {
         // Modify Shuffle List on UI Click
         if (shuffle) {
-            const indexInShuffleList = PlaylistHelper.shuffleList.findIndex(
-                (element) => element === index
+            const indexInShuffleList = shuffleList.findIndex(
+                (element: number) => element === index
             );
             await PlaylistHelper.SliceShuffleList(indexInShuffleList);
         }
@@ -127,7 +126,7 @@ async function NextSong(index: number, UIClick = false) {
 
     urlParams.delete('startplaylist');
 
-    const nextSong = PlaylistHelper.myPlaylist[index];
+    const nextSong = myPlaylist[index];
 
     urlParams.set('v', nextSong[0]);
     urlParams.set('t', nextSong[1]);
@@ -153,7 +152,7 @@ async function NextSong(index: number, UIClick = false) {
             newURL = `https://www.youtube.com/watch?${urlParams.toString()}`;
         }
     }
-    await UrlHelper.SaveToStorage();
+    await UrlHelper.SaveToStorage(urlParams.toString());
 
     console.log('Redirect: %s', newURL);
     chrome.tabs.update(tabId, { url: newURL });
