@@ -87,9 +87,10 @@ function addListeners() {
     });
 }
 
-async function NextSong(tabId: number, index: number, UIClick = false) {
+async function NextSong(tabId: number, _index: number, UIClick = false) {
     const urlParams = new URLSearchParams(await UrlHelper.GetFromStorage(''));
     const shuffle = urlParams.has('shuffle') && urlParams.get('shuffle') !== '0';
+    let index = _index;
 
     if (tabId < 0) {
         console.warn('TabId not defined!');
@@ -122,6 +123,11 @@ async function NextSong(tabId: number, index: number, UIClick = false) {
         console.log(`Next Song ${index} by UI click`);
     } else {
         console.log(`Next Song ${index}`);
+    }
+
+    if (index >= myPlaylist.length) {
+        index = 0;
+        console.log('Playlist ended! Playing first song...');
     }
 
     urlParams.delete('startplaylist');
