@@ -44,7 +44,7 @@ export async function LoadPlayLists(
             Playlists: IPlaylist[] = [];
         const promises = [
             chrome.storage.sync
-                .get({ disabledLists: GenerateDefaultDisabledPlaylists() })
+                .get({ disabledLists: await GenerateDefaultDisabledPlaylists() })
                 .then((_result) => (DisabledPlaylists = _result.disabledLists)),
             chrome.storage.local
                 .get({ shuffleList: [] })
@@ -260,9 +260,12 @@ export async function GenerateDefaultDisabledPlaylists(): Promise<string[]> {
 export async function ReadPlaylistsFromStorage(): Promise<(string[] | IPlaylist[])[]> {
     const Playlists =
         ((await chrome.storage.local.get('Playlists')).Playlists as IPlaylist[]) ?? [];
-    const DisabledPlaylists = (
-        await chrome.storage.sync.get({ disabledLists: GenerateDefaultDisabledPlaylists() })
-    ).disabledLists as string[];
+    const DisabledPlaylists =
+        ((
+            await chrome.storage.sync.get({
+                disabledLists: await GenerateDefaultDisabledPlaylists(),
+            })
+        ).disabledLists as string[]) ?? [];
     return [Playlists, DisabledPlaylists];
 }
 
