@@ -63,10 +63,20 @@ jobs:
           files: |
             YoutubeClipPlaylist.zip
 
+  upload_to_chrome_web_store:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: artifact
+
       - name: Upload to Chrome Web Store
         uses: mobilefirstllc/cws-publish@latest
         with:
-          action: 'publish'  # one of: upload, publish, testers
+          action: 'upload'  # one of: upload, publish, testers
           client_id: ${{ secrets.CLIENT_ID }}
           client_secret: ${{ secrets.CLIENT_SECRET }}
           refresh_token: ${{ secrets.REFRESH_TOKEN }}
