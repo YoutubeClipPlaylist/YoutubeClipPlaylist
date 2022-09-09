@@ -117,7 +117,12 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
         if (shuffle) {
             url.searchParams.set('shuffle', '1');
             await chrome.runtime.sendMessage(new Message('LoadPlaylists', url.href));
-            await chrome.runtime.sendMessage(new Message('StepShuffle'));
+            const shuffleList: number[] = (await chrome.storage.local.get({ shuffleList: [] }))
+                .shuffleList;
+            UrlHelper.SaveToStorage(url.search);
+            await chrome.runtime.sendMessage(
+                new Message('NextSongToBackground', { index: shuffleList[0], UIClick: false })
+            );
         } else {
             await chrome.runtime.sendMessage(new Message('LoadPlaylists', url.href));
             await chrome.runtime.sendMessage(

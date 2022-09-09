@@ -56,25 +56,11 @@ function addListeners() {
                     tabId = sender.tab.id ?? tabId;
                 }
             }
+
             NextSong(tabId, message.Data.index, message.Data.UIClick);
             sendResponse();
         }
     );
-    _addListener<boolean>('StepShuffle', async (message, sender, sendResponse) => {
-        const shuffleList: number[] = (await chrome.storage.local.get('shuffleList')).shuffleList;
-        shuffleList.push(shuffleList.shift() ?? 0);
-        chrome.storage.local.set({ shuffleList: shuffleList });
-        let tabId: number = chrome.tabs.TAB_ID_NONE;
-        if (sender.tab && sender.tab.url) {
-            if (sender.tab.url.indexOf('/embed/') > 0) {
-                tabId = sender.tab.openerTabId ?? tabId;
-            } else {
-                tabId = sender.tab.id ?? tabId;
-            }
-        }
-        NextSong(tabId, shuffleList[0]);
-        sendResponse();
-    });
     _addListener<string>('CheckList', async (message, sender, sendResponse) => {
         sendResponse(await PlaylistHelper.CheckList(message.Data));
     });

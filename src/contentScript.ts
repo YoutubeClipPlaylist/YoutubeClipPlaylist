@@ -78,8 +78,12 @@ import { player } from './Helper/DOMHelper';
         );
     }
 
-    function StepShuffle(): void {
-        chrome.runtime.sendMessage(new Message('StepShuffle'));
+    async function StepShuffle(): Promise<void> {
+        const shuffleList: number[] = (await chrome.storage.local.get('shuffleList')).shuffleList;
+        shuffleList.push(shuffleList.shift() ?? 0);
+        chrome.storage.local.set({ shuffleList: shuffleList });
+
+        NextSong(shuffleList[0]);
     }
 
     async function WaitForDOMLoaded(): Promise<void> {

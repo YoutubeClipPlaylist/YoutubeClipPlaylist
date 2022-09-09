@@ -137,8 +137,9 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
     if ('undefined' === typeof plBox) {
         plBox = document.body.appendChild(document.createElement('div'));
     } else {
-        plBox.outerHTML = '<div></div>'
+        plBox.outerHTML = '<div></div>';
     }
+    plBox.id = 'plBox';
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const myPlaylist: any[][] = (await chrome.storage.local.get('myPlaylist')).myPlaylist;
@@ -281,6 +282,7 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
         },
         false
     );
+    console.debug('Playlist UI loaded');
 }
 
 // export async function ChangeTwitcastingArchiveVideoThroughHash() {
