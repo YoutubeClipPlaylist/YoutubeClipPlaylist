@@ -133,13 +133,23 @@ async function NextSong(tabId: number, _index: number, UIClick = false) {
 
     let newURL: string;
     if (nextSong[0].indexOf('http') >= 0) {
-        // URL (Onedrive)
+        // URL
         const _url = new URL(nextSong[0]);
         if (nextSong[0].indexOf('?') > 0) {
             _url.searchParams.forEach(function (value, key) {
                 urlParams.set(key, value);
             });
         }
+
+        // OneDrive
+        if (
+            nextSong[0].indexOf('sharepoint.com') > 0 ||
+            nextSong[0].indexOf('onedrive.live.com') > 0 ||
+            nextSong[0].indexOf('1drv.ms') > 0
+        ) {
+            urlParams.set('nav', `{"playbackOptions":{"startTimeInSeconds":${nextSong[1]}}}`);
+        }
+
         newURL = `${_url.origin}${_url.pathname}?${urlParams.toString()}${_url.hash}`;
     } else {
         // ID
