@@ -12,6 +12,7 @@ import { player } from './Helper/DOMHelper';
 
     const url = new URL(window.location.href);
     const urlParams = await UrlHelper.PrepareUrlParams(url.toString());
+    let currentIndex = -1;
 
     // if ('twitcasting.tv' == window.location.hostname) {
     //     // Change twitcasting archive video through hash
@@ -138,7 +139,13 @@ import { player } from './Helper/DOMHelper';
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async function DoOnVideoChange(loadedmetadata: unknown = undefined) {
         player.ontimeupdate = null;
-        const currentIndex = await CheckList(window.location.href);
+        const _currentIndex = await CheckList(window.location.href);
+
+        if (currentIndex == _currentIndex) {
+            return;
+        } else {
+            currentIndex = _currentIndex;
+        }
 
         const shuffle = urlParams.has('shuffle') && urlParams.get('shuffle') !== '0';
 
@@ -148,8 +155,8 @@ import { player } from './Helper/DOMHelper';
             player.ontimeupdate = CheckTimeUp;
 
             // DOMHelper.DisableAutoVideoPause();
-            DOMHelper.MakePlaylistUI(currentIndex, shuffle);
-            DOMHelper.MakeSubtitle(url.toString());
+            await DOMHelper.MakePlaylistUI(currentIndex, shuffle);
+            await DOMHelper.MakeSubtitle(url.toString());
         } else {
             CleanUp();
         }
