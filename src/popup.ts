@@ -116,15 +116,20 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
         const shuffle = document.getElementById('shuffle')?.classList.contains('active');
         if (shuffle) {
             url.searchParams.set('shuffle', '1');
-            await chrome.runtime.sendMessage(new Message('LoadPlaylists', url.href));
+        } else {
+            url.searchParams.delete('shuffle');
+        }
+
+        await chrome.runtime.sendMessage(new Message('LoadPlaylists', url.href));
+        UrlHelper.SaveToStorage(url.search);
+
+        if (shuffle) {
             const shuffleList: number[] = (await chrome.storage.local.get({ shuffleList: [] }))
                 .shuffleList;
-            UrlHelper.SaveToStorage(url.search);
             await chrome.runtime.sendMessage(
                 new Message('NextSongToBackground', { index: shuffleList[0], UIClick: false })
             );
         } else {
-            await chrome.runtime.sendMessage(new Message('LoadPlaylists', url.href));
             await chrome.runtime.sendMessage(
                 new Message('NextSongToBackground', { index: 0, UIClick: false })
             );
