@@ -138,13 +138,13 @@ import { player } from './Helper/DOMHelper';
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async function DoOnVideoChange(loadedmetadata: unknown = undefined) {
-        player.ontimeupdate = null;
         const _currentIndex = await CheckList(window.location.href);
 
         if (currentIndex == _currentIndex) {
             return;
         } else {
             currentIndex = _currentIndex;
+            player.ontimeupdate = null;
         }
 
         const shuffle = urlParams.has('shuffle') && urlParams.get('shuffle') !== '0';
