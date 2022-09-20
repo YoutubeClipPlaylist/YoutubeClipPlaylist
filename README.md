@@ -23,12 +23,13 @@
 
 ## 安裝步驟
 
-1. 參照[這篇文章](https://blog.maki0419.com/2022/01/media-autoplay-on-browser.html)，設定下方網域的允許自動播放
+1. 參照[這篇文章](https://blog.maki0419.com/2022/01/media-autoplay-on-browser.html)，設定下方網域的**允許自動播放**
 
     - `https://www.youtube.com:443`
-    - `https://1drv.ms:443`
+    - `https://onedrive.live.com:443`
     - `https://gothuedutw-my.sharepoint.com:443`
     - `https://twitcasting.tv:443`
+    - `https://drive.google.com:443`
 
 1. 安裝瀏覧器擴充功能: [Chrome Web Store](https://chrome.google.com/webstore/detail/kdlhjpdoaabhpolkaghkjklfcdfjapkh)
 
@@ -79,42 +80,7 @@
 
 ![pic](pic/sub.png)
 
-## 播放單一播放清單
-
-    https://www.youtube.com/?
-        startplaylist &
-        playlist=QuonTamaSongList
-
-## Youtube 網址格式
-
-    https://www.youtube.com/watch?
-        v=ETjgki1sSgc &
-        t=1591 &
-        end=1880 &
-        shuffle=1 &
-        playlistinclude=quon &
-        playlistexclude=member
-
-## Google Drive 網址格式
-
-    https://drive.google.com/file/d/13LaALYNOmdN3GfD7aeKreyzshdKX-Tvz/view?
-        t=884 &
-        end=1166 &
-        shuffle=1 &
-        playlistinclude=quon &
-        playlistexclude=member
-
-## 其它網址格式 (目前支援 OneDrive、twitcasting)
-
-其它格式是以原網址直接當做 VideoID 傳入
-
-    https://twitcasting.tv/quon01tama/movie/688324697
-        t=1470 &
-        end=1653 &
-        shuffle=1 &
-        playlistinclude=twitcasting
-
-## 參數
+## 讀取的網址參數
 
 - VideoID: 在 Youtube 原生為`v`參數；Google Drive 是在路徑中；其它為原始網址
 - `t`: 影片播放開始時間
