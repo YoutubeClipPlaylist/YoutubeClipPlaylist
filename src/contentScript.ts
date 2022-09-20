@@ -21,6 +21,11 @@ import { player } from './Helper/DOMHelper';
 
     if (!UrlHelper.HasMonitoredParameters(urlParams)) {
         return;
+    } else {
+        // Youtube Embed video
+        if (window.location != window.parent.location) {
+            if (!document.referrer.startsWith('https://drive.google.com/')) return;
+        }
     }
 
     // first start
@@ -37,10 +42,14 @@ import { player } from './Helper/DOMHelper';
     } catch (e) {
         if (e instanceof Error)
             switch (e.message) {
-                case 'Skip the song if it is on Google Drive and play in the background.':
+                case 'Skip the song if it is on Google Drive and play in the background':
+                    console.debug(
+                        'Skip the song if it is on Google Drive and play in the background'
+                    );
                     NextSong((await CheckList(url.toString())) + 1);
                     break;
                 case 'Google Drive files in iframe':
+                    console.debug('Google Drive files in iframe');
                     // ==> And then this contentScript will triggered inside iframe.
                     return;
                 default:
@@ -135,7 +144,7 @@ import { player } from './Helper/DOMHelper';
 
         // Skip the song if it is on Google Drive and play in the background.
         if ('/embed/' === url.pathname && 'hidden' === document.visibilityState) {
-            throw new Error('Skip the song if it is on Google Drive and play in the background.');
+            throw new Error('Skip the song if it is on Google Drive and play in the background');
         }
 
         await DOMHelper.WaitUntilThePlayerIsReady();
