@@ -3,9 +3,6 @@ import { IMessage } from './Models/Message';
 import * as UrlHelper from './Helper/URLHelper';
 import * as PlaylistHelper from './Helper/PlaylistHelper';
 
-// Clear storage
-chrome.storage.local.remove(['shuffleList', 'myPlaylist', 'params']);
-
 addListeners();
 PlaylistHelper.fetchPlaylists();
 

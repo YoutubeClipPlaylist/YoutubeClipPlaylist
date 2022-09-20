@@ -23,6 +23,12 @@ import { player } from './Helper/DOMHelper';
         return;
     }
 
+    // first start
+    if (urlParams.has('startplaylist')) {
+        // Clear storage
+        chrome.storage.local.remove(['shuffleList', 'myPlaylist', 'params']);
+    }
+
     await UrlHelper.SaveToStorage(urlParams.toString());
 
     try {
