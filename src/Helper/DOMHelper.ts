@@ -41,15 +41,19 @@ export function elementReady(selector: string, tagName?: string): Promise<Elemen
 }
 
 export async function WaitUntilThePlayerIsReady(): Promise<HTMLVideoElement> {
-    // Wait until the player is ready.
     player = (await elementReady('video', 'video')) as HTMLVideoElement;
+
+    // Wait until the player is ready.
     return new Promise((resolve, reject) => {
         const waitPlayerInterval = setInterval(() => {
-            // if (!player.paused) {
-            //     player.pause();
-            // }
-            console.debug('Waiting for the player to be ready... State: ' + player.readyState);
+            // Load the player manually if preload is disabled.
+            if (player.preload === 'none' && player.readyState === 0) {
+                player.play();
+            }
+
+            console.debug('Waiting for the player to be ready... ReadyState: ' + player.readyState);
             if (player.readyState === 1 || player.readyState === 4) {
+                console.debug('The player is ready.');
                 clearInterval(waitPlayerInterval);
                 resolve(player);
             }
