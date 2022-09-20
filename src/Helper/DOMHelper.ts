@@ -48,7 +48,13 @@ export async function WaitUntilThePlayerIsReady(): Promise<HTMLVideoElement> {
         const waitPlayerInterval = setInterval(() => {
             // Load the player manually if preload is disabled.
             if (player.preload === 'none' && player.readyState === 0) {
-                player.play();
+                player.preload = 'auto';
+            }
+
+            if (!player.oncanplay) {
+                player.oncanplay = () => {
+                    player.play();
+                };
             }
 
             console.debug('Waiting for the player to be ready... ReadyState: ' + player.readyState);
