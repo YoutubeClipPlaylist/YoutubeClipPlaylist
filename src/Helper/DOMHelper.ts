@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Message } from '../Models/Message';
+import { ISong } from '../Models/Song';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const ASS: any;
@@ -154,7 +155,7 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
     plBox = document.getElementById('plBox') as HTMLDivElement;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const myPlaylist: any[][] = (await chrome.storage.local.get('myPlaylist')).myPlaylist;
+    const myPlaylist: ISong[] = (await chrome.storage.local.get('myPlaylist')).myPlaylist;
 
     // Make Playlist
     let pl: number[] = [];
@@ -177,17 +178,25 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
     const plContent = document.getElementById('plContent') as HTMLUListElement;
 
     // Make li template
-    const liTemplate = document.createElement('li');
+    const liTemplate = document.getElementById('plLiTemplate') as HTMLTemplateElement;
 
     // Make list
     pl.forEach(function (plElement, plIndex) {
-        const li = document.createElement('li');
-        // 顯示歌曲文字
-        if (myPlaylist[plElement].length >= 4) {
-            li.innerHTML = myPlaylist[plElement][3];
+        const clone = liTemplate.content.cloneNode(true) as DocumentFragment;
+        const li = clone.querySelector('li') as HTMLLIElement;
+        // 曲名
+        if (myPlaylist[plElement].Title) {
+            li.getElementsByClassName('songName')[0].innerHTML = myPlaylist[plElement].Title ?? '';
         } else {
             // Fallback
-            li.innerHTML = `${myPlaylist[plElement][0]}: ${myPlaylist[plElement][1]}`;
+            li.getElementsByClassName(
+                'songName'
+            )[0].innerHTML = `${myPlaylist[plElement].VideoID}: ${myPlaylist[plElement].StartTime}`;
+        }
+
+        // 歌手
+        if (myPlaylist[plElement].Singer) {
+            li.getElementsByClassName('singer')[0].innerHTML = myPlaylist[plElement].Singer ?? '';
         }
 
         // Onclick

@@ -1,3 +1,4 @@
+import { ISong } from './Models/Song';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { IMessage } from './Models/Message';
 import * as UrlHelper from './Helper/URLHelper';
@@ -62,7 +63,7 @@ function addListeners() {
         sendResponse(await PlaylistHelper.CheckList(message.Data));
     });
     _addListener<string>('GetNowPlaying', async (message, sender, sendResponse) => {
-        const myPlaylist = (await chrome.storage.local.get('myPlaylist')).myPlaylist;
+        const myPlaylist: ISong[] = (await chrome.storage.local.get('myPlaylist')).myPlaylist;
         sendResponse(myPlaylist[await PlaylistHelper.CheckList(message.Data)]);
     });
     _addListener<boolean>('FetchPlaylists', async (message, sender, sendResponse) => {
@@ -82,13 +83,7 @@ async function NextSong(tabId: number, _index: number, UIClick = false) {
         if (tabId < 0) return;
     }
 
-    let myPlaylist = (await chrome.storage.local.get({ myPlaylist: [] })).myPlaylist as [
-        string,
-        number,
-        number,
-        string | undefined,
-        string | undefined
-    ][];
+    let myPlaylist = (await chrome.storage.local.get({ myPlaylist: [] })).myPlaylist as ISong[];
     const shuffleList = (await chrome.storage.local.get('shuffleList')).shuffleList;
 
     if (myPlaylist.length == 0) {
@@ -124,15 +119,15 @@ async function NextSong(tabId: number, _index: number, UIClick = false) {
 
     const nextSong = myPlaylist[index];
 
-    urlParams.set('v', nextSong[0]);
-    urlParams.set('t', nextSong[1].toString());
-    urlParams.set('end', nextSong[2].toString());
+    urlParams.set('v', nextSong.VideoID);
+    urlParams.set('t', nextSong.StartTime.toString());
+    urlParams.set('end', nextSong.EndTime.toString());
 
     let newURL: string;
-    if (nextSong[0].indexOf('http') >= 0) {
+    if (nextSong.VideoID.indexOf('http') >= 0) {
         // URL
-        const _url = new URL(nextSong[0]);
-        if (nextSong[0].indexOf('?') > 0) {
+        const _url = new URL(nextSong.VideoID);
+        if (nextSong.VideoID.indexOf('?') > 0) {
             _url.searchParams.forEach(function (value, key) {
                 urlParams.set(key, value);
             });
@@ -140,19 +135,24 @@ async function NextSong(tabId: number, _index: number, UIClick = false) {
 
         // OneDrive
         if (
-            nextSong[0].indexOf('sharepoint.com') > 0 ||
-            nextSong[0].indexOf('onedrive.live.com') > 0 ||
-            nextSong[0].indexOf('1drv.ms') > 0
+            nextSong.VideoID.indexOf('sharepoint.com') > 0 ||
+            nextSong.VideoID.indexOf('onedrive.live.com') > 0 ||
+            nextSong.VideoID.indexOf('1drv.ms') > 0
         ) {
-            urlParams.set('nav', `{"playbackOptions":{"startTimeInSeconds":${nextSong[1]}}}`);
+            urlParams.set(
+                'nav',
+                `{"playbackOptions":{"startTimeInSeconds":${nextSong.StartTime}}}`
+            );
         }
 
         newURL = `${_url.origin}${_url.pathname}?${urlParams.toString()}${_url.hash}`;
     } else {
         // ID
-        if (nextSong[0].length > 20) {
+        if (nextSong.VideoID.length > 20) {
             // Google Drive
-            newURL = `https://drive.google.com/file/d/${nextSong[0]}/view?${urlParams.toString()}`;
+            newURL = `https://drive.google.com/file/d/${
+                nextSong.VideoID
+            }/view?${urlParams.toString()}`;
         } else {
             // Youtube
             newURL = `https://www.youtube.com/watch?${urlParams.toString()}`;

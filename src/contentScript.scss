@@ -48,13 +48,25 @@
     }
 }
 
-#plContent>li:first-child {
-    font-size: 25px;
-    list-style-type: none;
-    font-weight: bold;
-    text-align: center;
-    border-bottom: .1em solid rgb(170, 170, 170);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+#plContent>li {
+    position: relative;
+
+    &:first-child {
+        font-size: 25px;
+        list-style-type: none;
+        font-weight: bold;
+        text-align: center;
+        border-bottom: .1em solid rgb(170, 170, 170);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    span.singer {
+        position: absolute;
+        right: 0px;
+        bottom: 0px;
+        font-size: 0.8em;
+        color: darkgray;
+    }
 }

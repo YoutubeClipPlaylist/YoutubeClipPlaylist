@@ -1,4 +1,5 @@
 import { IPlaylist } from '../Models/Playlist';
+import { ISong, Song } from '../Models/Song';
 import * as UrlHelper from './URLHelper';
 
 const defaultDisabledTags = ['notsongs', 'member', 'onedrive'];
@@ -11,9 +12,7 @@ export async function fetchPlaylists(): Promise<IPlaylist[]> {
     return Playlists;
 }
 
-export async function LoadPlayLists(
-    urlParams: URLSearchParams
-): Promise<[string, number, number, string | undefined, string | undefined][]> {
+export async function LoadPlayLists(urlParams: URLSearchParams): Promise<ISong[]> {
     const LoadedPlaylists = new Map();
     // eslint-disable-next-line prefer-const
     let [DisabledPlaylists, shuffleList, Playlists] = await getStorageLists();
@@ -103,10 +102,22 @@ export async function LoadPlayLists(
 
     async function LoadOnePlaylist(route: string, listName: string): Promise<void> {
         const response = await fetch(baseURL + route);
-        const json = await response.json();
-        LoadedPlaylists.set(listName, json);
+        const json = (await response.json()) as [
+            string,
+            number,
+            number,
+            string | undefined,
+            string | undefined
+        ][];
+        const tempList: ISong[] = [];
+
+        json.forEach((input) => {
+            const song: Song = new Song(...input);
+            tempList.push(song);
+        });
+        LoadedPlaylists.set(listName, tempList);
         console.log('Load %s', listName);
-        console.table(json);
+        console.table(tempList);
     }
 
     async function LoadAllPlaylists(): Promise<void[]> {
@@ -129,14 +140,17 @@ export async function LoadPlayLists(
         return Promise.all(promises);
     }
 
-    async function ConcatPlaylistsIntoMyPlaylists(): Promise<
-        [string, number, number, string | undefined, string | undefined][]
-    > {
-        let myPlaylist: [string, number, number, string | undefined, string | undefined][] = [];
+    async function ConcatPlaylistsIntoMyPlaylists(): Promise<ISong[]> {
+        let myPlaylist: ISong[] = [];
         // It is important to load here in the order of 'Playlists'.
         Playlists.forEach((playlist) => {
             if (LoadedPlaylists.has(playlist.name)) {
-                myPlaylist = myPlaylist.concat(LoadedPlaylists.get(playlist.name));
+                const tempPlaylist = LoadedPlaylists.get(playlist.name);
+                tempPlaylist.forEach((element: ISong) => {
+                    element.Singer = playlist.singer;
+                });
+
+                myPlaylist = myPlaylist.concat(tempPlaylist);
             }
         });
 
@@ -179,14 +193,7 @@ export async function LoadPlayLists(
 export async function CheckList(urlString: string): Promise<number> {
     const url = new URL(urlString);
     const urlParams = await UrlHelper.PrepareUrlParams(urlString);
-    /**
-     * VideoID: 必須用引號包住，為字串型態。
-     * StartTime: 只能是非負數。如果要從頭播放，輸入0
-     * EndTime: 只能是非負數。如果要播放至尾，輸入0
-     * Title: 必須用引號包住，為字串型態
-     */
-    const myPlaylist: (string | number)[][] = (await chrome.storage.local.get({ myPlaylist: [] }))
-        .myPlaylist;
+    const myPlaylist: ISong[] = (await chrome.storage.local.get({ myPlaylist: [] })).myPlaylist;
 
     //Check myPlaylist
     let i = -1;
@@ -202,9 +209,9 @@ export async function CheckList(urlString: string): Promise<number> {
         for (i = 0; i < myPlaylist.length; i++) {
             // VideoId
             if (
-                myPlaylist[i][0] == nowParameters.v &&
+                myPlaylist[i].VideoID == nowParameters.v &&
                 // StartTime
-                myPlaylist[i][1] == nowParameters.t
+                myPlaylist[i].StartTime == nowParameters.t
             ) {
                 flag = true;
                 break;
@@ -215,11 +222,12 @@ export async function CheckList(urlString: string): Promise<number> {
         for (i = 0; i < myPlaylist.length; i++) {
             // VideoId
             if (
-                (myPlaylist[i][0] == nowParameters.v ||
-                    myPlaylist[i][0] == url.origin + url.pathname ||
-                    myPlaylist[i][0] == url.origin + url.pathname + url.hash) &&
+                (myPlaylist[i].VideoID == nowParameters.v ||
+                    myPlaylist[i].VideoID == url.origin + url.pathname ||
+                    myPlaylist[i].VideoID == url.origin + url.pathname + url.hash) &&
                 // StartTime
-                (myPlaylist[i][1] == nowParameters.t || myPlaylist[i][1] == nowParameters.start)
+                (myPlaylist[i].StartTime == nowParameters.t ||
+                    myPlaylist[i].StartTime.toString() == nowParameters.start)
             ) {
                 flag = true;
                 break;
@@ -229,10 +237,10 @@ export async function CheckList(urlString: string): Promise<number> {
     if (flag) {
         console.group('Check List');
         console.log(`Playing on Playlist No.${i}`);
-        console.log(`Name : ${myPlaylist[i][3]}`);
-        console.log(`URL  : ${myPlaylist[i][0]}`);
-        console.log(`Start: ${myPlaylist[i][1]}`);
-        console.log(`End  : ${myPlaylist[i][2]}`);
+        console.log(`Name : ${myPlaylist[i].Title}`);
+        console.log(`URL  : ${myPlaylist[i].VideoID}`);
+        console.log(`Start: ${myPlaylist[i].StartTime}`);
+        console.log(`End  : ${myPlaylist[i].EndTime}`);
         console.groupEnd();
     } else {
         console.log('Not playing in the playlist.');
