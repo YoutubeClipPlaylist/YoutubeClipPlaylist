@@ -226,17 +226,23 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
     // 開閉清單
     // 預設以關閉清單的狀態初始化Style，然後一秒後觸發打開動作
     let isOpen = (await chrome.storage.local.get({ isOpen: true })).isOpen as boolean;
-    setTimeout(() => {
-        toggleDisplay(isOpen);
-    }, 1000);
+    let isOpen_option = false;
+    const plOption = document.getElementById('plOption') as HTMLDivElement;
+    const plOptionTitle = document.getElementById('plOpenOption') as HTMLDivElement;
 
-    function toggleDisplay(open: boolean) {
+    async function toggleDisplay(open: boolean) {
         if (open) {
             // 開啟清單
             plBox.style.right = '0px';
             plTitle.style.right = `${width}px`;
+            plOption.style.bottom = `-210px`;
         } else {
             // 關閉清單
+            if (isOpen_option) {
+                toggleDisplay_option(false);
+                await new Promise((r) => setTimeout(r, 1000));
+            }
+            plOption.style.bottom = '-235px';
             plBox.style.right = `-${width}px`;
             plTitle.style.right = '0px';
         }
@@ -244,14 +250,23 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
         chrome.storage.local.set({ isOpen: isOpen });
     }
 
-    // 滑鼠點擊開閉UI
-    plTitle.addEventListener(
-        'click',
-        function () {
-            toggleDisplay(!isOpen);
-        },
-        false
-    );
+    function toggleDisplay_option(open: boolean) {
+        if (open) {
+            // 開啟清單
+            plOption.style.bottom = '0px';
+        } else {
+            // 關閉清單
+            plOption.style.bottom = `-210px`;
+        }
+        isOpen_option = open;
+    }
+
+    setTimeout(() => {
+        toggleDisplay(isOpen);
+    }, 1000);
+
+    plTitle.addEventListener('click', () => toggleDisplay(!isOpen), false);
+    plOptionTitle.addEventListener('click', () => toggleDisplay_option(!isOpen_option), false);
     console.debug('Playlist UI loaded');
 }
 

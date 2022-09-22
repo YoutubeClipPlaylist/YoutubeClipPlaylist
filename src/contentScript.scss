@@ -89,7 +89,7 @@
 
 #plOption {
     position: fixed;
-    bottom: 0;
+    bottom: -210px;
     height: 200px;
     width: -webkit-fill-available;
 
@@ -108,6 +108,8 @@
 
     border-top: 1px solid gray;
 
+    transition: all 1s ease 0s;
+
     #plOpenOption {
         position: absolute;
 
@@ -117,7 +119,7 @@
         height: 19px;
         transform: translateX(-50%);
 
-        cursor: cursor;
+        cursor: pointer;
 
         margin: 0;
         background: #222222DD;
@@ -129,8 +131,6 @@
         text-align: center;
         font-size: unset;
         font-weight: unset;
-
-        transition: all 1s ease 0s;
 
         svg {
             width: 20px;
