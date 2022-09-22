@@ -267,6 +267,26 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
 
     plTitle.addEventListener('click', () => toggleDisplay(!isOpen), false);
     plOptionTitle.addEventListener('click', () => toggleDisplay_option(!isOpen_option), false);
+
+    // filter logic
+    const plFilter = document.getElementById('plFilter') as HTMLInputElement;
+    plFilter.addEventListener('input', () => {
+        const filter = plFilter.value.toLowerCase().trim();
+        const liList = plContent.getElementsByTagName('li');
+        // foreach li in lis
+        // but keep the first li
+        for (let i = 1; i < liList.length; i++) {
+            const li = liList[i];
+            const songName = li.getElementsByClassName('songName')[0].innerHTML.toLowerCase();
+            const singer = li.getElementsByClassName('singer')[0].innerHTML.toLowerCase();
+            if (songName.indexOf(filter) > -1 || singer.indexOf(filter) > -1) {
+                li.style.display = '';
+            } else {
+                li.style.display = 'none';
+            }
+        }
+    });
+
     console.debug('Playlist UI loaded');
 }
 

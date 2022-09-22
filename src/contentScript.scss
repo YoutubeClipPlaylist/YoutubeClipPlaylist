@@ -74,6 +74,10 @@
         text-overflow: ellipsis;
 
         list-style-type: none;
+
+        .singer {
+            display: none;
+        }
     }
 
     span.singer {
