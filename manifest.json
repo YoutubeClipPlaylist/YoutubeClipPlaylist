@@ -46,6 +46,9 @@
             "all_frames": true,
             "js": [
                 "contentScript.js"
+            ],
+            "css": [
+                "contentScript.css"
             ]
         },
         {
@@ -61,6 +64,21 @@
             "all_frames": true,
             "js": [
                 "assets/assjs/ass.min.js"
+            ]
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "contentScript.html"
+            ],
+            "matches": [
+                "https://www.youtube.com/*",
+                "https://drive.google.com/*",
+                "https://youtube.googleapis.com/*",
+                "https://*.sharepoint.com/*",
+                "https://onedrive.live.com/*",
+                "https://twitcasting.tv/*"
             ]
         }
     ]

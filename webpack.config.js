@@ -12,11 +12,13 @@ module.exports = {
     // experiments: { topLevelAwait: true },
     entry: {
         background: path.resolve(__dirname, 'src', 'background.ts'),
+        contentScript: path.resolve(__dirname, 'src', 'contentScript.scss'),
         contentScript: path.resolve(__dirname, 'src', 'contentScript.ts'),
         popup: path.resolve(__dirname, 'src', 'popup.ts'),
     },
     output: {
         path: path.join(__dirname, 'dist'),
+        clean: true,
         filename: '[name].js',
     },
     resolve: {
@@ -38,12 +40,12 @@ module.exports = {
                 type: 'asset/resource',
             },
             {
-                test: /.s?css$/,
-                use: [
-                    MiniCssExtractPlugin.loader,
-                    { loader: 'css-loader', options: { sourceMap: true } },
-                    { loader: 'sass-loader', options: { sourceMap: true } },
-                ],
+                test: /\.css$/i,
+                use: [MiniCssExtractPlugin.loader, 'css-loader'],
+            },
+            {
+                test: /\.s[ac]ss$/i,
+                use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
             },
         ],
     },

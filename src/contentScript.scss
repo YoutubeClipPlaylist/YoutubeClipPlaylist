@@ -1,0 +1,60 @@
+#plBox {
+    display: block;
+    position: fixed;
+    z-index: 2000;
+    cursor: pointer;
+    overflow-y: scroll;
+    color: white;
+    background: #222222DD;
+    font-family: Meiryo;
+    transition: all 1s ease 0s;
+    height: calc(100vh - 56px);
+    bottom: 0px;
+
+    right: -450px;
+    width: 450px;
+
+    h2 {
+        color: lightgrey;
+        position: fixed;
+        right: 0px;
+        bottom: 0px;
+        padding: 8px;
+        writing-mode: vertical-lr;
+        background: #222222DD;
+        font-weight: unset;
+        font-size: 18px;
+        border-radius: 10px 0 0 0;
+        margin: 0px;
+        border-top: 1px solid gray;
+        border-left: 1px solid gray;
+        transition: all 1s ease 0s;
+    }
+
+    ul {
+        padding: 0px;
+        margin: 0px;
+        border: 0px;
+        background: transparent;
+    }
+
+    li {
+        font-size: 20px;
+        margin: 12px;
+        margin-left: 36px;
+
+        /* Not function in chrome */
+        list-style-type: disclosure-closed;
+    }
+}
+
+#plContent>li:first-child {
+    font-size: 25px;
+    list-style-type: none;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: .1em solid rgb(170, 170, 170);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

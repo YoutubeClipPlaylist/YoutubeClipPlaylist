@@ -2,6 +2,7 @@ import { Message } from './Models/Message';
 import * as UrlHelper from './Helper/URLHelper';
 import * as DOMHelper from './Helper/DOMHelper';
 import { player } from './Helper/DOMHelper';
+import './contentScript.scss';
 
 (async function () {
     if (

@@ -144,12 +144,14 @@ export async function MakeSubtitle(urlString: string) {
 }
 
 export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
-    if ('undefined' === typeof plBox) {
-        plBox = document.body.appendChild(document.createElement('div'));
-    } else {
-        plBox.outerHTML = '<div></div>';
-    }
-    plBox.id = 'plBox';
+    document.getElementById('plBox')?.remove();
+    await fetch(chrome.runtime.getURL('/contentScript.html'))
+        .then((response) => response.text())
+        .then((response) => {
+            document.body.insertAdjacentHTML('beforeend', response);
+        });
+
+    plBox = document.getElementById('plBox') as HTMLDivElement;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const myPlaylist: any[][] = (await chrome.storage.local.get('myPlaylist')).myPlaylist;
@@ -170,29 +172,16 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
     }
 
     // Init Playlist Box
-    plBox.style.display = 'block';
-    plBox.innerHTML = '';
-    const plTitle = document.createElement('h2');
+    const plTitle = document.getElementById('plTitle') as HTMLHeadingElement;
     plTitle.innerHTML = chrome.i18n.getMessage('plTitle');
-    plBox.appendChild(plTitle);
-    const plContent = document.createElement('ul');
-    plBox.appendChild(plContent);
-    plContent.style.padding = '0';
-    plContent.style.margin = '0';
-    plContent.style.border = '0';
-    plContent.style.background = 'transparent';
+    const plContent = document.getElementById('plContent') as HTMLUListElement;
 
     // Make li template
     const liTemplate = document.createElement('li');
-    liTemplate.style.color = 'white';
-    liTemplate.style.fontSize = '20px';
-    liTemplate.style.margin = '12px';
-    liTemplate.style.marginLeft = '36px';
-    liTemplate.style.listStyleType = 'disclosure-closed'; // Not function in chrome
 
     // Make list
     pl.forEach(function (plElement, plIndex) {
-        const li = liTemplate.cloneNode() as HTMLLIElement;
+        const li = document.createElement('li');
         // 顯示歌曲文字
         if (myPlaylist[plElement].length >= 4) {
             li.innerHTML = myPlaylist[plElement][3];
@@ -216,52 +205,14 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
         plContent.appendChild(li);
     });
 
-    // Styling Now-Playing li
-    if (plContent.hasChildNodes()) {
-        const li = plContent.firstChild as HTMLLIElement;
-        li.style.fontSize = '25px';
-        li.style.fontWeight = 'bold';
-        li.style.textAlign = 'center';
-        li.style.listStyleType = 'none';
-        li.style.borderBottom = '.1em #AAA solid';
-        li.style.overflow = 'hidden';
-        li.style.textOverflow = 'ellipsis';
-        li.style.whiteSpace = 'nowrap';
-    }
-
     // 讓box+目錄標籤的寬度，永遠不大於螢幕寬的0.8倍
     let width = 450;
     if (screen.width * 0.8 - 40 < width) {
         width = screen.width * 0.8 - 40;
     }
 
-    // Styling
-    plBox.style.position = 'fixed';
     plBox.style.right = `-${width}px`;
-    plBox.style.zIndex = '2000';
-    plBox.style.background = '#222222DD';
-    plBox.style.cursor = 'pointer';
     plBox.style.width = `${width}px`;
-    plBox.style.bottom = '0';
-    plBox.style.overflowY = 'scroll';
-    plBox.style.height = 'calc(100vh - 56px)';
-    plBox.style.fontFamily = 'Meiryo';
-    plBox.style.transition = 'all 1s';
-
-    plTitle.style.position = 'fixed';
-    plTitle.style.right = '0px';
-    plTitle.style.bottom = '0px';
-    plTitle.style.background = '#222222DD';
-    plTitle.style.padding = '8px';
-    plTitle.style.writingMode = 'vertical-lr';
-    plTitle.style.color = 'lightgrey';
-    plTitle.style.fontWeight = 'unset';
-    plTitle.style.fontSize = '18px';
-    plTitle.style.borderRadius = '10px 0 0 0';
-    plTitle.style.margin = '0px';
-    plTitle.style.borderTop = '1px solid gray';
-    plTitle.style.borderLeft = '1px solid gray';
-    plTitle.style.transition = 'all 1s';
 
     // 開閉清單
     // 預設以關閉清單的狀態初始化Style，然後一秒後觸發打開動作
