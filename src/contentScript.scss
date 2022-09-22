@@ -1,45 +1,56 @@
 #plBox {
     display: block;
     position: fixed;
+
+    bottom: 0px;
+    right: -450px;
+
+    width: 450px;
+    height: calc(100vh - 56px);
+
     z-index: 2000;
     cursor: pointer;
     overflow-y: scroll;
+
+    font-family: Meiryo;
     color: white;
     background: #222222DD;
-    font-family: Meiryo;
-    transition: all 1s ease 0s;
-    height: calc(100vh - 56px);
-    bottom: 0px;
 
-    right: -450px;
-    width: 450px;
+    transition: all 1s ease 0s;
 
     h2 {
-        color: lightgrey;
         position: fixed;
         right: 0px;
         bottom: 0px;
         padding: 8px;
-        writing-mode: vertical-lr;
+
+        color: lightgrey;
         background: #222222DD;
+
+        writing-mode: vertical-lr;
         font-weight: unset;
         font-size: 18px;
-        border-radius: 10px 0 0 0;
+
         margin: 0px;
         border-top: 1px solid gray;
         border-left: 1px solid gray;
+        border-radius: 10px 0 0 0;
+
         transition: all 1s ease 0s;
     }
 
     ul {
         padding: 0px;
         margin: 0px;
-        border: 0px;
+
         background: transparent;
+
+        border: 0px;
     }
 
     li {
         font-size: 20px;
+
         margin: 12px;
         margin-left: 36px;
 
@@ -52,21 +63,133 @@
     position: relative;
 
     &:first-child {
+        border-bottom: .1em solid rgb(170, 170, 170);
+
+        overflow: hidden;
+        white-space: nowrap;
+
         font-size: 25px;
-        list-style-type: none;
         font-weight: bold;
         text-align: center;
-        border-bottom: .1em solid rgb(170, 170, 170);
-        overflow: hidden;
         text-overflow: ellipsis;
-        white-space: nowrap;
+
+        list-style-type: none;
     }
 
     span.singer {
         position: absolute;
+
         right: 0px;
         bottom: 0px;
-        font-size: 0.8em;
+
         color: darkgray;
+        font-size: 0.8em;
     }
+}
+
+#plOption {
+    position: fixed;
+    bottom: 0;
+    height: 200px;
+    width: -webkit-fill-available;
+
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-evenly;
+
+    cursor: default;
+
+    padding: 5px 20px;
+    margin-right: 17px;
+
+    text-align: center;
+    background: #222222DD;
+
+    border-top: 1px solid gray;
+
+    #plOpenOption {
+        position: absolute;
+
+        top: -20px;
+        left: 50%;
+        width: 100px;
+        height: 19px;
+        transform: translateX(-50%);
+
+        cursor: cursor;
+
+        margin: 0;
+        background: #222222DD;
+
+        border: 1px solid gray;
+        border-radius: 10px 10px 0 0;
+        border-bottom: none;
+
+        text-align: center;
+        font-size: unset;
+        font-weight: unset;
+
+        transition: all 1s ease 0s;
+
+        svg {
+            width: 20px;
+            height: 20px;
+            fill: lightgray;
+        }
+    }
+
+    input {
+        width: 80%;
+        margin: 10px;
+    }
+
+    hr {
+        width: 60%;
+        height: 1px;
+        margin: 10px auto;
+        background: darkgray;
+    }
+
+    div {
+        margin-top: 4px;
+        margin-bottom: -3px;
+        font-size: medium;
+        font-weight: bold;
+    }
+
+    #buttonContainer {
+        display: flex;
+        width: 100%;
+
+        a {
+            flex-grow: 1;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+
+            margin: 5px;
+            padding: 2px;
+
+            text-decoration: none;
+            color: lightgray;
+
+            border: 1px solid gray;
+            border-radius: 5px;
+
+            &:hover {
+                filter: brightness(1.5);
+            }
+
+            svg {
+                width: 1em;
+                height: 1em;
+                padding-right: 5px;
+                fill: lightgray;
+            }
+        }
+    }
+
 }
