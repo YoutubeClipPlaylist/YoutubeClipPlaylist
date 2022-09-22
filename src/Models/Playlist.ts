@@ -3,6 +3,7 @@ export interface IPlaylist {
     tag: string[];
     route: string;
     maintainer: IMaintainer;
+    singer: string;
 }
 
 export interface IMaintainer {
