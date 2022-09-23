@@ -82,12 +82,16 @@
 
     span.singer {
         position: absolute;
+        z-index: -1;
 
         right: 0px;
         bottom: 0px;
 
-        color: darkgray;
         font-size: 0.8em;
+
+        color: #666;
+        text-align: right;
+        border-bottom: 1px solid;
     }
 }
 
