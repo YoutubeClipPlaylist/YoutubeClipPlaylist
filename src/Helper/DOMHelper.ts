@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Message } from '../Models/Message';
 import { ISong } from '../Models/Song';
+import * as UrlHelper from './URLHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const ASS: any;
@@ -285,6 +286,39 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
                 li.style.display = 'none';
             }
         }
+    });
+
+    // Share buttons
+    const shareUrl = await UrlHelper.GenerateURLFromSong(myPlaylist[0]);
+    const plShareLinkInput = document.getElementById('plShareLinkInput') as HTMLInputElement;
+    plShareLinkInput.value = shareUrl;
+
+    const plCopylink = document.getElementById('plCopylink') as HTMLAnchorElement;
+    plCopylink.addEventListener('click', async () => {
+        navigator.clipboard.writeText(shareUrl);
+        plCopylink.innerHTML = plCopylink.innerHTML.replace('Copy', 'Copied!');
+        await new Promise((r) => setTimeout(r, 1000));
+        plCopylink.innerHTML = plCopylink.innerHTML.replace('Copied!', 'Copy');
+    });
+
+    const plShareToTwitter = document.getElementById('plShareToTwitter') as HTMLAnchorElement;
+    plShareToTwitter.addEventListener('mouseover', async () => {
+        plShareToTwitter.href = `https://twitter.com/intent/tweet?text=${
+            encodeURIComponent(myPlaylist[0].Title + ' - ' + myPlaylist[0].Singer) +
+            '%0A' +
+            encodeURIComponent(shareUrl) +
+            '%0A' +
+            `${encodeURIComponent('#YoutubeClipPlaylist #' + myPlaylist[0].Singer)}`
+        }`;
+    });
+
+    const plShareToFacebook = document.getElementById('plShareToFacebook') as HTMLAnchorElement;
+    plShareToFacebook.addEventListener('mouseover', async () => {
+        plShareToFacebook.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+            shareUrl
+        )}&quote=${encodeURIComponent(
+            myPlaylist[0].Title + ' - ' + myPlaylist[0].Singer
+        )}&hashtag=%23YoutubeClipPlaylist`;
     });
 
     console.debug('Playlist UI loaded');

@@ -123,41 +123,7 @@ async function NextSong(tabId: number, _index: number, UIClick = false) {
     urlParams.set('t', nextSong.StartTime.toString());
     urlParams.set('end', nextSong.EndTime.toString());
 
-    let newURL: string;
-    if (nextSong.VideoID.indexOf('http') >= 0) {
-        // URL
-        const _url = new URL(nextSong.VideoID);
-        if (nextSong.VideoID.indexOf('?') > 0) {
-            _url.searchParams.forEach(function (value, key) {
-                urlParams.set(key, value);
-            });
-        }
-
-        // OneDrive
-        if (
-            nextSong.VideoID.indexOf('sharepoint.com') > 0 ||
-            nextSong.VideoID.indexOf('onedrive.live.com') > 0 ||
-            nextSong.VideoID.indexOf('1drv.ms') > 0
-        ) {
-            urlParams.set(
-                'nav',
-                `{"playbackOptions":{"startTimeInSeconds":${nextSong.StartTime}}}`
-            );
-        }
-
-        newURL = `${_url.origin}${_url.pathname}?${urlParams.toString()}${_url.hash}`;
-    } else {
-        // ID
-        if (nextSong.VideoID.length > 20) {
-            // Google Drive
-            newURL = `https://drive.google.com/file/d/${
-                nextSong.VideoID
-            }/view?${urlParams.toString()}`;
-        } else {
-            // Youtube
-            newURL = `https://www.youtube.com/watch?${urlParams.toString()}`;
-        }
-    }
+    const newURL = await UrlHelper.GenerateURLFromSong(nextSong, urlParams);
     await UrlHelper.SaveToStorage(urlParams.toString());
 
     console.log('Redirect: %s', newURL);

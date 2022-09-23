@@ -1,3 +1,5 @@
+import { ISong } from '../Models/Song';
+
 const defaultBaseUrl = 'https://raw.githubusercontent.com/jim60105/Playlists/minify/';
 
 export async function PrepareUrlParams(urlString: string): Promise<URLSearchParams> {
@@ -66,4 +68,42 @@ export async function GetBaseUrl(): Promise<string> {
             baseUrl: defaultBaseUrl,
         })
     ).baseUrl;
+}
+
+export async function GenerateURLFromSong(song: ISong, urlParams?: URLSearchParams) {
+    if (!urlParams) {
+        urlParams = new URLSearchParams(await GetFromStorage(''));
+    }
+
+    let newURL: string;
+    if (song.VideoID.indexOf('http') >= 0) {
+        // URL
+        const _url = new URL(song.VideoID);
+        if (song.VideoID.indexOf('?') > 0) {
+            _url.searchParams.forEach(function (value, key) {
+                urlParams?.set(key, value);
+            });
+        }
+
+        // OneDrive
+        if (
+            song.VideoID.indexOf('sharepoint.com') > 0 ||
+            song.VideoID.indexOf('onedrive.live.com') > 0 ||
+            song.VideoID.indexOf('1drv.ms') > 0
+        ) {
+            urlParams.set('nav', `{"playbackOptions":{"startTimeInSeconds":${song.StartTime}}}`);
+        }
+
+        newURL = `${_url.origin}${_url.pathname}?${urlParams.toString()}${_url.hash}`;
+    } else {
+        // ID
+        if (song.VideoID.length > 20) {
+            // Google Drive
+            newURL = `https://drive.google.com/file/d/${song.VideoID}/view?${urlParams.toString()}`;
+        } else {
+            // Youtube
+            newURL = `https://www.youtube.com/watch?${urlParams.toString()}`;
+        }
+    }
+    return newURL;
 }
