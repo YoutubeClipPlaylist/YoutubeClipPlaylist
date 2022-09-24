@@ -277,9 +277,12 @@ export async function ReadPlaylistsFromStorage(): Promise<(string[] | IPlaylist[
     return [Playlists, DisabledPlaylists];
 }
 
-export async function SliceShuffleList(index: number): Promise<number[]> {
+export async function SliceShuffleList(currentIndex: number): Promise<number[]> {
     let shuffleList: number[] = (await chrome.storage.local.get({ shuffleList: [] })).shuffleList;
-    shuffleList = shuffleList.slice(index).concat(shuffleList.slice(0, index));
+    const indexInShuffleList = shuffleList.findIndex((element: number) => element === currentIndex);
+    shuffleList = shuffleList
+        .slice(indexInShuffleList)
+        .concat(shuffleList.slice(0, indexInShuffleList));
     await chrome.storage.local.set({ shuffleList: shuffleList });
     return shuffleList;
 }

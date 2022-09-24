@@ -8,7 +8,9 @@ export async function PrepareUrlParams(urlString: string): Promise<URLSearchPara
     const urlSearch: string = url.search;
 
     const search: string =
-        urlSearch.indexOf('startplaylist') >= 0 ? urlSearch : await GetFromStorage(urlSearch);
+        urlSearch.indexOf('startplaylist') + urlSearch.indexOf('share') >= 0
+            ? urlSearch
+            : await GetFromStorage(urlSearch);
     let urlParams = new URLSearchParams(search);
     urlParams = CleanUpParameters(urlParams);
 

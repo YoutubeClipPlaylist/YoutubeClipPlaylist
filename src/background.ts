@@ -105,10 +105,7 @@ async function NextSong(tabId: number, _index: number, UIClick = false) {
     if (UIClick) {
         // Modify Shuffle List on UI Click
         if (shuffle) {
-            const indexInShuffleList = shuffleList.findIndex(
-                (element: number) => element === index
-            );
-            await PlaylistHelper.SliceShuffleList(indexInShuffleList);
+            await PlaylistHelper.SliceShuffleList(index);
         }
         console.log(`Next Song ${index} by UI click`);
     } else {
@@ -116,6 +113,7 @@ async function NextSong(tabId: number, _index: number, UIClick = false) {
     }
 
     urlParams.delete('startplaylist');
+    urlParams.delete('share');
 
     const nextSong = myPlaylist[index];
 

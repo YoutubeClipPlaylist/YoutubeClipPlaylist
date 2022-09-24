@@ -2,6 +2,7 @@
 import { Message } from '../Models/Message';
 import { ISong } from '../Models/Song';
 import * as UrlHelper from './URLHelper';
+import * as PlaylistHelper from './PlaylistHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const ASS: any;
@@ -161,7 +162,7 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
     // Make Playlist
     let pl: number[] = [];
     if (shuffle) {
-        pl = (await chrome.storage.local.get('shuffleList')).shuffleList;
+        pl = await PlaylistHelper.SliceShuffleList(currentIndex);
     } else {
         const list = [];
         for (let i = 0; i < myPlaylist.length; i++) list[i] = i;
@@ -289,7 +290,7 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
     });
 
     // Share buttons
-    const shareUrl = await UrlHelper.GenerateURLFromSong(myPlaylist[0]);
+    const shareUrl = (await UrlHelper.GenerateURLFromSong(myPlaylist[0])) + '&share=1';
     const plShareLinkInput = document.getElementById('plShareLinkInput') as HTMLInputElement;
     plShareLinkInput.value = shareUrl;
 
