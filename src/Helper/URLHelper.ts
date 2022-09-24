@@ -5,12 +5,19 @@ const defaultBaseUrl = 'https://raw.githubusercontent.com/jim60105/Playlists/min
 export async function PrepareUrlParams(urlString: string): Promise<URLSearchParams> {
     const url = new URL(urlString);
     // Save the url first, as parameters may be removed during WaitForDomLoaded (at Youtube)
-    const urlSearch: string = url.search;
+    const urlSearch: string = url.search ?? '';
 
-    const search: string =
-        urlSearch.indexOf('startplaylist') + urlSearch.indexOf('share') >= 0
-            ? urlSearch
-            : await GetFromStorage(urlSearch);
+    let search: string = urlSearch;
+    if (
+        // Always use url from browser when start playlist or from share
+        urlSearch.indexOf('startplaylist') < 0 &&
+        urlSearch.indexOf('share') < 0 &&
+        // Currently only onedrive and sharepoint will redirect and remove all parameters before playing
+        (url.host.indexOf('onedrive') >= 0 || url.host.indexOf('sharepoint') >= 0)
+    ) {
+        search = await GetFromStorage(urlSearch);
+    }
+
     let urlParams = new URLSearchParams(search);
     urlParams = CleanUpParameters(urlParams);
 
