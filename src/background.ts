@@ -115,6 +115,10 @@ async function NextSong(tabId: number, _index: number, UIClick = false) {
     urlParams.delete('startplaylist');
     urlParams.delete('share');
 
+    // 'start' parameter will be left by Google Drive player
+    // and Youtube will overwrite 't' parameter with 'start' parameter
+    urlParams.delete('start');
+
     const nextSong = myPlaylist[index];
 
     urlParams.set('v', nextSong.VideoID);
