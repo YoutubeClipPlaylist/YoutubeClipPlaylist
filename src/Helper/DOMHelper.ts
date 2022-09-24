@@ -49,15 +49,18 @@ export async function WaitUntilThePlayerIsReady(): Promise<HTMLVideoElement> {
     // Wait until the player is ready.
     return new Promise((resolve, reject) => {
         const waitPlayerInterval = setInterval(() => {
-            // Load the player manually if preload is disabled.
-            if (player.preload === 'none' && player.readyState === 0) {
-                player.preload = 'auto';
-            }
-
-            if (!player.oncanplay) {
-                player.oncanplay = () => {
-                    player.play();
-                };
+            // Click the 'Play' button at twitcasting.tv
+            if (window.location.host.indexOf('twitcasting.tv') >= 0) {
+                const button = document.getElementsByClassName(
+                    'vjs-big-play-button'
+                )[0] as HTMLButtonElement;
+                const vjsPlayer = document.getElementById('player') as any;
+                if (vjsPlayer && button) {
+                    // Wait for videojs init before we can click the button.
+                    setTimeout(() => {
+                        if (!vjsPlayer.classList.contains('vjs-playing')) button.click();
+                    }, 1000);
+                }
             }
 
             console.debug('Waiting for the player to be ready... ReadyState: ' + player.readyState);
@@ -345,16 +348,16 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
 //     }, 500);
 // }
 
-export function ChangeTwitcastingCSSToPlayingStyle(url: URL) {
-    if ('twitcasting.tv' == url.hostname) {
-        const vjsPlayer = document.getElementById('player');
-        if (vjsPlayer) {
-            vjsPlayer.classList.remove('vjs-paused');
-            vjsPlayer.classList.add('vjs-playing');
-            vjsPlayer.classList.add('vjs-has-started');
-        }
-    }
-}
+// export function ChangeTwitcastingCSSToPlayingStyle(url: URL) {
+//     if ('twitcasting.tv' == url.hostname) {
+//         const vjsPlayer = document.getElementById('player');
+//         if (vjsPlayer) {
+//             vjsPlayer.classList.remove('vjs-paused');
+//             vjsPlayer.classList.add('vjs-playing');
+//             vjsPlayer.classList.add('vjs-has-started');
+//         }
+//     }
+// }
 
 // // Get rid of the Youtube 'automatic video pause' function
 // export function DisableAutoVideoPause() {
@@ -378,12 +381,13 @@ export async function SetTheStartTimeManually(url: URL, urlParams: URLSearchPara
     // - Youtube skipped it when t == 0, and start from last history.
     // - Onedrive always go to 0.
     if (urlParams.has('t')) {
-        // Onedrive sometimes(?) use videojs, and it cannot set currentTime directly on the element.
+        // Twitcasting use videojs, Onedrive sometimes(?) use videojs, and it cannot set currentTime directly on the element.
         if (
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             typeof (window as any).videojs === 'function' &&
-            (url.hostname.indexOf('sharepoint.com') > 0 ||
-                url.hostname.indexOf('onedrive.live.com') > 0)
+            (url.hostname.indexOf('sharepoint.com') >= 0 ||
+                url.hostname.indexOf('onedrive.live.com') >= 0 ||
+                url.hostname.indexOf('twitcasting.tv') >= 0)
         ) {
             console.debug('videojs detected!');
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

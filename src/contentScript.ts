@@ -71,7 +71,7 @@ import './contentScript.scss';
     }
 
     // Change twitcasting CSS to playing style
-    DOMHelper.ChangeTwitcastingCSSToPlayingStyle(url);
+    // DOMHelper.ChangeTwitcastingCSSToPlayingStyle(url);
 
     await DOMHelper.SetTheStartTimeManually(url, urlParams);
 
