@@ -293,7 +293,8 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
     });
 
     // Share buttons
-    const shareUrl = (await UrlHelper.GenerateURLFromSong(myPlaylist[0])) + '&share=1';
+    const song = myPlaylist[currentIndex];
+    const shareUrl = (await UrlHelper.GenerateURLFromSong(song)) + '&share=1';
     const plShareLinkInput = document.getElementById('plShareLinkInput') as HTMLInputElement;
     plShareLinkInput.value = shareUrl;
 
@@ -308,11 +309,11 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
     const plShareToTwitter = document.getElementById('plShareToTwitter') as HTMLAnchorElement;
     plShareToTwitter.addEventListener('mouseover', async () => {
         plShareToTwitter.href = `https://twitter.com/intent/tweet?text=${
-            encodeURIComponent(myPlaylist[0].Title + ' - ' + myPlaylist[0].Singer) +
+            encodeURIComponent(song.Title + ' - ' + song.Singer) +
             '%0A' +
             encodeURIComponent(shareUrl) +
             '%0A' +
-            `${encodeURIComponent('#YoutubeClipPlaylist #' + myPlaylist[0].Singer)}`
+            `${encodeURIComponent('#YoutubeClipPlaylist #' + song.Singer)}`
         }`;
     });
 
@@ -321,7 +322,7 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
         plShareToFacebook.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
             shareUrl
         )}&quote=${encodeURIComponent(
-            myPlaylist[0].Title + ' - ' + myPlaylist[0].Singer
+            song.Title + ' - ' + song.Singer
         )}&hashtag=%23YoutubeClipPlaylist`;
     });
 
