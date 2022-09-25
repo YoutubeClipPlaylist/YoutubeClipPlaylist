@@ -95,23 +95,41 @@ export function DestroySubtitle() {
 }
 
 // Add custom subtitle
-export async function MakeSubtitle(urlString: string) {
+export async function MakeSubtitle(urlString: string, offset: string) {
     DestroySubtitle();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const nowPlaying: any[] = await chrome.runtime.sendMessage(
+    const nowPlaying: ISong = await chrome.runtime.sendMessage(
         new Message('GetNowPlaying', urlString)
     );
-    if (nowPlaying.length >= 4 && nowPlaying[4]) {
-        fetch(nowPlaying[4])
+    if (nowPlaying.SubSrc) {
+        fetch(nowPlaying.SubSrc)
             .then((response) => response.text())
             .then((text) => {
                 if (text.startsWith('WEBVTT')) {
                     // webvtt
-                    const blob = new Blob([text], {
+
+                    // Offset WebVTT
+                    const textSplit = text.split('\n');
+                    const secondLine = textSplit[1];
+                    let MPEGTStime = '0';
+                    let LOCALtime = '00:00:00.000';
+                    if (secondLine.indexOf('X-TIMESTAMP-MAP') >= 0) {
+                        MPEGTStime = secondLine.split('MPEGTS:')[1].split(',')[0];
+                        LOCALtime = secondLine.split('LOCAL:')[1].split(',')[0];
+                    } else {
+                        // add a element into textSplit second line
+                        textSplit.splice(1, 0, 'X-TIMESTAMP-MAP=MPEGTS:0,LOCAL:00:00:00.000');
+                    }
+                    MPEGTStime += ~offset * 90000;
+                    textSplit[1] = `X-TIMESTAMP-MAP=MPEGTS:${MPEGTStime},LOCAL:${LOCALtime}`;
+                    const newText = textSplit.join('\n');
+
+                    // Add WebVTT
+                    const track = document.createElement('track');
+                    const blob = new Blob([newText], {
                         type: 'text/vtt',
                     });
-                    const track = document.createElement('track');
                     track.src = URL.createObjectURL(blob);
                     track.label = 'Traditional Chinese';
                     track.kind = 'subtitles';
