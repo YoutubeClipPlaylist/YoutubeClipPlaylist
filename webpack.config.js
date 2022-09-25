@@ -58,18 +58,18 @@ module.exports = {
                     from: 'node_modules/bootstrap/dist/js/bootstrap.min.js',
                     to: 'assets/bootstrap/',
                 },
-                {
-                    from: 'node_modules/bootstrap/dist/js/bootstrap.min.js.map',
-                    to: 'assets/bootstrap/',
-                },
+                // {
+                //     from: 'node_modules/bootstrap/dist/js/bootstrap.min.js.map',
+                //     to: 'assets/bootstrap/',
+                // },
                 {
                     from: 'node_modules/bootstrap/dist/css/bootstrap.min.css',
                     to: 'assets/bootstrap/',
                 },
-                {
-                    from: 'node_modules/bootstrap/dist/css/bootstrap.min.css.map',
-                    to: 'assets/bootstrap/',
-                },
+                // {
+                //     from: 'node_modules/bootstrap/dist/css/bootstrap.min.css.map',
+                //     to: 'assets/bootstrap/',
+                // },
                 { from: 'node_modules/bootstrap/LICENSE', to: 'assets/bootstrap/' },
                 {
                     from: 'node_modules/bootstrap-icons/font/bootstrap-icons.css',
