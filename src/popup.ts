@@ -32,9 +32,13 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
     }
 
     function MakeList() {
-        const container = document.getElementById('PlayListContainer') as HTMLDivElement;
+        const playlistContainer = document.getElementById('Playlists') as HTMLDivElement;
+        const singerContainer = document.getElementById('Singers') as HTMLDivElement;
         const listTemplate = document.getElementById('listTemplate') as HTMLTemplateElement;
-        container.innerHTML = '';
+        playlistContainer.innerHTML = '';
+        singerContainer.innerHTML = '';
+
+        const singer: string[] = [];
 
         Playlists.forEach((playlist) => {
             const clone = document.importNode(listTemplate.content, true);
@@ -51,6 +55,10 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
                 label.classList.remove('disabled');
                 disabledIcon.classList.add('invisible');
                 label.addEventListener('click', StartPlaylistClickEvent);
+
+                if (!singer.includes(playlist.singer)) {
+                    singer.push(playlist.singer);
+                }
             } else {
                 // Disabled
                 label.classList.add('disabled');
@@ -58,7 +66,23 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
                 label.removeEventListener('click', StartPlaylistClickEvent);
             }
 
-            container.appendChild(clone);
+            playlistContainer.appendChild(clone);
+        });
+
+        singer.forEach((singer) => {
+            const clone = document.importNode(listTemplate.content, true);
+            const label = clone.querySelector('label');
+            const labelText = clone.querySelector('[name="labelText"]');
+            const disabledIcon = clone.querySelector('[name="disabled"]');
+            if (!labelText || !disabledIcon || !label) {
+                return;
+            }
+            labelText.textContent = singer;
+
+            disabledIcon.classList.add('invisible');
+            label.addEventListener('click', StartSingerClickEvent);
+
+            singerContainer.appendChild(clone);
         });
 
         SetupI18nStrings();
@@ -72,7 +96,7 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
 
     // Start editing button
     async function EditClickEvent(event: MouseEvent) {
-        const container = document.getElementById('PlayListContainer') as HTMLDivElement;
+        const container = document.getElementById('Playlists') as HTMLDivElement;
         MakeList();
 
         document.getElementById('play')?.classList.add('d-none');
@@ -106,12 +130,44 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
 
         const label = event.currentTarget as HTMLLabelElement | null;
         const labelText = label?.getElementsByTagName('span')[0];
+        if (labelText && labelText.textContent) {
+            url.searchParams.set(
+                'playlist',
+                (await GetPlaylistFromDisplayName(labelText.textContent))?.name ?? ''
+            );
+        }
+
+        const shuffle = document.getElementById('shuffle')?.classList.contains('active');
+        if (shuffle) {
+            url.searchParams.set('shuffle', '1');
+        } else {
+            url.searchParams.delete('shuffle');
+        }
+
+        await chrome.runtime.sendMessage(new Message('LoadPlaylists', url.href));
+        UrlHelper.SaveToStorage(url.search);
+
+        if (shuffle) {
+            const shuffleList: number[] = (await chrome.storage.local.get({ shuffleList: [] }))
+                .shuffleList;
+            await chrome.runtime.sendMessage(
+                new Message('NextSongToBackground', { index: shuffleList[0], UIClick: false })
+            );
+        } else {
+            await chrome.runtime.sendMessage(
+                new Message('NextSongToBackground', { index: 0, UIClick: false })
+            );
+        }
+        window.close();
+    }
+
+    async function StartSingerClickEvent(event: MouseEvent): Promise<void> {
+        const url = new URL(`https://www.youtube.com/?startplaylist`);
+
+        const label = event.currentTarget as HTMLLabelElement | null;
+        const labelText = label?.getElementsByTagName('span')[0];
         if (labelText) {
-            const [LoadPlaylists] = await PlaylistHelper.ReadPlaylistsFromStorage();
-            const playlist = LoadPlaylists.find((p) => p.name_display === labelText.textContent);
-            if (playlist && playlist.name) {
-                url.searchParams.set('playlist', playlist.name);
-            }
+            url.searchParams.set('playlistinclude', labelText.innerHTML);
         }
 
         const shuffle = document.getElementById('shuffle')?.classList.contains('active');
@@ -142,27 +198,50 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
         const label = event.currentTarget as HTMLLabelElement;
         const labelText = label.getElementsByTagName('span')[0];
         const disabledIcon = label.getElementsByTagName('i')[0];
-        const container = document.getElementById('PlayListContainer') as HTMLDivElement;
-        if (!labelText || !container || !disabledIcon) return;
+        const container = document.getElementById('Playlists') as HTMLDivElement;
+        if (!labelText || !labelText.textContent || !container || !disabledIcon) return;
 
-        if (!(await EditDisabledPlaylists(labelText.innerHTML))) {
-            // Not disabled
-            label.classList.remove('disabled');
-            disabledIcon.classList.add('invisible');
-        } else {
-            // Disabled
-            disabledIcon.classList.remove('invisible');
-        }
+        const disabled = await EditDisabledPlaylists(
+            (await GetPlaylistFromDisplayName(labelText.textContent))?.name ?? ''
+        );
+        if (null !== disabled)
+            if (!disabled) {
+                // Not disabled
+                label.classList.remove('disabled');
+                disabledIcon.classList.add('invisible');
+            } else {
+                // Disabled
+                disabledIcon.classList.remove('invisible');
+            }
 
-        async function EditDisabledPlaylists(playlistName: string): Promise<boolean> {
+        /**
+         * Toggle the disabled state of the playlist
+         * @param playlistName
+         * @returns true if Disabled. or false if not disabled. Null if playlistName is empty
+         */
+        async function EditDisabledPlaylists(playlistName: string): Promise<boolean | null> {
+            if (!playlistName) return null;
+
             const include = DisabledPlaylists.includes(playlistName);
             if (include) {
+                // Enabled (Remove from disabled list)
                 DisabledPlaylists.splice(DisabledPlaylists.indexOf(playlistName), 1);
             } else {
+                // Disabled
                 DisabledPlaylists.push(playlistName);
             }
             await chrome.storage.sync.set({ disabledLists: DisabledPlaylists });
             return !include;
         }
+    }
+
+    async function GetPlaylistFromDisplayName(display: string): Promise<IPlaylist | null> {
+        const [LoadPlaylists] = await PlaylistHelper.ReadPlaylistsFromStorage();
+        const playlist = LoadPlaylists.find((p) => p.name_display === display);
+        if (playlist && playlist.name) {
+            return playlist;
+        }
+
+        return null;
     }
 })();

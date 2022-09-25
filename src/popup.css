@@ -1,10 +1,16 @@
 body {
     min-width: 270px;
 }
+
 .list-group-item.disabled,
 .list-group-item:disabled {
     background-color: lightgray;
 }
+
 div#baseUrlContainer {
     max-height: calc(1.75rem + 2px)
+}
+
+.nav {
+    font-size: small;
 }

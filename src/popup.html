@@ -1,19 +1,11 @@
 <div class="hstack gap-3 m-1">
-    <button
-        type="button"
-        id="shuffle"
-        class="btn btn-outline-secondary"
-        data-bs-toggle="button"
-    >
+    <button type="button" id="shuffle" class="btn btn-outline-secondary" data-bs-toggle="button">
         <i class="bi bi-shuffle"></i>
     </button>
     <button type="button" id="play" class="btn btn-danger mx-auto w-100">
         <i class="bi bi-play-fill"></i>
     </button>
-    <div
-        id="baseUrlContainer"
-        class="input-group input-group-sm mx-auto d-none"
-    >
+    <div id="baseUrlContainer" class="input-group input-group-sm mx-auto d-none">
         <span class="input-group-text">Base Url</span>
         <input
             type="text"
@@ -30,7 +22,62 @@
     </button>
 </div>
 
-<div id="PlayListContainer" class="list-group list-group-flush"></div>
+<nav class="nav nav-tabs flex-row nav-justified" id="myTab" role="tablist">
+    <a
+        class="flex-sm-fill text-sm-center nav-link active"
+        aria-current="page"
+        href="#"
+        id="Playlists-tab"
+        data-bs-toggle="tab"
+        data-bs-target="#Playlists"
+        type="button"
+        role="tab"
+        aria-controls="Playlists"
+        aria-selected="true"
+        >Playlists</a
+    >
+    <a
+        class="flex-sm-fill text-sm-center nav-link"
+        href="#"
+        id="Singers-tab"
+        data-bs-toggle="tab"
+        data-bs-target="#Singers"
+        type="button"
+        role="tab"
+        aria-controls="Singers"
+        aria-selected="true"
+        >Singers</a
+    >
+    <!-- <a
+        class="text-sm-center nav-link"
+        href="#"
+        id="Settings-tab"
+        data-bs-toggle="tab"
+        data-bs-target="#Settings"
+        type="button"
+        role="tab"
+        aria-controls="Settings"
+        aria-selected="true"
+        >Settings</a
+    > -->
+</nav>
+<div class="tab-content" id="myTabContent">
+    <div
+        class="tab-pane fade show active list-group list-group-flush"
+        id="Playlists"
+        role="tabpanel"
+        aria-labelledby="Playlists-tab"
+    ></div>
+    <div
+        class="tab-pane fade list-group list-group-flush"
+        id="Singers"
+        role="tabpanel"
+        aria-labelledby="Singers-tab"
+    ></div>
+    <div class="tab-pane fade" id="Settings" role="tabpanel" aria-labelledby="Settings-tab">
+        settings tab
+    </div>
+</div>
 
 <template id="listTemplate">
     <label
