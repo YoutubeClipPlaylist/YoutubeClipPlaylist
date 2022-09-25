@@ -6,10 +6,7 @@ import * as UrlHelper from './Helper/URLHelper';
 import * as PlaylistHelper from './Helper/PlaylistHelper';
 
 (async () => {
-    const [Playlists, DisabledPlaylists] = (await PlaylistHelper.ReadPlaylistsFromStorage()) as [
-        IPlaylist[],
-        string[]
-    ];
+    const [Playlists, DisabledPlaylists] = await PlaylistHelper.ReadPlaylistsFromStorage();
 
     await GetBaseUrl();
     MakeList();
@@ -47,7 +44,7 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
             if (!labelText || !disabledIcon || !label) {
                 return;
             }
-            labelText.textContent = playlist.name;
+            labelText.textContent = playlist.name_display ?? `${playlist.singer} ${playlist.name}`;
 
             if (!DisabledPlaylists.includes(playlist.name)) {
                 // Enabled
@@ -110,7 +107,11 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
         const label = event.currentTarget as HTMLLabelElement | null;
         const labelText = label?.getElementsByTagName('span')[0];
         if (labelText) {
-            url.searchParams.set('playlist', labelText.innerHTML);
+            const [LoadPlaylists] = await PlaylistHelper.ReadPlaylistsFromStorage();
+            const playlist = LoadPlaylists.find((p) => p.name_display === labelText.textContent);
+            if (playlist && playlist.name) {
+                url.searchParams.set('playlist', playlist.name);
+            }
         }
 
         const shuffle = document.getElementById('shuffle')?.classList.contains('active');

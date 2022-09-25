@@ -265,7 +265,7 @@ export async function GenerateDefaultDisabledPlaylists(): Promise<string[]> {
     return disabledPlaylists;
 }
 
-export async function ReadPlaylistsFromStorage(): Promise<(string[] | IPlaylist[])[]> {
+export async function ReadPlaylistsFromStorage(): Promise<[IPlaylist[], string[]]> {
     const Playlists =
         ((await chrome.storage.local.get('Playlists')).Playlists as IPlaylist[]) ?? [];
     const DisabledPlaylists =
