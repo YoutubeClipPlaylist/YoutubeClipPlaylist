@@ -15,10 +15,6 @@
         "message": "全ての曲を再生する",
         "description": "Play all the songs."
     },
-    "baseUrlContainer": {
-        "message": "ソース",
-        "description": "The source of the playlists."
-    },
     "edit": {
         "message": "エディット",
         "description": "Edit Button"
@@ -27,12 +23,48 @@
         "message": "セーブ",
         "description": "Save Button"
     },
-    "listItem": {
+    "playlistClickHint": {
         "message": "このプレイリストを再生する!",
         "description": "Click on the list item to start the Playlist."
+    },
+    "singerClickHint": {
+        "message": "彼/彼女の歌を再生する!",
+        "description": "Click on the list item to play his song!"
     },
     "plTitle": {
         "message": "クリッププレイリスト",
         "description": "Title of the playlist container sidebar."
+    },
+    "widthHelp":{
+        "message": "数値(px)、またはcss値の文字列を指定します",
+        "description": "Can be a plain number in px or a css value string."
+    },
+    "heightHelp":{
+        "message": "数値(px)、またはcss値の文字列を指定します",
+        "description": "Can be a plain number in px or a css value string."
+    },
+    "playlistSourceHelp":{
+        "message": "このフィールドをクリアすると、デフォルトのソースを使用します",
+        "description": "Clear this field to use the default source."
+    },
+    "UIWidth": {
+        "message": "プレイリストUIの幅",
+        "description": "Playlist UI Width"
+    },
+    "UIHeight": {
+        "message": "プレイリストUIの高さ",
+        "description": "Playlist UI Height"
+    },
+    "baseUrlTitle": {
+        "message": "プレイリストのソース",
+        "description": "Playlist Source Base Url"
+    },
+    "submitForm": {
+        "message": "セーブ",
+        "description": "Save Button"
+    },
+    "savedToast": {
+        "message": "保存しました<br>次回のロード時に有効になります",
+        "description": "Saved Toast"
     }
 }

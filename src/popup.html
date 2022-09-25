@@ -1,27 +1,3 @@
-<div class="hstack gap-3 m-1">
-    <button type="button" id="shuffle" class="btn btn-outline-secondary" data-bs-toggle="button">
-        <i class="bi bi-shuffle"></i>
-    </button>
-    <button type="button" id="play" class="btn btn-danger mx-auto w-100">
-        <i class="bi bi-play-fill"></i>
-    </button>
-    <div id="baseUrlContainer" class="input-group input-group-sm mx-auto d-none">
-        <span class="input-group-text">Base Url</span>
-        <input
-            type="text"
-            id="baseUrl"
-            class="form-control"
-            placeholder="https://raw.githubusercontent.com/{author}/{repository}/{branch}"
-        />
-    </div>
-    <button type="button" id="edit" class="btn btn-outline-secondary">
-        <i class="bi bi-pencil-square"></i>
-    </button>
-    <button type="button" id="editDone" class="btn btn-outline-success d-none">
-        <i class="bi bi-check2-square"></i>
-    </button>
-</div>
-
 <nav class="nav nav-tabs flex-row nav-justified" id="myTab" role="tablist">
     <a
         class="flex-sm-fill text-sm-center nav-link active"
@@ -29,7 +5,7 @@
         href="#"
         id="Playlists-tab"
         data-bs-toggle="tab"
-        data-bs-target="#Playlists"
+        data-bs-target="#Playlists-tab-pane"
         type="button"
         role="tab"
         aria-controls="Playlists"
@@ -41,14 +17,14 @@
         href="#"
         id="Singers-tab"
         data-bs-toggle="tab"
-        data-bs-target="#Singers"
+        data-bs-target="#Singers-tab-pane"
         type="button"
         role="tab"
         aria-controls="Singers"
         aria-selected="true"
         >Singers</a
     >
-    <!-- <a
+    <a
         class="text-sm-center nav-link"
         href="#"
         id="Settings-tab"
@@ -59,23 +35,96 @@
         aria-controls="Settings"
         aria-selected="true"
         >Settings</a
-    > -->
+    >
 </nav>
 <div class="tab-content" id="myTabContent">
     <div
-        class="tab-pane fade show active list-group list-group-flush"
-        id="Playlists"
+        id="Playlists-tab-pane"
+        class="tab-pane fade show active"
         role="tabpanel"
         aria-labelledby="Playlists-tab"
-    ></div>
-    <div
-        class="tab-pane fade list-group list-group-flush"
-        id="Singers"
-        role="tabpanel"
-        aria-labelledby="Singers-tab"
-    ></div>
+    >
+        <div class="hstack gap-3 m-1 mt-3">
+            <button
+                type="button"
+                name="shuffle"
+                class="btn btn-outline-secondary"
+                data-bs-toggle="button"
+            >
+                <i class="bi bi-shuffle"></i>
+            </button>
+            <button type="button" name="play" class="btn btn-danger mx-auto w-100">
+                <i class="bi bi-play-fill"></i>
+            </button>
+            <button type="button" name="edit" class="btn btn-outline-secondary">
+                <i class="bi bi-pencil-square"></i>
+            </button>
+            <button type="button" name="editDone" class="btn btn-outline-success d-none">
+                <i class="bi bi-check2-square"></i>
+            </button>
+        </div>
+        <div class="list-group list-group-flush" id="Playlists"></div>
+    </div>
+    <div id="Singers-tab-pane" class="tab-pane fade" role="tabpanel" aria-labelledby="Singers-tab">
+        <div class="hstack gap-3 m-1 mt-3">
+            <button
+                type="button"
+                name="shuffle"
+                class="btn btn-outline-secondary w-100"
+                data-bs-toggle="button"
+            >
+                <i class="bi bi-shuffle"></i>
+            </button>
+        </div>
+        <div class="list-group list-group-flush" id="Singers"></div>
+    </div>
     <div class="tab-pane fade" id="Settings" role="tabpanel" aria-labelledby="Settings-tab">
-        settings tab
+        <form class="m-3" id="settingsForm">
+            <div class="mb-3">
+                <label for="width" class="form-label" id="UIWidth">UI Width</label>
+                <input type="text" class="form-control" id="width" aria-describedby="widthHelp" />
+                <div id="widthHelp" class="form-text">
+                    Can be a plain number in px or a css value string.
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="height" class="form-label" id="UIHeight">UI Height</label>
+                <input type="text" class="form-control" id="height" aria-describedby="heightHelp" />
+                <div id="heightHelp" class="form-text">
+                    Can be a plain number in px or a css value string.
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="playlistSource" class="form-label" id="baseUrlTitle"
+                    >Playlist Source Base Url</label
+                >
+                <input
+                    type="text"
+                    id="baseUrl"
+                    class="form-control"
+                    placeholder="https://raw.githubusercontent.com/{author}/{repository}/{branch}"
+                />
+                <div id="playlistSourceHelp" class="form-text">
+                    Clear this field to use the default source.
+                </div>
+            </div>
+            <button id="submitForm" type="button" class="btn btn-primary">Save</button>
+        </form>
+        <div class="position-fixed bottom-0 end-0 p-3">
+            <div
+                id="toast"
+                class="toast bg-success text-white w-auto"
+                role="success"
+                aria-live="assertive"
+                aria-atomic="true"
+            >
+                <div class="d-flex">
+                    <div class="toast-body" id="savedToast">
+                        Saved. It will take effect on the next load.
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

@@ -15,10 +15,6 @@
         "message": "播放所有歌曲",
         "description": "Play all the songs."
     },
-    "baseUrlContainer": {
-        "message": "清單來源",
-        "description": "The source of the playlists."
-    },
     "edit": {
         "message": "編輯",
         "description": "Edit Button"
@@ -27,12 +23,48 @@
         "message": "儲存",
         "description": "Save Button"
     },
-    "listItem": {
+    "playlistClickHint": {
         "message": "播放此播放清單!",
         "description": "Click on the list item to start the Playlist."
+    },
+    "singerClickHint": {
+        "message": "播放他的歌曲!",
+        "description": "Click on the list item to play his song!"
     },
     "plTitle":{
         "message": "截選播放清單",
         "description": "Title of the playlist container sidebar."
+    },
+    "widthHelp":{
+        "message": "可以填入普通數字(px)或css字串",
+        "description": "Can be a plain number in px or a css value string."
+    },
+    "heightHelp":{
+        "message": "可以填入普通數字(px)或css字串",
+        "description": "Can be a plain number in px or a css value string."
+    },
+    "playlistSourceHelp":{
+        "message": "填入空白以恢復為預設來源",
+        "description": "Clear this field to use the default source."
+    },
+    "UIWidth": {
+        "message": "播放清單UI寬度",
+        "description": "Playlist UI Width"
+    },
+    "UIHeight": {
+        "message": "播放清單UI高度",
+        "description": "Playlist UI Height"
+    },
+    "baseUrlTitle": {
+        "message": "播放清單來源",
+        "description": "Playlist Source Base Url"
+    },
+    "submitForm": {
+        "message": "儲存",
+        "description": "Save Button"
+    },
+    "savedToast": {
+        "message": "已儲存<br>將會在下次載入時生效",
+        "description": "Saved Toast"
     }
 }

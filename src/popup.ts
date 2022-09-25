@@ -2,33 +2,43 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { IPlaylist } from './Models/Playlist';
 import { Message } from './Models/Message';
-import * as UrlHelper from './Helper/URLHelper';
-import * as PlaylistHelper from './Helper/PlaylistHelper';
+import { SetBaseUrl, GetBaseUrl, SaveToStorage } from './Helper/URLHelper';
+import { ReadPlaylistsFromStorage } from './Helper/PlaylistHelper';
+import { SetStorageWidthHeight, GetStorageWidthHeight } from './Helper/DOMHelper';
+import Toast from 'bootstrap/js/dist/toast';
 
 (async () => {
-    const [Playlists, DisabledPlaylists] = await PlaylistHelper.ReadPlaylistsFromStorage();
+    const [Playlists, DisabledPlaylists] = await ReadPlaylistsFromStorage();
 
-    await GetBaseUrl();
     MakeList();
+    await InitSettingForm();
     AddEventListener();
+    SetupI18nStrings();
 
     function SetupI18nStrings() {
-        document.getElementById('shuffle')!.title = chrome.i18n.getMessage('shuffle');
-        document.getElementById('play')!.title = chrome.i18n.getMessage('play');
-        document.getElementById('baseUrlContainer')!.title =
-            chrome.i18n.getMessage('baseUrlContainer');
-        document.getElementById('baseUrlContainer')!.querySelector('span')!.innerHTML =
-            chrome.i18n.getMessage('baseUrlContainer');
-        document.getElementById('edit')!.title = chrome.i18n.getMessage('edit');
-        document.getElementById('editDone')!.title = chrome.i18n.getMessage('editDone');
-        document.getElementsByName('listItem').forEach((element) => {
-            element.title = chrome.i18n.getMessage('listItem');
-        });
-    }
+        document
+            .getElementsByName('shuffle')
+            .forEach((element) => (element!.title = chrome.i18n.getMessage('shuffle')));
+        document
+            .getElementsByName('play')
+            .forEach((element) => (element!.title = chrome.i18n.getMessage('play')));
+        document
+            .getElementsByName('edit')
+            .forEach((element) => (element!.title = chrome.i18n.getMessage('edit')));
+        document
+            .getElementsByName('editDone')
+            .forEach((element) => (element!.title = chrome.i18n.getMessage('editDone')));
 
-    async function GetBaseUrl() {
-        (document.getElementById('baseUrl') as HTMLInputElement).value =
-            await UrlHelper.GetBaseUrl();
+        // Settings
+        document.getElementById('widthHelp')!.innerHTML = chrome.i18n.getMessage('widthHelp');
+        document.getElementById('heightHelp')!.innerHTML = chrome.i18n.getMessage('heightHelp');
+        document.getElementById('playlistSourceHelp')!.innerHTML =
+            chrome.i18n.getMessage('playlistSourceHelp');
+        document.getElementById('UIWidth')!.innerHTML = chrome.i18n.getMessage('UIWidth');
+        document.getElementById('UIHeight')!.innerHTML = chrome.i18n.getMessage('UIHeight');
+        document.getElementById('baseUrlTitle')!.innerHTML = chrome.i18n.getMessage('baseUrlTitle');
+        document.getElementById('submitForm')!.innerHTML = chrome.i18n.getMessage('submitForm');
+        document.getElementById('savedToast')!.innerHTML = chrome.i18n.getMessage('savedToast');
     }
 
     function MakeList() {
@@ -69,6 +79,11 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
             playlistContainer.appendChild(clone);
         });
 
+        // Hint
+        [...document.getElementById('Playlists')!.querySelectorAll('label')].forEach((element) => {
+            element.title = chrome.i18n.getMessage('listItem');
+        });
+
         singer.forEach((singer) => {
             const clone = document.importNode(listTemplate.content, true);
             const label = clone.querySelector('label');
@@ -85,13 +100,22 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
             singerContainer.appendChild(clone);
         });
 
-        SetupI18nStrings();
+        // Hint
+        [...document.getElementById('Singers')!.querySelectorAll('label')].forEach((element) => {
+            element.title = chrome.i18n.getMessage('listItem');
+        });
     }
 
     function AddEventListener() {
-        document.getElementById('edit')?.addEventListener('click', EditClickEvent);
-        document.getElementById('editDone')?.addEventListener('click', EditDoneClickEvent);
-        document.getElementById('play')?.addEventListener('click', StartPlaylistClickEvent);
+        document
+            .getElementsByName('edit')
+            .forEach((element) => element?.addEventListener('click', EditClickEvent));
+        document
+            .getElementsByName('editDone')
+            .forEach((element) => element?.addEventListener('click', EditDoneClickEvent));
+        document
+            .getElementsByName('play')
+            .forEach((element) => element?.addEventListener('click', StartPlaylistClickEvent));
     }
 
     // Start editing button
@@ -99,10 +123,11 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
         const container = document.getElementById('Playlists') as HTMLDivElement;
         MakeList();
 
-        document.getElementById('play')?.classList.add('d-none');
-        document.getElementById('baseUrlContainer')?.classList.remove('d-none');
-        document.getElementById('editDone')?.classList.remove('d-none');
-        document.getElementById('edit')?.classList.add('d-none');
+        document.getElementsByName('play').forEach((element) => element?.classList.add('disabled'));
+        document
+            .getElementsByName('editDone')
+            .forEach((element) => element?.classList.remove('d-none'));
+        document.getElementsByName('edit').forEach((element) => element?.classList.add('d-none'));
 
         container.querySelectorAll('label').forEach((label) => {
             label.classList.remove('disabled');
@@ -114,13 +139,18 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
     // Finish editing button
     async function EditDoneClickEvent(event: MouseEvent) {
         await chrome.storage.sync.set({ disabledLists: DisabledPlaylists });
-        await UrlHelper.SetBaseUrl((document.getElementById('baseUrl') as HTMLInputElement).value);
+        await SetBaseUrl((document.getElementById('baseUrl') as HTMLInputElement).value);
         await chrome.runtime.sendMessage(new Message('FetchPlaylists'));
 
-        document.getElementById('play')?.classList.remove('d-none');
-        document.getElementById('baseUrlContainer')?.classList.add('d-none');
-        document.getElementById('editDone')?.classList.add('d-none');
-        document.getElementById('edit')?.classList.remove('d-none');
+        document
+            .getElementsByName('play')
+            .forEach((element) => element?.classList.remove('disabled'));
+        document
+            .getElementsByName('editDone')
+            .forEach((element) => element?.classList.add('d-none'));
+        document
+            .getElementsByName('edit')
+            .forEach((element) => element?.classList.remove('d-none'));
 
         window.location.reload();
     }
@@ -137,7 +167,7 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
             );
         }
 
-        const shuffle = document.getElementById('shuffle')?.classList.contains('active');
+        const shuffle = document.getElementsByName('shuffle')[0]?.classList.contains('active');
         if (shuffle) {
             url.searchParams.set('shuffle', '1');
         } else {
@@ -145,7 +175,7 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
         }
 
         await chrome.runtime.sendMessage(new Message('LoadPlaylists', url.href));
-        UrlHelper.SaveToStorage(url.search);
+        SaveToStorage(url.search);
 
         if (shuffle) {
             const shuffleList: number[] = (await chrome.storage.local.get({ shuffleList: [] }))
@@ -170,7 +200,7 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
             url.searchParams.set('playlistinclude', labelText.innerHTML);
         }
 
-        const shuffle = document.getElementById('shuffle')?.classList.contains('active');
+        const shuffle = document.getElementsByName('shuffle')[1]?.classList.contains('active');
         if (shuffle) {
             url.searchParams.set('shuffle', '1');
         } else {
@@ -178,7 +208,7 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
         }
 
         await chrome.runtime.sendMessage(new Message('LoadPlaylists', url.href));
-        UrlHelper.SaveToStorage(url.search);
+        SaveToStorage(url.search);
 
         if (shuffle) {
             const shuffleList: number[] = (await chrome.storage.local.get({ shuffleList: [] }))
@@ -236,12 +266,36 @@ import * as PlaylistHelper from './Helper/PlaylistHelper';
     }
 
     async function GetPlaylistFromDisplayName(display: string): Promise<IPlaylist | null> {
-        const [LoadPlaylists] = await PlaylistHelper.ReadPlaylistsFromStorage();
+        const [LoadPlaylists] = await ReadPlaylistsFromStorage();
         const playlist = LoadPlaylists.find((p) => p.name_display === display);
         if (playlist && playlist.name) {
             return playlist;
         }
 
         return null;
+    }
+
+    async function InitSettingForm() {
+        [
+            (document.getElementById('width') as HTMLInputElement).value,
+            (document.getElementById('height') as HTMLInputElement).value,
+        ] = await GetStorageWidthHeight();
+
+        (document.getElementById('baseUrl') as HTMLInputElement).value = await GetBaseUrl();
+
+        (document.getElementById('submitForm') as HTMLButtonElement).addEventListener(
+            'click',
+            async (e) => {
+                await SetStorageWidthHeight(
+                    (document.getElementById('width') as HTMLInputElement).value,
+                    (document.getElementById('height') as HTMLInputElement).value
+                );
+                await SetBaseUrl((document.getElementById('baseUrl') as HTMLInputElement).value);
+                InitSettingForm();
+
+                const toast = new Toast(document.getElementById('toast') as Element);
+                toast.show();
+            }
+        );
     }
 })();

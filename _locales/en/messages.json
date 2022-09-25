@@ -15,10 +15,6 @@
         "message": "Play All!",
         "description": "Play all the songs."
     },
-    "baseUrlContainer": {
-        "message": "The source of the playlists.",
-        "description": "The source of the playlists."
-    },
     "edit": {
         "message": "Edit",
         "description": "Edit Button"
@@ -27,12 +23,48 @@
         "message": "Save",
         "description": "Save Button"
     },
-    "listItem": {
+    "playlistClickHint": {
         "message": "Click to start the Playlist!",
         "description": "Click on the list item to start the Playlist."
+    },
+    "singerClickHint": {
+        "message": "Click on the list item to play his/her song!",
+        "description": "Click on the list item to play his song!"
     },
     "plTitle":{
         "message": "Clip Playlist",
         "description": "Title of the playlist container sidebar."
+    },
+    "widthHelp":{
+        "message": "Can be a plain number in px or a css value string.",
+        "description": "Can be a plain number in px or a css value string."
+    },
+    "heightHelp":{
+        "message": "Can be a plain number in px or a css value string.",
+        "description": "Can be a plain number in px or a css value string."
+    },
+    "playlistSourceHelp":{
+        "message": "Clear this field to use the default source.",
+        "description": "Clear this field to use the default source."
+    },
+    "UIWidth": {
+        "message": "Playlist UI Width",
+        "description": "Playlist UI Width"
+    },
+    "UIHeight": {
+        "message": "Playlist UI Height",
+        "description": "Playlist UI Height"
+    },
+    "baseUrlTitle": {
+        "message": "Playlist Source Base Url",
+        "description": "Playlist Source Base Url"
+    },
+    "submitForm": {
+        "message": "Save",
+        "description": "Save Button"
+    },
+    "savedToast": {
+        "message": "Saved.<br>It will take effect on the next load.",
+        "description": "Saved Toast"
     }
 }

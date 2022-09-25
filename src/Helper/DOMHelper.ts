@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Message } from '../Models/Message';
 import { ISong } from '../Models/Song';
-import * as UrlHelper from './URLHelper';
-import * as PlaylistHelper from './PlaylistHelper';
+import { GenerateURLFromSong } from './URLHelper';
+import { SliceShuffleList } from './PlaylistHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const ASS: any;
@@ -165,7 +165,7 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
     // Make Playlist
     let pl: number[] = [];
     if (shuffle) {
-        pl = await PlaylistHelper.SliceShuffleList(currentIndex);
+        pl = await SliceShuffleList(currentIndex);
     } else {
         const list = [];
         for (let i = 0; i < myPlaylist.length; i++) list[i] = i;
@@ -220,13 +220,22 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
     });
 
     // 讓box+目錄標籤的寬度，永遠不大於螢幕寬的0.8倍
-    let width = 450;
-    if (screen.width * 0.8 - 40 < width) {
-        width = screen.width * 0.8 - 40;
+    const wh_s = await GetStorageWidthHeight();
+    const width = isNumeric(wh_s[0]) ? wh_s[0] + 'px' : wh_s[0];
+    const height = isNumeric(wh_s[1]) ? wh_s[1] + 'px' : wh_s[1];
+
+    // https://stackoverflow.com/a/175787
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function isNumeric(str: any) {
+        return (
+            !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+            !isNaN(parseFloat(str))
+        ); // ...and ensure strings of whitespace fail
     }
 
-    plBox.style.right = `-${width}px`;
-    plBox.style.width = `${width}px`;
+    plBox.style.right = `calc(-1 * ${width})`;
+    plBox.style.width = width;
+    plBox.style.height = height;
 
     // 開閉清單
     // 預設以關閉清單的狀態初始化Style，然後一秒後觸發打開動作
@@ -239,7 +248,7 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
         if (open) {
             // 開啟清單
             plBox.style.right = '0px';
-            plTitle.style.right = `${width}px`;
+            plTitle.style.right = width;
             plOption.style.bottom = `-210px`;
         } else {
             // 關閉清單
@@ -248,7 +257,7 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
                 await new Promise((r) => setTimeout(r, 1000));
             }
             plOption.style.bottom = '-235px';
-            plBox.style.right = `-${width}px`;
+            plBox.style.right = `calc(-1 * ${width})`;
             plTitle.style.right = '0px';
         }
         isOpen = open;
@@ -294,7 +303,7 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
 
     // Share buttons
     const song = myPlaylist[currentIndex];
-    const shareUrl = (await UrlHelper.GenerateURLFromSong(song)) + '&share=1';
+    const shareUrl = (await GenerateURLFromSong(song)) + '&share=1';
     const plShareLinkInput = document.getElementById('plShareLinkInput') as HTMLInputElement;
     plShareLinkInput.value = shareUrl;
 
@@ -418,4 +427,23 @@ function NextSong(index: number, UIClick = false): void {
     chrome.runtime.sendMessage(
         new Message('NextSongToBackground', { index: index, UIClick: UIClick })
     );
+}
+
+export async function GetStorageWidthHeight(): Promise<[string, string]> {
+    const { width, height } = await chrome.storage.sync.get({
+        width: '450',
+        height: 'calc(100vh - 56px)',
+    });
+    return [width, height];
+}
+
+export async function SetStorageWidthHeight(width: string, height: string): Promise<void> {
+    if (!width) width = '450';
+
+    if (!height) height = 'calc(100vh - 56px)';
+
+    await chrome.storage.sync.set({
+        width: width,
+        height: height,
+    });
 }

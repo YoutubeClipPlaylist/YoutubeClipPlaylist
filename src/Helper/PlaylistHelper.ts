@@ -1,11 +1,11 @@
 import { IPlaylist } from '../Models/Playlist';
 import { ISong, Song } from '../Models/Song';
-import * as UrlHelper from './URLHelper';
+import { GetBaseUrl, PrepareUrlParams } from './URLHelper';
 
 const defaultDisabledTags = ['notsongs', 'member', 'onedrive'];
 
 export async function fetchPlaylists(): Promise<IPlaylist[]> {
-    const response = await fetch((await UrlHelper.GetBaseUrl()) + 'Playlists.jsonc');
+    const response = await fetch((await GetBaseUrl()) + 'Playlists.jsonc');
     const json = await response.json();
     const Playlists: IPlaylist[] = json;
     await chrome.storage.local.set({ Playlists: Playlists });
@@ -16,7 +16,7 @@ export async function LoadPlayLists(urlParams: URLSearchParams): Promise<ISong[]
     const LoadedPlaylists = new Map();
     // eslint-disable-next-line prefer-const
     let [DisabledPlaylists, shuffleList, Playlists] = await getStorageLists();
-    const baseURL = await UrlHelper.GetBaseUrl();
+    const baseURL = await GetBaseUrl();
 
     console.groupCollapsed('Playlists');
     console.table(Playlists);
@@ -192,7 +192,7 @@ export async function LoadPlayLists(urlParams: URLSearchParams): Promise<ISong[]
 
 export async function CheckList(urlString: string): Promise<number> {
     const url = new URL(urlString);
-    const urlParams = await UrlHelper.PrepareUrlParams(urlString);
+    const urlParams = await PrepareUrlParams(urlString);
     const myPlaylist: ISong[] = (await chrome.storage.local.get({ myPlaylist: [] })).myPlaylist;
 
     //Check myPlaylist

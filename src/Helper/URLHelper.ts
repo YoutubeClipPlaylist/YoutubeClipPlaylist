@@ -1,4 +1,5 @@
 import { ISong } from '../Models/Song';
+import { fetchPlaylists } from './PlaylistHelper';
 
 const defaultBaseUrl = 'https://raw.githubusercontent.com/jim60105/Playlists/minify/';
 
@@ -69,6 +70,7 @@ export async function SetBaseUrl(url: string): Promise<void> {
     if (!url) url = defaultBaseUrl;
 
     await chrome.storage.local.set({ baseUrl: url });
+    fetchPlaylists();
 }
 
 export async function GetBaseUrl(): Promise<string> {
