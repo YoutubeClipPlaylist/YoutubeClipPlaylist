@@ -172,7 +172,11 @@ import './contentScript.scss';
 
             // DOMHelper.DisableAutoVideoPause();
             await DOMHelper.MakePlaylistUI(currentIndex, shuffle);
-            await DOMHelper.MakeSubtitle(url.toString(), urlParams.get('t') ?? '0');
+            try {
+                await DOMHelper.MakeSubtitle(url.toString(), ~~(urlParams.get('t') ?? '0'));
+            } catch (e) {
+                console.error(e);
+            }
         } else {
             CleanUp();
         }

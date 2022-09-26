@@ -95,7 +95,7 @@ export function DestroySubtitle() {
 }
 
 // Add custom subtitle
-export async function MakeSubtitle(urlString: string, offset: string) {
+export async function MakeSubtitle(urlString: string, offset: number) {
     DestroySubtitle();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -121,7 +121,7 @@ export async function MakeSubtitle(urlString: string, offset: string) {
                         // add a element into textSplit second line
                         textSplit.splice(1, 0, 'X-TIMESTAMP-MAP=MPEGTS:0,LOCAL:00:00:00.000');
                     }
-                    MPEGTStime += ~offset * 90000;
+                    MPEGTStime += offset * 90000;
                     textSplit[1] = `X-TIMESTAMP-MAP=MPEGTS:${MPEGTStime},LOCAL:${LOCALtime}`;
                     const newText = textSplit.join('\n');
 
@@ -162,8 +162,78 @@ export async function MakeSubtitle(urlString: string, offset: string) {
                         attributeFilter: ['style'],
                         subtree: false,
                     });
+                    if (offset > 0) {
+                        console.error('ASS subtitle does not support offset!!!');
+                    }
+                } else if (
+                    (nowPlaying.SubSrc as string).endsWith('.lrc') &&
+                    new RegExp(/\[\d{2}:\d{2}.\d{2,5}\]/).test(text)
+                ) {
+                    const lrc = parseLyric(text);
+
+                    const track = player.addTextTrack('subtitles', 'Traditional Chinese', 'zh');
+                    for (let index = 0; index < lrc.length; index++) {
+                        const line = lrc[index];
+
+                        // Skip empty line
+                        if (!lrc[1]) continue;
+
+                        if (index === lrc.length - 1) {
+                            // Add five seconds to the last line
+                            track.addCue(
+                                new VTTCue(line[0] + offset, line[0] + offset + 5, line[1])
+                            );
+                        } else {
+                            track.addCue(
+                                new VTTCue(line[0] + offset, lrc[index + 1][0] + offset, line[1])
+                            );
+                        }
+                    }
+                    track.mode = 'showing';
                 }
             });
+    }
+
+    // https://www.cnblogs.com/Wayou/p/sync_lyric_with_html5_audio.html
+    function parseLyric(text: string) {
+        //将文本分隔成一行一行，存入数组
+        let lines = text.split('\\n'),
+            //用于匹配时间的正则表达式，匹配的结果类似[xx:xx.xx]
+            // eslint-disable-next-line prefer-const
+            pattern = /\[\d{2}:\d{2}.\d{2,5}\]/g,
+            //保存最终结果的数组
+            // eslint-disable-next-line prefer-const
+            result: [number, string][] = [];
+        //去掉不含时间的行
+        while (!pattern.test(lines[0])) {
+            lines = lines.slice(1);
+            if (lines.length === 0) {
+                throw new Error("Can't find time in the lyric");
+            }
+        }
+        //上面用'\n'生成生成数组时，结果中最后一个为空元素，这里将去掉
+        lines[lines.length - 1].length === 0 && lines.pop();
+        lines.forEach(function (v /*数组元素值*/, i /*元素索引*/, a /*数组本身*/) {
+            //提取出时间[xx:xx.xx]
+            // eslint-disable-next-line prefer-const
+            const time = v.match(pattern),
+                //提取歌词
+                value = v.replace(pattern, '');
+            if (time) {
+                //因为一行里面可能有多个时间，所以time有可能是[xx:xx.xx][xx:xx.xx][xx:xx.xx]的形式，需要进一步分隔
+                time.forEach(function (v1: string, i1: any, a1: any) {
+                    //去掉时间里的中括号得到xx:xx.xx
+                    const t = v1.slice(1, -1).split(':');
+                    //将结果压入最终数组
+                    result.push([parseInt(t[0], 10) * 60 + parseFloat(t[1]), value]);
+                });
+            }
+        });
+        //最后将结果数组中的元素按时间大小排序，以便保存之后正常显示歌词
+        result.sort(function (a, b) {
+            return a[0] - b[0];
+        });
+        return result;
     }
 }
 
