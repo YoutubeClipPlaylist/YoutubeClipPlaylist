@@ -107,27 +107,9 @@ export async function MakeSubtitle(urlString: string, offset: number) {
             .then((response) => response.text())
             .then((text) => {
                 if (text.startsWith('WEBVTT')) {
-                    // webvtt
-
-                    // Offset WebVTT
-                    const textSplit = text.split('\n');
-                    const secondLine = textSplit[1];
-                    let MPEGTStime = '0';
-                    let LOCALtime = '00:00:00.000';
-                    if (secondLine.indexOf('X-TIMESTAMP-MAP') >= 0) {
-                        MPEGTStime = secondLine.split('MPEGTS:')[1].split(',')[0];
-                        LOCALtime = secondLine.split('LOCAL:')[1].split(',')[0];
-                    } else {
-                        // add a element into textSplit second line
-                        textSplit.splice(1, 0, 'X-TIMESTAMP-MAP=MPEGTS:0,LOCAL:00:00:00.000');
-                    }
-                    MPEGTStime += offset * 90000;
-                    textSplit[1] = `X-TIMESTAMP-MAP=MPEGTS:${MPEGTStime},LOCAL:${LOCALtime}`;
-                    const newText = textSplit.join('\n');
-
                     // Add WebVTT
                     const track = document.createElement('track');
-                    const blob = new Blob([newText], {
+                    const blob = new Blob([text], {
                         type: 'text/vtt',
                     });
                     track.src = URL.createObjectURL(blob);
@@ -135,8 +117,20 @@ export async function MakeSubtitle(urlString: string, offset: number) {
                     track.kind = 'subtitles';
                     track.srclang = 'zh';
                     track.default = true;
-
                     player.appendChild(track);
+
+                    // offset
+                    track.onload = () => {
+                        const textTrack = player.textTracks[0];
+                        if (textTrack.cues) {
+                            for (let index = 0; index < textTrack.cues.length; index++) {
+                                const cue = textTrack.cues[index];
+                                cue.startTime += offset;
+                                cue.endTime += offset;
+                            }
+                        }
+                        track.onload = null;
+                    };
                 } else if (text.startsWith('[Script Info]')) {
                     // ass
                     assContainer = document.createElement('div');
