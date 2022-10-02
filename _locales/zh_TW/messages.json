@@ -59,6 +59,14 @@
         "message": "播放清單來源",
         "description": "Playlist Source Base Url"
     },
+    "UseAutoSubLabel": {
+        "message": "啟用自動歌詞功能",
+        "description": "Enable automatic lyrics feature."
+    },
+    "UseAutoSubHelp": {
+        "message": "這些歌詞是自動化由網路搜尋而來。<br />如果發生錯誤或是時間不正確，請<a href='https://github.com/jim60105/Lyrics/issues/new/choose' target='_blank' rel='noopener noreferrer' >在此</a >回報。",
+        "description": "These lyrics are automatically searched from the internet.<br />If there is a mismatch or incorrect timestamp, please report it <a href='https://github.com/jim60105/Lyrics/issues/new/choose' target='_blank' rel='noopener noreferrer' >here</a >."
+    },
     "submitForm": {
         "message": "儲存",
         "description": "Save Button"

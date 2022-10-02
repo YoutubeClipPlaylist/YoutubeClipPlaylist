@@ -59,6 +59,14 @@
         "message": "プレイリストのソース",
         "description": "Playlist Source Base Url"
     },
+    "UseAutoSubLabel": {
+        "message": "自動歌詞機能を有効にする",
+        "description": "Enable automatic lyrics feature."
+    },
+    "UseAutoSubHelp": {
+        "message": "この歌詞は、インターネットから自動的に検索されたものです<br />ミスマッチや不正確なタイムスタンプがある場合は、<a href='https://github.com/jim60105/Lyrics/issues/new/choose' target='_blank' rel='noopener noreferrer' >こちら</a >にご報告ください",
+        "description": "These lyrics are automatically searched from the internet.<br />If there is a mismatch or incorrect timestamp, please report it <a href='https://github.com/jim60105/Lyrics/issues/new/choose' target='_blank' rel='noopener noreferrer' >here</a >."
+    },
     "submitForm": {
         "message": "セーブ",
         "description": "Save Button"

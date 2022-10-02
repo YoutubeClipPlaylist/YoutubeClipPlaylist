@@ -37,6 +37,10 @@ import Toast from 'bootstrap/js/dist/toast';
         document.getElementById('UIWidth')!.innerHTML = chrome.i18n.getMessage('UIWidth');
         document.getElementById('UIHeight')!.innerHTML = chrome.i18n.getMessage('UIHeight');
         document.getElementById('baseUrlTitle')!.innerHTML = chrome.i18n.getMessage('baseUrlTitle');
+        document.getElementById('UseAutoSubLabel')!.innerHTML =
+            chrome.i18n.getMessage('UseAutoSubLabel');
+        document.getElementById('UseAutoSubHelp')!.innerHTML =
+            chrome.i18n.getMessage('UseAutoSubHelp');
         document.getElementById('submitForm')!.innerHTML = chrome.i18n.getMessage('submitForm');
         document.getElementById('savedToast')!.innerHTML = chrome.i18n.getMessage('savedToast');
     }
@@ -283,6 +287,9 @@ import Toast from 'bootstrap/js/dist/toast';
 
         (document.getElementById('baseUrl') as HTMLInputElement).value = await GetBaseUrl();
 
+        (document.getElementById('UseAutoSub') as HTMLInputElement).checked =
+            (await chrome.storage.sync.get('UseAutoSub')).UseAutoSub ?? false;
+
         (document.getElementById('submitForm') as HTMLButtonElement).addEventListener(
             'click',
             async (e) => {
@@ -292,6 +299,10 @@ import Toast from 'bootstrap/js/dist/toast';
                 );
                 await SetBaseUrl((document.getElementById('baseUrl') as HTMLInputElement).value);
                 InitSettingForm();
+
+                await chrome.storage.sync.set({
+                    UseAutoSub: (document.getElementById('UseAutoSub') as HTMLInputElement).checked,
+                });
 
                 const toast = new Toast(document.getElementById('toast') as Element);
                 toast.show();
