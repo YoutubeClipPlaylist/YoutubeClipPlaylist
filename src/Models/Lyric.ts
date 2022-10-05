@@ -18,15 +18,15 @@ export interface ILyric {
 }
 
 export class Lyric implements ILyric {
-    LyricId: number;
-    StartTime: number;
     VideoId: string;
+    StartTime: number;
+    LyricId: number;
     Title: string;
 
-    constructor(lyricId: number, startTime: number, videoId: string, title: string) {
-        this.LyricId = lyricId;
-        this.StartTime = startTime;
+    constructor(videoId: string, startTime: number, lyricId: number, title: string) {
         this.VideoId = videoId;
+        this.StartTime = startTime;
+        this.LyricId = lyricId;
         this.Title = title;
     }
 }

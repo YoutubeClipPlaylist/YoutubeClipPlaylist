@@ -1,12 +1,12 @@
 import { ILyric, Lyric } from './../Models/Lyric';
 import { ISong } from './../Models/Song';
 
-const baseURL = 'https://raw.githubusercontent.com/jim60105/Lyrics/lyrics/';
+const baseURL = 'https://raw.githubusercontent.com/jim60105/Lyrics/minify/';
 let LyricList: ILyric[] = [];
 
 async function LoadLyricsList(): Promise<ILyric[]> {
     const response = await fetch(baseURL + 'Lyrics.json');
-    const json = (await response.json()) as [number, number, string, string][];
+    const json = (await response.json()) as [string, number, number, string][];
     const tempList: ILyric[] = [];
 
     json.forEach((input) => {

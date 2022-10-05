@@ -194,13 +194,16 @@ export async function MakeSubtitle(urlString: string, offset: number) {
     // https://www.cnblogs.com/Wayou/p/sync_lyric_with_html5_audio.html
     function parseLyric(text: string) {
         //将文本分隔成一行一行，存入数组
-        let lines = text.split('\\n'),
+        let lines = text.replaceAll('\\\n', '\n').split('\n'),
             //用于匹配时间的正则表达式，匹配的结果类似[xx:xx.xx]
             // eslint-disable-next-line prefer-const
             pattern = /\[\d{2}:\d{2}.\d{2,5}\]/g,
             //保存最终结果的数组
             // eslint-disable-next-line prefer-const
             result: [number, string][] = [];
+
+        console.debug(lines);
+
         //去掉不含时间的行
         while (!pattern.test(lines[0])) {
             lines = lines.slice(1);
