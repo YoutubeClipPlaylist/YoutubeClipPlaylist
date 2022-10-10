@@ -6,7 +6,7 @@ let LyricList: ILyric[] = [];
 
 async function LoadLyricsList(): Promise<ILyric[]> {
     const response = await fetch(baseURL + 'Lyrics.json');
-    const json = (await response.json()) as [string, number, number, string][];
+    const json = (await response.json()) as [string, number, number, string, number][];
     const tempList: ILyric[] = [];
 
     json.forEach((input) => {

@@ -110,6 +110,7 @@ export async function MakeSubtitle(urlString: string, offset: number) {
         const lyric = await SearchLyricFromSong(song);
         if (lyric) {
             lyricsFromPrefetchProject = await LoadLyricContent(lyric.LyricId);
+            offset += lyric.Offset;
         }
     }
 
