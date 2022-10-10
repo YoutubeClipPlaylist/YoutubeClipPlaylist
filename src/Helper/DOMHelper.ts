@@ -198,7 +198,7 @@ export async function MakeSubtitle(urlString: string, offset: number) {
         let lines = text.replaceAll('\\\n', '\n').split('\n'),
             //用于匹配时间的正则表达式，匹配的结果类似[xx:xx.xx]
             // eslint-disable-next-line prefer-const
-            pattern = /\[\d{2}:\d{2}.\d{2,5}\]/g,
+            pattern = /\[\d{2}:\d{2}(.\d{1,5})?\]/g,
             //保存最终结果的数组
             // eslint-disable-next-line prefer-const
             result: [number, string][] = [];
