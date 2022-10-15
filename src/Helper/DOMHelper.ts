@@ -93,6 +93,19 @@ export function DestroySubtitle() {
         first.remove();
         first = player.firstElementChild;
     }
+    // Clean lrc sub
+    // https://stackoverflow.com/a/15315411/8706033
+    for (const key in player.textTracks) {
+        if (Object.prototype.hasOwnProperty.call(player.textTracks, key)) {
+            const track = player.textTracks[key];
+            const cues = track.cues ?? [];
+            for (let index = 0; index < cues.length; index++) {
+                track.removeCue(cues[index]);
+            }
+            // https://stackoverflow.com/a/29310267/8706033
+            track.mode = 'disabled';
+        }
+    }
 }
 
 // Add custom subtitle
