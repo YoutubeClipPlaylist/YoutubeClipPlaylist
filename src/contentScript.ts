@@ -81,6 +81,9 @@ import './contentScript.scss';
     // For situations where the webpage does not reload, such as clicking a link on YouTube.
     player.onloadedmetadata = DoOnVideoChange;
 
+    // Close the youtube chat message box
+    await DOMHelper.CloseChatMessageBoxInYoutube();
+
     function LoadPlaylists(): Promise<void> {
         return chrome.runtime.sendMessage(new Message('LoadPlaylists', url));
     }

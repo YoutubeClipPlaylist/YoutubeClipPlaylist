@@ -549,3 +549,26 @@ export async function SetStorageWidthHeight(width: string, height: string): Prom
         height: height,
     });
 }
+
+/**
+ * Close the youtube chat message box
+ */
+export async function CloseChatMessageBoxInYoutube() {
+    if (window.location.hostname.indexOf('youtube') < 0) {
+        return;
+    }
+
+    // Livestream is on by default. Premiere is off by default.
+    // Livestream is more common than Premiere in our playlists, so we trigger once at the beginning.
+    const btn = await elementReady(
+        '#show-hide-button > ytd-toggle-button-renderer',
+        'ytd-toggle-button-renderer'
+    );
+    btn?.dispatchEvent(new Event('click'));
+    const iframe = document.getElementById('chatframe') as HTMLIFrameElement;
+    iframe.onload = () => {
+        if (iframe.contentDocument?.getElementsByTagName('yt-live-chat-app').length) {
+            btn?.dispatchEvent(new Event('click'));
+        }
+    };
+}
