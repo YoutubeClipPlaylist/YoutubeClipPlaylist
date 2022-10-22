@@ -121,7 +121,7 @@ export async function MakeSubtitle(urlString: string, offset: number) {
         lyricsFromSubSrc = await fetch(song.SubSrc).then((response) => response.text());
     } else {
         const lyric = await SearchLyricFromSong(song);
-        if (lyric) {
+        if (lyric && lyric.LyricId > 0) {
             lyricsFromPrefetchProject = await LoadLyricContent(lyric.LyricId);
             offset += lyric.Offset;
         }
