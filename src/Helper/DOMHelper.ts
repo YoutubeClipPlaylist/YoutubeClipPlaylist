@@ -230,9 +230,16 @@ export async function MakeSubtitle(urlString: string, offset: number) {
         lines.forEach(function (v /*数组元素值*/, i /*元素索引*/, a /*数组本身*/) {
             //提取出时间[xx:xx.xx]
             // eslint-disable-next-line prefer-const
-            const time = v.match(pattern),
+            const time = v.match(pattern);
+            const value = v
                 //提取歌词
-                value = v.replace(pattern, '');
+                .replace(pattern, '')
+                // 調整歌詞資訊常出現的簡體字
+                .replace('词', '詞')
+                .replace('编', '編')
+                .replace('贝', '貝')
+                .replace('乐', '樂')
+                .replace('呗', '唄');
             if (time) {
                 //因为一行里面可能有多个时间，所以time有可能是[xx:xx.xx][xx:xx.xx][xx:xx.xx]的形式，需要进一步分隔
                 time.forEach(function (v1: string, i1: any, a1: any) {
