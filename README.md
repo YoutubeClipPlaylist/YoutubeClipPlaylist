@@ -35,8 +35,6 @@
 
 ## 彈窗 UI 選單
 
-![pic](pic/ChromeWebStore/UI.png)
-
 ### UI
 
 瀏覧器右上角開啟擴充工具彈出式視窗
@@ -44,6 +42,9 @@
 - 單擊左上角的隨機按鈕，切換是否隨機播放
 - 單擊中間的紅色播放按鈕，播放**所有**播放清單
 - 單擊播放清單列表，播放**單一**播放清單
+
+![pic](pic/ChromeWebStore/UI.png)
+![pic](pic/ChromeWebStore/UI2.png)
 
 ### 禁用歌單功能
 
@@ -71,14 +72,28 @@
 - Title?: 必須用雙引號包住，為字串型態，可選
 - SubSrc?: 必須用雙引號包住，為字串型態，可選
 
-## 字幕
+## 歌詞、字幕
 
-此工具支援載入 WebVTT 字幕(.vtt)、ASS 字幕(.ass)，請將字幕直鏈傳入歌單之 SubSrc 欄位
+### 自動歌詞功能
 
-> 我在[RadioQTama 播放清單](https://www.youtube.com/?startplaylist&playlistinclude=RadioQTama)中使用了來自[アルバート](https://twitter.com/alubto)的翻譯字幕，是直接由[他的 repo](https://gitlab.com/alubaato/tama-subs)取得內容\
-> 我使用了一支[.Net Core 程式](https://github.com/jim60105/Playlists/blob/master/QuonTama/CreateRadioQTamaSubtitles/CreateRadioQTamaSubtitles/Program.cs)和[Github Workflow](https://github.com/jim60105/Playlists/blob/master/.github/workflows/CreateRadioQTamaSubtitles.yml)做 CI
+此專案有一支排程程式，自動從網路上蒐集歌詞，請在 UI 的 Settings 頁啟用。\
+歌詞來源為 [網易雲音樂](https://music.163.com/)，以 Github Workflow 定時將播放清單使用的歌詞[轉存至 Github](https://github.com/jim60105/Lyrics/tree/lyrics)，然後再讓客戶端存取 Github。\
+經過這層轉存，你不會直接存取網易雲音樂站台，請安心使用。
 
-![pic](pic/sub.png)
+>注意，這是附加功能！\
+>由於歌詞皆為自動化搜尋匹配，能預期會有大量的錯誤情況發生。\
+>若發現歌詞有錯誤，請在[這裡](https://github.com/jim60105/Lyrics/issues/new/choose)回報。\
+>請務必提供該歌曲的 Share 連結，以便我能夠快速修正錯誤歌曲
+
+![pic](pic/ChromeWebStore/lyric.png)\
+↓啟用後↓\
+![pic](pic/ChromeWebStore/play.png)
+
+### ASS字幕功能
+
+此工具支援載入WebVTT字幕(.vtt)、ASS字幕(.ass)、lrc歌詞(.lrc)，可將字幕直鏈傳入歌單之SubSrc欄位
+
+![pic](pic/ChromeWebStore/Sub.png)
 
 ## 讀取的網址參數
 
