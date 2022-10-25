@@ -183,7 +183,7 @@ export async function MakeSubtitle(urlString: string, offset: number) {
         }
     } else if (
         ((song.SubSrc as string)?.endsWith('.lrc') || lyricsFromPrefetchProject) &&
-        new RegExp(/\[\d{2}:\d{2}.\d{2,5}\]/).test(lyrics)
+        new RegExp(/\[\d{2}:\d{2}.\d{1,5}\]/).test(lyrics)
     ) {
         // lrc
         const lrc = parseLyric(lyrics);
