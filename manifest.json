@@ -70,7 +70,8 @@
     "web_accessible_resources": [
         {
             "resources": [
-                "contentScript.html"
+                "contentScript.html",
+                "contentScript_lyricHelper.html"
             ],
             "matches": [
                 "https://www.youtube.com/*",

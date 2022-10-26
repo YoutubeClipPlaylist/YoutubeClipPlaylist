@@ -1,9 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Message } from '../Models/Message';
 import { ISong } from '../Models/Song';
+import { ILyric } from './../Models/Lyric';
 import { GenerateURLFromSong } from './URLHelper';
 import { SliceShuffleList } from './PlaylistHelper';
-import { LoadLyricContent, SearchLyricFromSong } from './LyricHelper';
+import {
+    LoadLyricContent,
+    SearchLyricFromSong,
+    ParseLyric,
+    MakeLyricHelperUI,
+    ReadLyricsFromStorage,
+} from './LyricHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const ASS: any;
@@ -111,6 +118,7 @@ export function DestroySubtitle() {
 // Add custom subtitle
 export async function MakeSubtitle(urlString: string, offset: number) {
     DestroySubtitle();
+    let lyric: ILyric | undefined;
 
     const song: ISong = await chrome.runtime.sendMessage(new Message('GetNowPlaying', urlString));
 
@@ -119,8 +127,21 @@ export async function MakeSubtitle(urlString: string, offset: number) {
 
     if (song.SubSrc) {
         lyricsFromSubSrc = await fetch(song.SubSrc).then((response) => response.text());
-    } else {
-        const lyric = await SearchLyricFromSong(song);
+    }
+
+    if (!lyricsFromSubSrc) {
+        if (process.env.NODE_ENV !== 'development') {
+            await chrome.storage.local.remove(['Lyrics']);
+        } else {
+            lyric = (await ReadLyricsFromStorage()).find(
+                (p) => p.VideoId === song.VideoID && p.StartTime === song.StartTime
+            );
+        }
+
+        if (!lyric) {
+            lyric = await SearchLyricFromSong(song);
+        }
+
         if (lyric && lyric.LyricId > 0) {
             lyricsFromPrefetchProject = await LoadLyricContent(lyric.LyricId);
             offset += lyric.Offset;
@@ -186,9 +207,10 @@ export async function MakeSubtitle(urlString: string, offset: number) {
         new RegExp(/\[\d{2}:\d{2}.\d{1,5}\]/).test(lyrics)
     ) {
         // lrc
-        const lrc = parseLyric(lyrics);
+        const lrc = ParseLyric(lyrics);
 
         const track = player.addTextTrack('subtitles', 'Traditional Chinese', 'zh');
+        const cues: VTTCue[] = [];
         for (let index = 0; index < lrc.length; index++) {
             const line = lrc[index];
 
@@ -197,64 +219,15 @@ export async function MakeSubtitle(urlString: string, offset: number) {
 
             if (index === lrc.length - 1) {
                 // Add five seconds to the last line
-                track.addCue(new VTTCue(line[0] + offset, line[0] + offset + 5, line[1]));
+                cues.push(new VTTCue(line[0] + offset, line[0] + offset + 5, line[1]));
             } else {
-                track.addCue(new VTTCue(line[0] + offset, lrc[index + 1][0] + offset, line[1]));
+                cues.push(new VTTCue(line[0] + offset, lrc[index + 1][0] + offset, line[1]));
             }
+            track.addCue(cues[index]);
         }
         track.mode = 'showing';
-    }
 
-    // https://www.cnblogs.com/Wayou/p/sync_lyric_with_html5_audio.html
-    function parseLyric(text: string) {
-        //将文本分隔成一行一行，存入数组
-        let lines = text.replaceAll('\\\n', '\n').split('\n'),
-            //用于匹配时间的正则表达式，匹配的结果类似[xx:xx.xx]
-            // eslint-disable-next-line prefer-const
-            pattern = /\[\d{2}:\d{2}(.\d{1,5})?\]/g,
-            //保存最终结果的数组
-            // eslint-disable-next-line prefer-const
-            result: [number, string][] = [];
-
-        console.debug(lines);
-
-        //去掉不含时间的行
-        while (!pattern.test(lines[0])) {
-            lines = lines.slice(1);
-            if (lines.length === 0) {
-                throw new Error("Can't find time in the lyric");
-            }
-        }
-        //上面用'\n'生成生成数组时，结果中最后一个为空元素，这里将去掉
-        lines[lines.length - 1].length === 0 && lines.pop();
-        lines.forEach(function (v /*数组元素值*/, i /*元素索引*/, a /*数组本身*/) {
-            //提取出时间[xx:xx.xx]
-            // eslint-disable-next-line prefer-const
-            const time = v.match(pattern);
-            const value = v
-                //提取歌词
-                .replace(pattern, '')
-                // 調整歌詞資訊常出現的簡體字
-                .replace('词', '詞')
-                .replace('编', '編')
-                .replace('贝', '貝')
-                .replace('乐', '樂')
-                .replace('呗', '唄');
-            if (time) {
-                //因为一行里面可能有多个时间，所以time有可能是[xx:xx.xx][xx:xx.xx][xx:xx.xx]的形式，需要进一步分隔
-                time.forEach(function (v1: string, i1: any, a1: any) {
-                    //去掉时间里的中括号得到xx:xx.xx
-                    const t = v1.slice(1, -1).split(':');
-                    //将结果压入最终数组
-                    result.push([parseInt(t[0], 10) * 60 + parseFloat(t[1]), value]);
-                });
-            }
-        });
-        //最后将结果数组中的元素按时间大小排序，以便保存之后正常显示歌词
-        result.sort(function (a, b) {
-            return a[0] - b[0];
-        });
-        return result;
+        if (typeof lyric !== 'undefined') await MakeLyricHelperUI(lyric, track, cues);
     }
 }
 

@@ -21,8 +21,11 @@ jobs:
           npx json -I -f manifest.json -e "this.version='$(echo ${GITHUB_REF/refs\/tags\//} | sed 's/v//')'"
           npx json -I -f package.json -e "this.version='$(echo ${GITHUB_REF/refs\/tags\//} | sed 's/v//')'"
 
+      - name: NPM install
+        run: npm install
+
       - name: Build
-        run: npm install && npm run-script build
+        run: npm run-script build
 
       - name: Easy Zip Files
         uses: vimtor/action-zip@v1
@@ -32,12 +35,24 @@ jobs:
           # https://github.com/vimtor/action-zip/issues/8#issuecomment-917654348
           recursive: true
 
+      - name: Build DEBUG
+        run: npm run-script build:dev
+
+      - name: Easy Zip Files
+        uses: vimtor/action-zip@v1
+        with:
+          files: dist/
+          dest: YoutubeClipPlaylist_DEBUG.zip
+          # https://github.com/vimtor/action-zip/issues/8#issuecomment-917654348
+          recursive: true
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
           name: artifact
           path: |
             YoutubeClipPlaylist.zip
+            YoutubeClipPlaylist_DEBUG.zip
             NOTICE
           retention-days: 10
 
@@ -59,6 +74,7 @@ jobs:
           body_path: NOTICE
           files: |
             YoutubeClipPlaylist.zip
+            YoutubeClipPlaylist_DEBUG.zip
 
   publish_to_chrome_web_store:
     name: Publish to chrome web store

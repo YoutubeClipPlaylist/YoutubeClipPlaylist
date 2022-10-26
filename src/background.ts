@@ -1,6 +1,6 @@
-import { ISong } from './Models/Song';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { IMessage } from './Models/Message';
+import { ISong } from './Models/Song';
 import * as UrlHelper from './Helper/URLHelper';
 import * as PlaylistHelper from './Helper/PlaylistHelper';
 
@@ -68,6 +68,27 @@ function addListeners() {
     });
     _addListener<boolean>('FetchPlaylists', async (message, sender, sendResponse) => {
         sendResponse(await PlaylistHelper.fetchPlaylists());
+    });
+    _addListener<boolean>('ReloadLastSong', async (message, sender, sendResponse) => {
+        const url = `https://www.youtube.com/watch?${await UrlHelper.GetFromStorage('')}`;
+        console.log('Redirect to last song: %s', url);
+
+        let tabId: number = chrome.tabs.TAB_ID_NONE;
+        if (sender.tab && sender.tab.url) {
+            if (sender.tab.url.indexOf('/embed/') > 0) {
+                tabId = sender.tab.openerTabId ?? tabId;
+            } else {
+                tabId = sender.tab.id ?? tabId;
+            }
+        }
+        if (tabId < 0) {
+            console.warn('TabId not defined!');
+            tabId = (await chrome.tabs.create({})).id ?? -1;
+
+            if (tabId < 0) return;
+        }
+        chrome.tabs.update(tabId, { url: url });
+        sendResponse();
     });
 }
 
