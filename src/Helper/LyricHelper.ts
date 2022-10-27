@@ -105,6 +105,7 @@ export async function MakeLyricHelperUI(lyric: ILyric, track: TextTrack, cues: V
     const btnSave = document.getElementById('btnSave') as HTMLButtonElement;
     const btnDump = document.getElementById('btnDump') as HTMLButtonElement;
     const btnReset = document.getElementById('btnReset') as HTMLButtonElement;
+    const btnSubmit = document.getElementById('btnSubmit') as HTMLButtonElement;
 
     rangeInput.min = (offset - range).toString();
     rangeInput.max = (offset + range).toString();
@@ -115,20 +116,60 @@ export async function MakeLyricHelperUI(lyric: ILyric, track: TextTrack, cues: V
     rangeInput.oninput = rebuildTrack;
     btnSave.onclick = save;
     btnDump.onclick = async () => {
-        const lyrics = await save();
-        const json: [string, number, number, string, number][] = [];
-        lyrics.forEach((lyric) => {
-            json.push([lyric.VideoId, lyric.StartTime, lyric.LyricId, lyric.Title, lyric.Offset]);
-        });
-        const dump = JSON.stringify(json);
-        navigator.clipboard.writeText(dump);
-        console.log(dump);
+        const jsonText = await dump();
+        navigator.clipboard.writeText(jsonText);
+        console.log(jsonText);
     };
     btnReset.onclick = async () => {
         await clearCurrent();
         // input.value = offset.toString();
         await ReloadLastSong();
     };
+    btnSubmit.onclick = async () => {
+        const dumpText = await dump();
+        const rawResponse = await fetch(
+            'https://api.github.com/repos/YoutubeClipPlaylist/Lyrics/dispatches',
+            {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/vnd.github+json',
+                    Authorization:
+                        'Bearer ' + (await chrome.storage.local.get('GITHUB_PAT')).GITHUB_PAT,
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: JSON.stringify({
+                    event_type: 'fetch_lyrics',
+                    client_payload: {
+                        lyrics: dumpText,
+                    },
+                }),
+                redirect: 'follow',
+            }
+        );
+        if (rawResponse.status === 204) {
+            alert('Submit Success!');
+            await chrome.storage.local.remove('Lyrics');
+        } else if (rawResponse.status === 401 || rawResponse.status === 422) {
+            console.warn('Validation failed when triggering github workflow!');
+            window.open(
+                'https://github.com/YoutubeClipPlaylist/Lyrics/issues/new?' +
+                    new URLSearchParams({
+                        title: '[Submit lyrics]',
+                        body: '```\n' + dumpText + '\n```',
+                    }),
+                '_blank'
+            );
+        }
+    };
+
+    async function dump() {
+        const lyrics = await save();
+        const json: [string, number, number, string, number][] = [];
+        lyrics.forEach((lyric) => {
+            json.push([lyric.VideoId, lyric.StartTime, lyric.LyricId, lyric.Title, lyric.Offset]);
+        });
+        return JSON.stringify(json);
+    }
 
     function rebuildTrack() {
         output.value = rangeInput.value;
