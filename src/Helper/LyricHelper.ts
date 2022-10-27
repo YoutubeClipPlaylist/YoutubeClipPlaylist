@@ -116,7 +116,11 @@ export async function MakeLyricHelperUI(lyric: ILyric, track: TextTrack, cues: V
     btnSave.onclick = save;
     btnDump.onclick = async () => {
         const lyrics = await save();
-        const dump = JSON.stringify(lyrics);
+        const json: [string, number, number, string, number][] = [];
+        lyrics.forEach((lyric) => {
+            json.push([lyric.VideoId, lyric.StartTime, lyric.LyricId, lyric.Title, lyric.Offset]);
+        });
+        const dump = JSON.stringify(json);
         navigator.clipboard.writeText(dump);
         console.log(dump);
     };

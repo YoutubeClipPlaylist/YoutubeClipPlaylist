@@ -1,16 +1,16 @@
 export interface ILyric {
     /**
-     * 歌詞ID
+     * 影片ID
      */
-    LyricId: number;
+    VideoId: string;
     /**
      * 歌曲啟始時間
      */
     StartTime: number;
     /**
-     * 影片ID
+     * 歌詞ID
      */
-    VideoId: string;
+    LyricId: number;
     /**
      * 歌曲名稱
      */
