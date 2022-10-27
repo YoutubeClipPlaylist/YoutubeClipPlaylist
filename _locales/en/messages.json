@@ -64,8 +64,8 @@
         "description": "Enable automatic lyrics feature."
     },
     "UseAutoSubHelp": {
-        "message": "These lyrics are automatically searched from the internet.<br />If there is a mismatch or incorrect timestamp, please report it <a href='https://github.com/jim60105/Lyrics/issues/new/choose' target='_blank' rel='noopener noreferrer' >here</a >.",
-        "description": "These lyrics are automatically searched from the internet.<br />If there is a mismatch or incorrect timestamp, please report it <a href='https://github.com/jim60105/Lyrics/issues/new/choose' target='_blank' rel='noopener noreferrer' >here</a >."
+        "message": "These lyrics are automatically searched from the internet.<br />If there is a mismatch or incorrect timestamp, please report it <a href='https://github.com/YoutubeClipPlaylist/Lyrics/issues/new/choose' target='_blank' rel='noopener noreferrer' >here</a >.",
+        "description": "These lyrics are automatically searched from the internet.<br />If there is a mismatch or incorrect timestamp, please report it <a href='https://github.com/YoutubeClipPlaylist/Lyrics/issues/new/choose' target='_blank' rel='noopener noreferrer' >here</a >."
     },
     "submitForm": {
         "message": "Save",

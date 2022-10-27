@@ -2,7 +2,7 @@
 
 ![cover](pic/ChromeWebStore/cover.png)
 
-[![GitHub tag](https://img.shields.io/github/tag/jim60105/YoutubeClipPlaylist?style=for-the-badge)](https://github.com/jim60105/YoutubeClipPlaylist/releases) [![GitHub last commit](https://img.shields.io/github/last-commit/jim60105/YoutubeClipPlaylist?style=for-the-badge)](https://github.com/jim60105/YoutubeClipPlaylists) [![LICENSE](https://img.shields.io/github/license/jim60105/YoutubeClipPlaylist?style=for-the-badge)](https://github.com/jim60105/YoutubeClipPlaylist/blob/master/LICENSE) \
+[![GitHub tag](https://img.shields.io/github/tag/YoutubeClipPlaylist/YoutubeClipPlaylist?style=for-the-badge)](https://github.com/YoutubeClipPlaylist/YoutubeClipPlaylist/releases) [![GitHub last commit](https://img.shields.io/github/last-commit/YoutubeClipPlaylist/YoutubeClipPlaylist?style=for-the-badge)](https://github.com/YoutubeClipPlaylist/YoutubeClipPlaylists) [![LICENSE](https://img.shields.io/github/license/YoutubeClipPlaylist/YoutubeClipPlaylist?style=for-the-badge)](https://github.com/YoutubeClipPlaylist/YoutubeClipPlaylist/blob/master/LICENSE) \
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/kdlhjpdoaabhpolkaghkjklfcdfjapkh?style=for-the-badge)](https://chrome.google.com/webstore/detail/kdlhjpdoaabhpolkaghkjklfcdfjapkh) [![Chrome Web Store](https://img.shields.io/chrome-web-store/users/kdlhjpdoaabhpolkaghkjklfcdfjapkh?style=for-the-badge)](https://chrome.google.com/webstore/detail/kdlhjpdoaabhpolkaghkjklfcdfjapkh) \
 ![Bootstrap](https://img.shields.io/static/v1?style=for-the-badge&message=Bootstrap&color=7952B3&logo=Bootstrap&logoColor=FFFFFF&label=) ![TypeScript](https://img.shields.io/static/v1?style=for-the-badge&message=TypeScript&color=3178C6&logo=TypeScript&logoColor=FFFFFF&label=) ![Webpack](https://img.shields.io/static/v1?style=for-the-badge&message=Webpack&color=222222&logo=Webpack&logoColor=8DD6F9&label=) \
 ![Google Chrome](https://img.shields.io/static/v1?style=for-the-badge&message=Google+Chrome&color=4285F4&logo=Google+Chrome&logoColor=FFFFFF&label=) ![YouTube](https://img.shields.io/static/v1?style=for-the-badge&message=YouTube&color=FF0000&logo=YouTube&logoColor=FFFFFF&label=) ![Microsoft OneDrive](https://img.shields.io/static/v1?style=for-the-badge&message=Microsoft+OneDrive&color=0078D4&logo=Microsoft+OneDrive&logoColor=FFFFFF&label=) ![Google Drive](https://img.shields.io/static/v1?style=for-the-badge&message=Google+Drive&color=4285F4&logo=Google+Drive&logoColor=FFFFFF&label=)
@@ -56,13 +56,13 @@
 ## 歌單(Playlist)
 
 目前內建**久遠たま、間取かける、薬袋アルマ、YOSHIKA⁂Ch.、須多夜花**的歌單\
-如果想要編寫歌單，請參考[此 repo](https://github.com/jim60105/Playlists) \
+如果想要編寫歌單，請參考[此 repo](https://github.com/YoutubeClipPlaylist/Playlists) \
 你也可以fork此repo，從頭寫你自己的！
 
 ### 歌單格式
 
 歌單的格式是 JSON with comment \
-在這裡有[總表](https://github.com/jim60105/Playlists/blob/master/Playlists.jsonc)，標示清單名稱、標籤、位置，並載入[個別歌單](https://github.com/jim60105/Playlists/blob/master/QuonTama/QuonTamaSongList.jsonc)
+在這裡有[總表](https://github.com/YoutubeClipPlaylist/Playlists/blob/master/Playlists.jsonc)，標示清單名稱、標籤、位置，並載入[個別歌單](https://github.com/YoutubeClipPlaylist/Playlists/blob/master/QuonTama/QuonTamaSongList.jsonc)
 
 每個陣列中儲存以下項目: [VideoID, StartTime, EndTime, Title?, SubSrc?]
 
@@ -77,12 +77,12 @@
 ### 自動歌詞功能
 
 此專案有一支排程程式，自動從網路上蒐集歌詞，請在 UI 的 Settings 頁啟用。\
-歌詞來源為 [網易雲音樂](https://music.163.com/)，以 Github Workflow 定時將播放清單使用的歌詞[轉存至 Github](https://github.com/jim60105/Lyrics/tree/lyrics)，然後再讓客戶端存取 Github。\
+歌詞來源為 [網易雲音樂](https://music.163.com/)，以 Github Workflow 定時將播放清單使用的歌詞[轉存至 Github](https://github.com/YoutubeClipPlaylist/Lyrics/tree/lyrics)，然後再讓客戶端存取 Github。\
 經過這層轉存，你不會直接存取網易雲音樂站台，請安心使用。
 
 >注意，這是附加功能！\
 >由於歌詞皆為自動化搜尋匹配，能預期會有大量的錯誤情況發生。\
->若發現歌詞有錯誤，請在[這裡](https://github.com/jim60105/Lyrics/issues/new/choose)回報。\
+>若發現歌詞有錯誤，請在[這裡](https://github.com/YoutubeClipPlaylist/Lyrics/issues/new/choose)回報。\
 >請務必提供該歌曲的 Share 連結，以便我能夠快速修正錯誤歌曲
 
 ![pic](pic/ChromeWebStore/lyric.png)\
@@ -121,5 +121,5 @@
 
 ## LICENSE
 
-[![LICENSE](https://img.shields.io/github/license/jim60105/YoutubeClipPlaylist?style=for-the-badge)](https://github.com/jim60105/YoutubeClipPlaylist/blob/master/LICENSE) \
+[![LICENSE](https://img.shields.io/github/license/YoutubeClipPlaylist/YoutubeClipPlaylist?style=for-the-badge)](https://github.com/YoutubeClipPlaylist/YoutubeClipPlaylist/blob/master/LICENSE) \
 此工具以 MIT License 開源

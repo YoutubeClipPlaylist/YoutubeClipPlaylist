@@ -1,7 +1,7 @@
 import { ISong } from '../Models/Song';
 import { fetchPlaylists } from './PlaylistHelper';
 
-const defaultBaseUrl = 'https://raw.githubusercontent.com/jim60105/Playlists/minify/';
+const defaultBaseUrl = 'https://raw.githubusercontent.com/YoutubeClipPlaylist/Playlists/minify/';
 
 export async function PrepareUrlParams(urlString: string): Promise<URLSearchParams> {
     const url = new URL(urlString);

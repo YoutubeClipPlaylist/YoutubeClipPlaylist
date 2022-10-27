@@ -1,6 +1,6 @@
 [submodule "Playlists"]
-	path = Playlists
-	url = https://github.com/jim60105/Playlists.git
+path = Playlists
+url = https://github.com/YoutubeClipPlaylist/Playlists.git
 [submodule "Lyrics"]
-	path = Lyrics
-	url = https://github.com/jim60105/Lyrics.git
+path = Lyrics
+url = https://github.com/YoutubeClipPlaylist/Lyrics.git

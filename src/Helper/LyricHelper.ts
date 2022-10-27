@@ -3,7 +3,7 @@ import { ILyric, Lyric } from './../Models/Lyric';
 import { ISong } from './../Models/Song';
 import { player } from './DOMHelper';
 
-const baseURL = 'https://raw.githubusercontent.com/jim60105/Lyrics/minify/';
+const baseURL = 'https://raw.githubusercontent.com/YoutubeClipPlaylist/Lyrics/minify/';
 let LyricList: ILyric[] = [];
 
 async function LoadLyricsList(): Promise<ILyric[]> {

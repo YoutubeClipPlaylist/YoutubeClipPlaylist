@@ -9,13 +9,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jim60105/YoutubeClipPlaylist.git"
+    "url": "git+https://github.com/YoutubeClipPlaylist/YoutubeClipPlaylist.git"
   },
   "keywords": [],
   "author": "jim60105",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jim60105/YoutubeClipPlaylist/issues"
+    "url": "https://github.com/YoutubeClipPlaylist/YoutubeClipPlaylist/issues"
   },
   "homepage": "https://blog.maki0419.com/2020/12/userscript-youtube-clip-playlist.html",
   "devDependencies": {
