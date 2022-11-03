@@ -98,6 +98,14 @@ import './contentScript.scss';
         );
     }
 
+    async function ReverseStepShuffle(): Promise<void> {
+        const shuffleList: number[] = (await chrome.storage.local.get('shuffleList')).shuffleList;
+        shuffleList.unshift(shuffleList.pop() ?? 0);
+        chrome.storage.local.set({ shuffleList: shuffleList });
+
+        NextSong(shuffleList[0]);
+    }
+
     async function StepShuffle(): Promise<void> {
         const shuffleList: number[] = (await chrome.storage.local.get('shuffleList')).shuffleList;
         shuffleList.push(shuffleList.shift() ?? 0);
@@ -197,6 +205,17 @@ import './contentScript.scss';
                             StepShuffle();
                         } else {
                             NextSong(currentIndex + 1);
+                        }
+                    });
+
+                    navigator.mediaSession.setActionHandler('previoustrack', function () {
+                        console.debug('Media Key trigger');
+                        player.ontimeupdate = null;
+
+                        if (shuffle) {
+                            ReverseStepShuffle();
+                        } else {
+                            NextSong(currentIndex - 1);
                         }
                     });
                 }
