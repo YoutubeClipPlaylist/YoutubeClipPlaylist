@@ -541,10 +541,7 @@ export async function CloseChatMessageBoxInYoutube() {
 
     // Livestream is on by default. Premiere is off by default.
     // Livestream is more common than Premiere in our playlists, so we trigger once at the beginning.
-    const btn = await elementReady(
-        '#show-hide-button > ytd-toggle-button-renderer',
-        'ytd-toggle-button-renderer'
-    );
+    const btn = await elementReady('#show-hide-button button', 'button');
     btn?.dispatchEvent(new Event('click'));
     const iframe = document.getElementById('chatframe') as HTMLIFrameElement;
     iframe.onload = () => {
