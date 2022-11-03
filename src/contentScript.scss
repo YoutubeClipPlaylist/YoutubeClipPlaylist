@@ -14,26 +14,29 @@
 
     font-family: Meiryo;
     color: white;
-    background: #222222DD;
+    background: rgb(24, 24, 24);
+    color-scheme: only dark;
+
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
 
     transition: all 1s ease 0s;
 
-    h2 {
+    #plTitle {
         position: fixed;
         right: 0px;
         bottom: 0px;
         padding: 8px;
 
         color: lightgrey;
-        background: #222222DD;
+        background: rgb(32, 32, 32);
 
         writing-mode: vertical-lr;
         font-weight: unset;
         font-size: 18px;
 
         margin: 0px;
-        border-top: 1px solid gray;
-        border-left: 1px solid gray;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 10px 0 0 0;
 
         transition: all 1s ease 0s;
@@ -51,11 +54,15 @@
     li {
         font-size: 20px;
 
-        margin: 12px;
+        margin: 6px;
         margin-left: 36px;
+        padding: 6px;
+        padding-left: 2px;
 
         /* Not function in chrome */
         list-style-type: disclosure-closed;
+
+        border-radius: 5px;
     }
 }
 
@@ -64,6 +71,10 @@
 
     &:first-child {
         border-bottom: .1em solid rgb(170, 170, 170);
+        border-radius: 0;
+
+        padding: 0;
+        margin: 12px;
 
         overflow: hidden;
         white-space: nowrap;
@@ -80,12 +91,18 @@
         }
     }
 
+    &:hover {
+        filter: brightness(1.5);
+        background: rgb(255 255 255 / 7%);
+    }
+
     span.singer {
         position: absolute;
         z-index: -1;
 
         right: 0px;
         bottom: 0px;
+        margin: 0 6px 6px 0;
 
         font-size: 0.8em;
 
@@ -114,7 +131,7 @@
     text-align: center;
     background: #222222DD;
 
-    border-top: 1px solid gray;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 
     transition: all 1s ease 0s;
 
@@ -132,7 +149,7 @@
         margin: 0;
         background: #222222DD;
 
-        border: 1px solid gray;
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 10px 10px 0 0;
         border-bottom: none;
 
@@ -183,12 +200,14 @@
 
             text-decoration: none;
             color: lightgray;
+            background: rgb(255 255 255 / 9%);
 
-            border: 1px solid gray;
+            border: 0;
             border-radius: 5px;
 
             &:hover {
                 filter: brightness(1.5);
+                background: rgb(255 255 255 / 23%)
             }
 
             svg {
@@ -223,12 +242,26 @@
     z-index: 20000;
     width: 700px;
 
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+
+    background: rgba(39, 39, 39);
+
+    color: white;
+    color-scheme: only dark;
+    @include font-size(2rem);
+
     output {
         text-align: center;
-        font-size: large;
+        padding: 0;
     }
 
-    button {
+    .btn {
         width: 100%;
+        @include font-size(2rem !important);
     }
+}
+
+.btn {
+    background: rgba(255, 255, 255, 0.1);
 }
