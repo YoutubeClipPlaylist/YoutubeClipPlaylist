@@ -66,7 +66,8 @@ export function ParseLyric(text: string) {
             .replace('编', '編')
             .replace('贝', '貝')
             .replace('乐', '樂')
-            .replace('呗', '唄');
+            .replace('呗', '唄')
+            .trim();
         if (time) {
             //因为一行里面可能有多个时间，所以time有可能是[xx:xx.xx][xx:xx.xx][xx:xx.xx]的形式，需要进一步分隔
             time.forEach(function (v1: string, i1: any, a1: any) {
