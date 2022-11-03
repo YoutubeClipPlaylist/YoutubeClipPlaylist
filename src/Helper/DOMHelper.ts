@@ -85,6 +85,7 @@ export function HideUI() {
     if ('undefined' !== typeof plBox) {
         plBox.style.display = 'none';
     }
+    document.getElementById('lyricHelper')?.remove();
 }
 
 export function DestroySubtitle() {
