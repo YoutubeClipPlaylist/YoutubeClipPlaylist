@@ -1,4 +1,4 @@
-﻿# ![icon](pic/icon/icon48.png) Youtube 影片截選播放清單 (Youtube Clip Playlist)
+# ![icon](pic/icon/icon48.png) Youtube 影片截選播放清單 (Youtube Clip Playlist)
 
 ![cover](pic/ChromeWebStore/cover.png)
 
@@ -6,6 +6,14 @@
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/kdlhjpdoaabhpolkaghkjklfcdfjapkh?style=for-the-badge)](https://chrome.google.com/webstore/detail/kdlhjpdoaabhpolkaghkjklfcdfjapkh) [![Chrome Web Store](https://img.shields.io/chrome-web-store/users/kdlhjpdoaabhpolkaghkjklfcdfjapkh?style=for-the-badge)](https://chrome.google.com/webstore/detail/kdlhjpdoaabhpolkaghkjklfcdfjapkh) \
 ![Bootstrap](https://img.shields.io/static/v1?style=for-the-badge&message=Bootstrap&color=7952B3&logo=Bootstrap&logoColor=FFFFFF&label=) ![TypeScript](https://img.shields.io/static/v1?style=for-the-badge&message=TypeScript&color=3178C6&logo=TypeScript&logoColor=FFFFFF&label=) ![Webpack](https://img.shields.io/static/v1?style=for-the-badge&message=Webpack&color=222222&logo=Webpack&logoColor=8DD6F9&label=) \
 ![Google Chrome](https://img.shields.io/static/v1?style=for-the-badge&message=Google+Chrome&color=4285F4&logo=Google+Chrome&logoColor=FFFFFF&label=) ![YouTube](https://img.shields.io/static/v1?style=for-the-badge&message=YouTube&color=FF0000&logo=YouTube&logoColor=FFFFFF&label=) ![Microsoft OneDrive](https://img.shields.io/static/v1?style=for-the-badge&message=Microsoft+OneDrive&color=0078D4&logo=Microsoft+OneDrive&logoColor=FFFFFF&label=) ![Google Drive](https://img.shields.io/static/v1?style=for-the-badge&message=Google+Drive&color=4285F4&logo=Google+Drive&logoColor=FFFFFF&label=)
+
+> **Warning**\
+> Youtube launch a new feature called ["Clips"](https://support.google.com/youtube/answer/10332730) and this tool has ***ABSOLUTELY NOTHING*** to do with it.\
+> This tool existed long before this feature was introduced.
+
+> **Note**\
+> For README.md in English and Japanese, please refer to [Chrome Web Store](https://chrome.google.com/webstore/detail/kdlhjpdoaabhpolkaghkjklfcdfjapkh).\
+> 英語版と日本語版のREADME.mdは、[Chromeウェブストア](https://chrome.google.com/webstore/detail/kdlhjpdoaabhpolkaghkjklfcdfjapkh)を参照してください。
 
 ## 這是?
 
@@ -17,9 +25,6 @@
 - 觀看數都會算在原始影片上
 - 只要清單化起始/結束時間就完事，比剪片快得多
 - 因為沒有轉載、修改原影片，不會有版權爭議
-
-> 此專案曾是個油猴腳本(UserScript)，現已重寫為擴充功能\
-> 它成長得太大了
 
 ## 安裝步驟
 
