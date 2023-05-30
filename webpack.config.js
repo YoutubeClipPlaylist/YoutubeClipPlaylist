@@ -76,7 +76,7 @@ module.exports = {
                     to: 'assets/bootstrap/',
                 },
                 { from: 'node_modules/bootstrap-icons/font/fonts', to: 'assets/bootstrap/fonts' },
-                { from: 'node_modules/bootstrap-icons/LICENSE.md', to: 'assets/bootstrap/' },
+                { from: 'node_modules/bootstrap-icons/LICENSE', to: 'assets/bootstrap/' },
 
                 { from: 'manifest.json', to: '.' },
                 {
