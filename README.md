@@ -32,7 +32,6 @@
 
     - `https://www.youtube.com:443`
     - `https://onedrive.live.com:443`
-    - `https://gothuedutw-my.sharepoint.com:443`
     - `https://twitcasting.tv:443`
     - `https://drive.google.com:443`
 
@@ -53,14 +52,16 @@
 
 ### 禁用歌單功能
 
-> _若你不聽廣播，可以把 RadioQTamaList 禁用，再使用全循序/隨機播放功能_
+> _例: 若是不聽廣播，可以把 RadioQTamaList 禁用，再使用全循序/隨機播放功能_
 
 點擊右上角進入「編輯」功能，此時在清單項單擊可以啟用、禁用該播放清單 \
 編輯完成後，請務必單擊右上角「儲存」按鈕寫入設定
 
 ## 歌單(Playlist)
 
-目前內建**久遠たま、間取かける、薬袋アルマ、YOSHIKA⁂Ch.、須多夜花**的歌單\
+目前內建歌單內容如下 \
+**久遠たま、須多夜花、薬袋アルマ、浠Mizuki、神月天、町田ちま、YOSHIKA⁂Ch.、炭酸ちゃん、名雪薇薇、紅記えり、苺咲べりぃ、HACHI、獅子神レオナ、松永依織、石狩あかり、凛々咲 Ririsya、牧野白、火閻まどか、鈴花ステラ、羽宮くぅ、苓吃エムリィ、伊冬ユナ、間取かける**
+
 如果想要編寫歌單，請參考[此 repo](https://github.com/YoutubeClipPlaylist/Playlists) \
 你也可以fork此repo，從頭寫你自己的！
 
