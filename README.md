@@ -11,10 +11,6 @@
 > Youtube launch a new feature called ["Clips"](https://support.google.com/youtube/answer/10332730) and this tool has ***ABSOLUTELY NOTHING*** to do with it.\
 > This tool existed long before this feature was introduced.
 
-> **Note**\
-> For README.md in English and Japanese, please refer to [Chrome Web Store](https://chrome.google.com/webstore/detail/kdlhjpdoaabhpolkaghkjklfcdfjapkh).\
-> 英語版と日本語版のREADME.mdは、[Chromeウェブストア](https://chrome.google.com/webstore/detail/kdlhjpdoaabhpolkaghkjklfcdfjapkh)を参照してください。
-
 ## 這是?
 
 這是截選播放清單功能，在Youtube/Onedrive/GoogleDrive/TwitCasting上直接播放「起始~結束時間」影片片段。\
