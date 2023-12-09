@@ -54,7 +54,7 @@ export function ParseLyric(text: string) {
     }
     //上面用'\n'生成生成数组时，结果中最后一个为空元素，这里将去掉
     lines[lines.length - 1].length === 0 && lines.pop();
-    lines.forEach(function (v /*数组元素值*/, i /*元素索引*/, a /*数组本身*/) {
+    lines.forEach(function (v /*数组元素值*/) {
         //提取出时间[xx:xx.xx]
         // eslint-disable-next-line prefer-const
         const time = v.match(pattern);
@@ -70,7 +70,7 @@ export function ParseLyric(text: string) {
             .trim();
         if (time) {
             //因为一行里面可能有多个时间，所以time有可能是[xx:xx.xx][xx:xx.xx][xx:xx.xx]的形式，需要进一步分隔
-            time.forEach(function (v1: string, i1: any, a1: any) {
+            time.forEach(function (v1: string) {
                 //去掉时间里的中括号得到xx:xx.xx
                 const t = v1.slice(1, -1).split(':');
                 //将结果压入最终数组

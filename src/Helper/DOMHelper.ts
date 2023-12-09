@@ -62,6 +62,7 @@ export async function WaitUntilThePlayerIsReady(): Promise<HTMLVideoElement> {
                 const button = document.getElementsByClassName(
                     'vjs-big-play-button'
                 )[0] as HTMLButtonElement;
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const vjsPlayer = document.getElementById('player') as any;
                 if (vjsPlayer && button) {
                     // Wait for videojs init before we can click the button.
@@ -123,6 +124,21 @@ export async function MakeSubtitle(urlString: string, offset: number) {
 
     const song: ISong = await chrome.runtime.sendMessage(new Message('GetNowPlaying', urlString));
 
+    let lyrics: string, lyricsFromPrefetchProject: string;
+    ({ lyrics, lyricsFromPrefetchProject, lyric, offset } = await fetchLyric(song, lyric, offset));
+    if (lyrics.startsWith('WEBVTT')) {
+        processWebVTT(lyrics, offset);
+    } else if (lyrics.startsWith('[Script Info]')) {
+        processASS(lyrics, offset);
+    } else if (
+        ((song.SubSrc as string)?.endsWith('.lrc') || lyricsFromPrefetchProject) &&
+        new RegExp(/\[\d{2}:\d{2}.\d{1,5}\]/).test(lyrics)
+    ) {
+        await processLrc(lyrics, offset, lyric);
+    }
+}
+
+async function fetchLyric(song: ISong, lyric: ILyric | undefined, offset: number) {
     let lyricsFromPrefetchProject = '',
         lyricsFromSubSrc = '';
 
@@ -150,86 +166,86 @@ export async function MakeSubtitle(urlString: string, offset: number) {
     }
 
     const lyrics = lyricsFromSubSrc || lyricsFromPrefetchProject;
-    if (lyrics.startsWith('WEBVTT')) {
-        // Add WebVTT
-        const track = document.createElement('track');
-        const blob = new Blob([lyrics], {
-            type: 'text/vtt',
-        });
-        track.src = URL.createObjectURL(blob);
-        track.label = 'Traditional Chinese';
-        track.kind = 'subtitles';
-        track.srclang = 'zh';
-        track.default = true;
-        player.appendChild(track);
+    return { lyrics, lyricsFromPrefetchProject, lyric, offset };
+}
 
-        // offset
-        track.onload = () => {
-            const textTrack = player.textTracks[0];
-            if (textTrack.cues) {
-                for (let index = 0; index < textTrack.cues.length; index++) {
-                    const cue = textTrack.cues[index];
-                    cue.startTime += offset;
-                    cue.endTime += offset;
-                }
+function processWebVTT(lyrics: string, offset: number) {
+    const track = document.createElement('track');
+    const blob = new Blob([lyrics], {
+        type: 'text/vtt',
+    });
+    track.src = URL.createObjectURL(blob);
+    track.label = 'Traditional Chinese';
+    track.kind = 'subtitles';
+    track.srclang = 'zh';
+    track.default = true;
+    player.appendChild(track);
+
+    // offset
+    track.onload = () => {
+        const textTrack = player.textTracks[0];
+        if (textTrack.cues) {
+            for (let index = 0; index < textTrack.cues.length; index++) {
+                const cue = textTrack.cues[index];
+                cue.startTime += offset;
+                cue.endTime += offset;
             }
-            track.onload = null;
-        };
-    } else if (lyrics.startsWith('[Script Info]')) {
-        // ass
-        assContainer = document.createElement('div');
-        player.parentNode?.appendChild(assContainer);
-        ass = new ASS(lyrics, player, {
-            container: assContainer,
-        });
-
-        // For player resize
-        assContainer.style.position = 'absolute';
-        assContainer.style.top = '0';
-        assContainer.style.left = player.style.left;
-
-        observer = new MutationObserver(function (mutations) {
-            mutations.forEach(() => {
-                ass.resize();
-                assContainer.style.left = player.style.left;
-            });
-        });
-
-        observer.observe(player, {
-            attributes: true,
-            attributeFilter: ['style'],
-            subtree: false,
-        });
-        if (offset > 0) {
-            console.error('ASS subtitle does not support offset!!!');
         }
-    } else if (
-        ((song.SubSrc as string)?.endsWith('.lrc') || lyricsFromPrefetchProject) &&
-        new RegExp(/\[\d{2}:\d{2}.\d{1,5}\]/).test(lyrics)
-    ) {
-        // lrc
-        const lrc = ParseLyric(lyrics);
+        track.onload = null;
+    };
+}
 
-        const track = player.addTextTrack('subtitles', 'Traditional Chinese', 'zh');
-        const cues: VTTCue[] = [];
-        for (let index = 0; index < lrc.length; index++) {
-            const line = lrc[index];
+function processASS(lyrics: string, offset: number) {
+    assContainer = document.createElement('div');
+    player.parentNode?.appendChild(assContainer);
+    ass = new ASS(lyrics, player, {
+        container: assContainer,
+    });
 
-            // Skip empty line
-            if (!lrc[1]) continue;
+    // For player resize
+    assContainer.style.position = 'absolute';
+    assContainer.style.top = '0';
+    assContainer.style.left = player.style.left;
 
-            if (index === lrc.length - 1) {
-                // Add five seconds to the last line
-                cues.push(new VTTCue(line[0] + offset, line[0] + offset + 5, line[1]));
-            } else {
-                cues.push(new VTTCue(line[0] + offset, lrc[index + 1][0] + offset, line[1]));
-            }
-            track.addCue(cues[index]);
-        }
-        track.mode = 'showing';
+    observer = new MutationObserver(function (mutations) {
+        mutations.forEach(() => {
+            ass.resize();
+            assContainer.style.left = player.style.left;
+        });
+    });
 
-        if (typeof lyric !== 'undefined') await MakeLyricHelperUI(lyric, track, cues);
+    observer.observe(player, {
+        attributes: true,
+        attributeFilter: ['style'],
+        subtree: false,
+    });
+    if (offset > 0) {
+        console.error('ASS subtitle does not support offset!!!');
     }
+}
+
+async function processLrc(lyrics: string, offset: number, lyric: ILyric | undefined) {
+    const lrc = ParseLyric(lyrics);
+
+    const track = player.addTextTrack('subtitles', 'Traditional Chinese', 'zh');
+    const cues: VTTCue[] = [];
+    for (let index = 0; index < lrc.length; index++) {
+        const line = lrc[index];
+
+        // Skip empty line
+        if (!lrc[1]) continue;
+
+        if (index === lrc.length - 1) {
+            // Add five seconds to the last line
+            cues.push(new VTTCue(line[0] + offset, line[0] + offset + 5, line[1]));
+        } else {
+            cues.push(new VTTCue(line[0] + offset, lrc[index + 1][0] + offset, line[1]));
+        }
+        track.addCue(cues[index]);
+    }
+    track.mode = 'showing';
+
+    if (typeof lyric !== 'undefined') await MakeLyricHelperUI(lyric, track, cues);
 }
 
 export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
