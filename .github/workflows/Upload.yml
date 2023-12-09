@@ -13,9 +13,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v3.3.0
+      - uses: actions/setup-node@v4
         with:
           node-version: 16.3.0
 
@@ -51,7 +51,7 @@ jobs:
           recursive: true
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: artifact
           path: |
@@ -67,12 +67,12 @@ jobs:
 
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: artifact
 
       - name: Upload to Chrome Web Store
-        uses: mobilefirstllc/cws-publish@latest
+        uses: mobilefirstllc/cws-publish@2.1.1
         with:
           action: 'upload' # one of: upload, publish, testers
           client_id: ${{ secrets.CLIENT_ID }}
