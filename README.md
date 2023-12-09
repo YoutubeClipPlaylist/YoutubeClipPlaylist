@@ -125,4 +125,13 @@
 ## LICENSE
 
 [![LICENSE](https://img.shields.io/github/license/YoutubeClipPlaylist/YoutubeClipPlaylist?style=for-the-badge)](https://github.com/YoutubeClipPlaylist/YoutubeClipPlaylist/blob/master/LICENSE)  
-此工具以 MIT License 開源
+
+<img src="https://github.com/YoutubeClipPlaylist/YoutubeClipPlaylist/assets/16995691/9a1f2d14-56aa-4c5b-a99c-480be535b8a3" alt="open graph" width="200" />
+
+[GNU GENERAL PUBLIC LICENSE Version 3](LICENSE)
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
