@@ -4,7 +4,7 @@
         "description": "Name of the extension"
     },
     "extDescription": {
-        "message": "切り抜きのプレイリスト機能です。Youtube/Onedrive/GoogleDrive/TwitCastingを「開始時間～終了時間」再生する。Vtuberの歌枠を聴くためのツールです。",
+        "message": "切り抜きのプレイリスト機能です。Youtube/GoogleDrive/TwitCastingを「開始時間～終了時間」再生する。Vtuberの歌枠を聴くためのツールです。",
         "description": "Description of the extension"
     },
     "shuffle": {
