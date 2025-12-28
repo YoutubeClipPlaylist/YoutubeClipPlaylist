@@ -38,8 +38,6 @@
                 "https://www.youtube.com/*",
                 "https://drive.google.com/*",
                 "https://youtube.googleapis.com/*",
-                "https://*.sharepoint.com/*",
-                "https://onedrive.live.com/*",
                 "https://twitcasting.tv/*"
             ],
             "run_at": "document_start",
@@ -56,8 +54,6 @@
                 "https://www.youtube.com/*",
                 "https://drive.google.com/*",
                 "https://youtube.googleapis.com/*",
-                "https://*.sharepoint.com/*",
-                "https://onedrive.live.com/*",
                 "https://twitcasting.tv/*"
             ],
             "run_at": "document_idle",
@@ -77,8 +73,6 @@
                 "https://www.youtube.com/*",
                 "https://drive.google.com/*",
                 "https://youtube.googleapis.com/*",
-                "https://*.sharepoint.com/*",
-                "https://onedrive.live.com/*",
                 "https://twitcasting.tv/*"
             ]
         }

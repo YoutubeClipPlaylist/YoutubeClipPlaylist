@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**Youtube Clip Playlist** is a Chrome Extension that enables playing video clips with specified "start~end time" directly on YouTube, OneDrive, Google Drive, and TwitCasting. It is designed for listening to Vtuber singing streams (歌枠), allowing users to create playlists of song segments without downloading or re-uploading content.
+**Youtube Clip Playlist** is a Chrome Extension that enables playing video clips with specified "start~end time" directly on YouTube, Google Drive, and TwitCasting. It is designed for listening to Vtuber singing streams (歌枠), allowing users to create playlists of song segments without downloading or re-uploading content.
 
 ### Key Benefits
 

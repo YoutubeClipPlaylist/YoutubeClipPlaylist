@@ -9,15 +9,6 @@ export async function PrepareUrlParams(urlString: string): Promise<URLSearchPara
     const urlSearch: string = url.search ?? '';
 
     let search: string = urlSearch;
-    if (
-        // Always use url from browser when start playlist or from share
-        urlSearch.indexOf('startplaylist') < 0 &&
-        urlSearch.indexOf('share') < 0 &&
-        // Currently only onedrive and sharepoint will redirect and remove all parameters before playing
-        (url.host.indexOf('onedrive') >= 0 || url.host.indexOf('sharepoint') >= 0)
-    ) {
-        search = await GetFromStorage(urlSearch);
-    }
 
     let urlParams = new URLSearchParams(search);
     urlParams = CleanUpParameters(urlParams);
@@ -94,15 +85,6 @@ export async function GenerateURLFromSong(song: ISong, urlParams?: URLSearchPara
             _url.searchParams.forEach(function (value, key) {
                 urlParams?.set(key, value);
             });
-        }
-
-        // OneDrive
-        if (
-            song.VideoID.indexOf('sharepoint.com') > 0 ||
-            song.VideoID.indexOf('onedrive.live.com') > 0 ||
-            song.VideoID.indexOf('1drv.ms') > 0
-        ) {
-            urlParams.set('nav', `{"playbackOptions":{"startTimeInSeconds":${song.StartTime}}}`);
         }
 
         newURL = `${_url.origin}${_url.pathname}?${urlParams.toString()}${_url.hash}`;

@@ -487,16 +487,13 @@ export async function MakePlaylistUI(currentIndex: number, shuffle: boolean) {
 // }
 
 export async function SetTheStartTimeManually(url: URL, urlParams: URLSearchParams): Promise<void> {
-    // - Youtube skipped it when t == 0, and start from last history.
-    // - Onedrive always go to 0.
+    // Youtube skipped it when t == 0, and start from last history.
     if (urlParams.has('t')) {
-        // Twitcasting use videojs, Onedrive sometimes(?) use videojs, and it cannot set currentTime directly on the element.
+        // Twitcasting use videojs, and it cannot set currentTime directly on the element.
         if (
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             typeof (window as any).videojs === 'function' &&
-            (url.hostname.indexOf('sharepoint.com') >= 0 ||
-                url.hostname.indexOf('onedrive.live.com') >= 0 ||
-                url.hostname.indexOf('twitcasting.tv') >= 0)
+            url.hostname.indexOf('twitcasting.tv') >= 0
         ) {
             console.debug('videojs detected!');
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

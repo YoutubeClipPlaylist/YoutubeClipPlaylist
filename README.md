@@ -6,7 +6,7 @@
 [![GitHub tag](https://img.shields.io/github/tag/YoutubeClipPlaylist/YoutubeClipPlaylist?style=for-the-badge)](https://github.com/YoutubeClipPlaylist/YoutubeClipPlaylist/releases) [![GitHub last commit](https://img.shields.io/github/last-commit/YoutubeClipPlaylist/YoutubeClipPlaylist?style=for-the-badge)](https://github.com/YoutubeClipPlaylist/YoutubeClipPlaylists) [![LICENSE](https://img.shields.io/github/license/YoutubeClipPlaylist/YoutubeClipPlaylist?style=for-the-badge)](https://github.com/YoutubeClipPlaylist/YoutubeClipPlaylist/blob/master/LICENSE)  
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/kdlhjpdoaabhpolkaghkjklfcdfjapkh?style=for-the-badge)](https://chrome.google.com/webstore/detail/kdlhjpdoaabhpolkaghkjklfcdfjapkh) [![Chrome Web Store](https://img.shields.io/chrome-web-store/users/kdlhjpdoaabhpolkaghkjklfcdfjapkh?style=for-the-badge)](https://chrome.google.com/webstore/detail/kdlhjpdoaabhpolkaghkjklfcdfjapkh)  
 ![Bootstrap](https://img.shields.io/static/v1?style=for-the-badge&message=Bootstrap&color=7952B3&logo=Bootstrap&logoColor=FFFFFF&label=) ![TypeScript](https://img.shields.io/static/v1?style=for-the-badge&message=TypeScript&color=3178C6&logo=TypeScript&logoColor=FFFFFF&label=) ![Webpack](https://img.shields.io/static/v1?style=for-the-badge&message=Webpack&color=222222&logo=Webpack&logoColor=8DD6F9&label=)  
-![Google Chrome](https://img.shields.io/static/v1?style=for-the-badge&message=Google+Chrome&color=4285F4&logo=Google+Chrome&logoColor=FFFFFF&label=) ![YouTube](https://img.shields.io/static/v1?style=for-the-badge&message=YouTube&color=FF0000&logo=YouTube&logoColor=FFFFFF&label=) ![Microsoft OneDrive](https://img.shields.io/static/v1?style=for-the-badge&message=Microsoft+OneDrive&color=0078D4&logo=Microsoft+OneDrive&logoColor=FFFFFF&label=) ![Google Drive](https://img.shields.io/static/v1?style=for-the-badge&message=Google+Drive&color=4285F4&logo=Google+Drive&logoColor=FFFFFF&label=)
+![Google Chrome](https://img.shields.io/static/v1?style=for-the-badge&message=Google+Chrome&color=4285F4&logo=Google+Chrome&logoColor=FFFFFF&label=) ![YouTube](https://img.shields.io/static/v1?style=for-the-badge&message=YouTube&color=FF0000&logo=YouTube&logoColor=FFFFFF&label=) ![Google Drive](https://img.shields.io/static/v1?style=for-the-badge&message=Google+Drive&color=4285F4&logo=Google+Drive&logoColor=FFFFFF&label=)
 
 > **Warning**  
 > Youtube launch a new feature called ["Clips"](https://support.google.com/youtube/answer/10332730) and this tool has ***ABSOLUTELY NOTHING*** to do with it.  
@@ -14,8 +14,8 @@
 
 ## 這是?
 
-這是截選播放清單功能，在Youtube/Onedrive/GoogleDrive/TwitCasting上直接播放「起始~結束時間」影片片段。  
-此工具專門設計來聽Vtuber的歌枠。
+這是截選播放清單功能，在 Youtube/GoogleDrive/TwitCasting 上直接播放「起始~結束時間」影片片段。  
+此工具專門設計來聽 Vtuber 的歌枠。
 
 和烤肉或剪片相比的優點為
 
@@ -28,7 +28,6 @@
 1. 參照[這篇文章](https://blog.maki0419.com/2022/01/media-autoplay-on-browser.html)，設定下方網域的**允許自動播放**
 
     - `https://www.youtube.com:443`
-    - `https://onedrive.live.com:443`
     - `https://twitcasting.tv:443`
     - `https://drive.google.com:443`
 

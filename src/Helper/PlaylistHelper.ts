@@ -2,7 +2,7 @@ import { IPlaylist } from '../Models/Playlist';
 import { ISong, Song } from '../Models/Song';
 import { GetBaseUrl, PrepareUrlParams } from './URLHelper';
 
-const defaultDisabledTags = ['notsongs', 'member', 'onedrive'];
+const defaultDisabledTags = ['notsongs', 'member'];
 
 export async function fetchPlaylists(): Promise<IPlaylist[]> {
     const response = await fetch((await GetBaseUrl()) + 'Playlists.jsonc');
@@ -218,7 +218,7 @@ export async function CheckList(urlString: string): Promise<number> {
             }
         }
     } else {
-        // Google Drive iframe, OneDrive, Others
+        // Google Drive iframe, Others
         for (i = 0; i < myPlaylist.length; i++) {
             // VideoId
             if (
