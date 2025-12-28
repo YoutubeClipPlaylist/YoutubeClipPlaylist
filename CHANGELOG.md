@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [16.0.1] - 2025-12-28
+
+### Changed
+
+- Changed: Consolidate CI/CD workflows into single build and release pipeline
+- Changed: Merge Publish.yml and Upload.yml into unified build.yml workflow
+- Changed: Remove Chrome Web Store upload and publish jobs due to integration issues
+- Changed: Retain build functionality with artifact generation and build provenance attestation
+- Changed: Add GitHub release creation for tagged versions
+- Changed: Update permissions to allow contents write for release creation
+
+### Fixed
+
+- Fixed: Normalize links and fix Markdown examples in documentation
+- Fixed: Wrap playlist link conversion tool URL in angle brackets in changelog
+- Fixed: Update README article link to xn--jgy.tw URL
+- Fixed: Correct Markdown example blockquote and emphasis formatting
+
 ## [16.0.0] - 2025-12-28
 
 ### Removed
@@ -866,7 +884,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
-[Unreleased]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v16.0.0...HEAD
+[Unreleased]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v16.0.1...HEAD
+[16.0.1]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v16.0.0...v16.0.1
 [16.0.0]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v15.2.9...v16.0.0
 [15.2.9]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v15.2.8...v15.2.9
 [15.2.8]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v15.2.7...v15.2.8
