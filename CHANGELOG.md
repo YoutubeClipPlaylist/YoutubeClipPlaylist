@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [15.2.9] - 2025-12-28
+
+### Changed
+
+- Changed: Update GitHub Actions to latest major versions (checkout v4→v6, setup-node v4→v6, upload-artifact v3→v6, download-artifact v3→v7, action-gh-release v1→v2)
+- Changed: Updated Playlists submodule to commit 3882307
+
+### Security
+
+- Security: Add SLSA build provenance attestations for Chrome extension artifacts to improve supply chain security
+
 ## [15.2.8] - 2025-12-28
 
 ### Added
@@ -840,7 +851,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
-[Unreleased]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v15.2.8...HEAD
+[Unreleased]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v15.2.9...HEAD
+[15.2.9]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v15.2.8...v15.2.9
 [15.2.8]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v15.2.7...v15.2.8
 [15.2.7]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v15.2.6...v15.2.7
 [15.2.6]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v15.2.5...v15.2.6
