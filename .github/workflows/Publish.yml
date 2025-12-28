@@ -3,6 +3,11 @@ name: Publish
 on:
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  attestations: write
+  contents: read
+
 jobs:
   build:
     name: Build Extension
@@ -45,6 +50,16 @@ jobs:
           dest: YoutubeClipPlaylist_DEBUG.zip
           # https://github.com/vimtor/action-zip/issues/8#issuecomment-917654348
           recursive: true
+
+      - name: Attest Build Provenance for Release Build
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: YoutubeClipPlaylist.zip
+
+      - name: Attest Build Provenance for Debug Build
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: YoutubeClipPlaylist_DEBUG.zip
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v6
