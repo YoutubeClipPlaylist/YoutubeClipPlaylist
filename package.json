@@ -1,6 +1,6 @@
 {
   "name": "youtube-clip-playlist",
-  "version": "16.0.1",
+  "version": "16.0.2",
   "description": "This is a playlist tool to play video clips with \"start~end time\" directly on Youtube/GoogleDrive.",
   "main": "background.js",
   "scripts": {

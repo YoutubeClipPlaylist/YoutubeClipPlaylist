@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [16.0.2] - 2025-12-28
+
+### Changed
+
+- Changed: Remove OneDrive from extension descriptions in all locales (English, Japanese, Traditional Chinese) and package.json
+
 ## [16.0.1] - 2025-12-28
 
 ### Changed
@@ -884,7 +890,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
-[Unreleased]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v16.0.1...HEAD
+[Unreleased]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v16.0.2...HEAD
+[16.0.2]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v16.0.1...v16.0.2
 [16.0.1]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v16.0.0...v16.0.1
 [16.0.0]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v15.2.9...v16.0.0
 [15.2.9]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v15.2.8...v15.2.9
