@@ -25,7 +25,7 @@
 
 ## 安裝步驟
 
-1. 參照[這篇文章](https://blog.maki0419.com/2022/01/media-autoplay-on-browser.html)，設定下方網域的**允許自動播放**
+1. 參照[這篇文章](https://xn--jgy.tw/Frontend/media-autoplay-on-browser/)，設定下方網域的**允許自動播放**
 
     - `https://www.youtube.com:443`
     - `https://twitcasting.tv:443`
@@ -48,7 +48,7 @@
 
 ### 禁用歌單功能
 
-> _例: 若是不聽廣播，可以把 RadioQTamaList 禁用，再使用全循序/隨機播放功能_
+> *例: 若是不聽廣播，可以把 RadioQTamaList 禁用，再使用全循序/隨機播放功能*
 
 點擊右上角進入「編輯」功能，此時在清單項單擊可以啟用、禁用該播放清單  
 編輯完成後，請務必單擊右上角「儲存」按鈕寫入設定

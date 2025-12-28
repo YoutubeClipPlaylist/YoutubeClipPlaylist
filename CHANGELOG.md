@@ -807,7 +807,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 
 - Changed: Update README.md
-- Changed: Move playlist link conversion tool to https://github.com/jim60105/SongLists
+- Changed: Move playlist link conversion tool to <https://github.com/jim60105/SongLists>
 
 ## [5.3.0] - 2020-12-10
 
