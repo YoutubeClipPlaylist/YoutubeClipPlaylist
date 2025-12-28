@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [16.0.0] - 2025-12-28
+
+### Removed
+
+- Removed: OneDrive and SharePoint video playback support (BREAKING CHANGE)
+- Removed: OneDrive and SharePoint URL patterns from manifest
+- Removed: OneDrive parameter storage logic and URL generation
+- Removed: OneDrive videojs handling from DOM helper
+- Removed: 'onedrive' from default disabled tags
+
+### Changed
+
+- Changed: Updated README.md to remove OneDrive badge and references
+- Changed: Updated AGENTS.md project description
+
 ## [15.2.9] - 2025-12-28
 
 ### Changed
@@ -851,7 +866,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
-[Unreleased]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v15.2.9...HEAD
+[Unreleased]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v16.0.0...HEAD
+[16.0.0]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v15.2.9...v16.0.0
 [15.2.9]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v15.2.8...v15.2.9
 [15.2.8]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v15.2.7...v15.2.8
 [15.2.7]: https://github.com/jim60105/YoutubeClipPlaylist/compare/v15.2.6...v15.2.7
